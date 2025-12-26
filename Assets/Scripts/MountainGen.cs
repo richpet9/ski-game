@@ -1,40 +1,30 @@
 using System.Collections;
+using SkiGame.Maps;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MountainGen : MonoBehaviour
 {
+    static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
+    bool _canGenerate = true;
+
+    [SerializeField]
+    MapConfig mapConfig;
+
     [SerializeField]
     bool randomizeOnGenerate = true;
 
     [SerializeField]
-    int width = 128; // Grid size
-
-    [SerializeField]
-    int height = 128;
-
-    [SerializeField]
-    float scale = 2f; // Noise frequency
-
-    [SerializeField]
-    float mountainHeight = 80f;
-
-    [SerializeField]
     AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
-
-    [SerializeField]
-    int seed = 0;
-
-    bool canGenerate = true;
 
     IEnumerator ActionRoutine()
     {
-        if (!canGenerate)
+        if (!_canGenerate)
             yield break;
 
-        canGenerate = false;
-        yield return new WaitForSeconds(0.5f);
-        canGenerate = true;
+        _canGenerate = false;
+        yield return _waitForSeconds0_5;
+        _canGenerate = true;
     }
 
     void Start()
@@ -44,12 +34,12 @@ public class MountainGen : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.G) && canGenerate)
+        if (Input.GetKey(KeyCode.G) && _canGenerate)
         {
             StartCoroutine(ActionRoutine());
             if (randomizeOnGenerate)
             {
-                seed = Random.Range(0, 100000);
+                mapConfig.Seed = Random.Range(0, 100000);
             }
             ClearMesh();
             Generate();
@@ -66,14 +56,18 @@ public class MountainGen : MonoBehaviour
 
     void Generate()
     {
-        Mesh mesh = new Mesh();
+        int width = mapConfig.Width;
+        int height = mapConfig.Height;
+        float scale = mapConfig.NoiseScale;
+
+        Mesh mesh = new();
         Vector3[] vertices = new Vector3[(width + 1) * (height + 1)];
         Vector2[] uv = new Vector2[vertices.Length];
         Vector4[] tangents = new Vector4[vertices.Length];
 
-        Vector2 center = new Vector2(width / 2f, height / 2f);
-        float xOffset = seed + 9999f;
-        float zOffset = seed + 9999f;
+        Vector2 center = new(width / 2f, height / 2f);
+        float xOffset = mapConfig.Seed + 9999f;
+        float zOffset = mapConfig.Seed + 9999f;
 
         for (int z = 0; z <= height; z++)
         {
@@ -91,7 +85,7 @@ public class MountainGen : MonoBehaviour
 
                 // 3. Apply Curve (Plateaus)
                 // Evaluate the combined noise + mask through your curve
-                float finalHeight = heightCurve.Evaluate(noise * mask) * mountainHeight;
+                float finalHeight = heightCurve.Evaluate(noise * mask) * mapConfig.MountainHeight;
 
                 vertices[z * (width + 1) + x] = new Vector3(x, finalHeight, z);
             }

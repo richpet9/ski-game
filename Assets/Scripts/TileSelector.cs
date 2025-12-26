@@ -11,11 +11,13 @@ public class TileSelector : MonoBehaviour
     [SerializeField]
     GameObject cursorVisual;
 
+    const float RAY_HEIGHT = 2000f;
+
     void Update()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 2000f, terrainLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, terrainLayer))
         {
             // Snap to integer grid
             int x = Mathf.RoundToInt(hit.point.x);

@@ -3,24 +3,39 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] Transform cameraTransform;
-    [SerializeField] LayerMask terrainLayer;
+    [SerializeField]
+    readonly Transform cameraTransform;
+
+    [SerializeField]
+    LayerMask terrainLayer;
 
     [Header("Movement (Rig Translation)")]
-    [SerializeField] float moveSpeed = 20f;
-    [SerializeField] float shiftMult = 2f;
-    [SerializeField] float smoothTime = 0.2f;
+    [SerializeField]
+    readonly float moveSpeed = 20f;
+
+    [SerializeField]
+    readonly float shiftMult = 2f;
+
+    [SerializeField]
+    readonly float smoothTime = 0.2f;
 
     [Header("Rotation (Rig Yaw)")]
-    [SerializeField] float rotateSpeed = 150f;
+    [SerializeField]
+    readonly float rotateSpeed = 150f;
 
     [Header("Tilt (Camera Pitch)")]
-    [SerializeField] Vector2 tiltLimits = new Vector2(20f, 85f); // Min/Max angle X
-    [SerializeField] float tiltSpeed = 150f;
+    [SerializeField]
+    Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X
+
+    [SerializeField]
+    readonly float tiltSpeed = 150f;
 
     [Header("Zoom (Camera Local Z)")]
-    [SerializeField] float zoomStep = 5f;
-    [SerializeField] Vector2 zoomLimits = new Vector2(5f, 50f); // Min/Max distance
+    [SerializeField]
+    readonly float zoomStep = 5f;
+
+    [SerializeField]
+    Vector2 zoomLimits = new(5f, 50f); // Min/Max distance
 
     // Smoothing Targets
     Vector3 _targetPos;
@@ -50,7 +65,11 @@ public class CameraController : MonoBehaviour
         _targetPitch = cameraTransform.localEulerAngles.x;
 
         // 2. Initialize zoom based on distance, not just Z axis
-        _targetZoom = Mathf.Clamp(Vector3.Distance(transform.position, cameraTransform.position), zoomLimits.x, zoomLimits.y);
+        _targetZoom = Mathf.Clamp(
+            Vector3.Distance(transform.position, cameraTransform.position),
+            zoomLimits.x,
+            zoomLimits.y
+        );
 
         // 3. Initialize "Current" variables so we don't start at 0
         _currentZoom = _targetZoom;
@@ -72,9 +91,13 @@ public class CameraController : MonoBehaviour
         // --- Movement ---
         Vector3 forward = transform.forward;
         Vector3 right = transform.right;
-        forward.Normalize(); right.Normalize();
+        forward.Normalize();
+        right.Normalize();
 
-        Vector3 moveDir = (forward * Input.GetAxisRaw("Vertical") + right * Input.GetAxisRaw("Horizontal")).normalized;
+        Vector3 moveDir = (
+            forward * Input.GetAxisRaw("Vertical") + right * Input.GetAxisRaw("Horizontal")
+        ).normalized;
+
         if (moveDir.sqrMagnitude > 0)
         {
             _targetPos += dt * speed * moveDir;
@@ -89,8 +112,15 @@ public class CameraController : MonoBehaviour
         }
 
         // Keyboard Rotation
-        if (Input.GetKey(KeyCode.Q)) _targetYaw -= rotateSpeed * dt;
-        if (Input.GetKey(KeyCode.E)) _targetYaw += rotateSpeed * dt;
+        if (Input.GetKey(KeyCode.Q))
+        {
+            _targetYaw -= rotateSpeed * dt;
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            _targetYaw += rotateSpeed * dt;
+        }
 
         // Clamp Pitch
         _targetPitch = Mathf.Clamp(_targetPitch, tiltLimits.x, tiltLimits.y);
@@ -106,10 +136,25 @@ public class CameraController : MonoBehaviour
     void ApplyTransform()
     {
         // SmoothDamp is framerate independent and overshoot-proof
-        transform.position = Vector3.SmoothDamp(transform.position, _targetPos, ref _currentPosVel, smoothTime);
+        transform.position = Vector3.SmoothDamp(
+            transform.position,
+            _targetPos,
+            ref _currentPosVel,
+            smoothTime
+        );
 
-        _currentYaw = Mathf.SmoothDampAngle(_currentYaw, _targetYaw, ref _currentYawVel, smoothTime);
-        _currentPitch = Mathf.SmoothDampAngle(_currentPitch, _targetPitch, ref _currentPitchVel, smoothTime);
+        _currentYaw = Mathf.SmoothDampAngle(
+            _currentYaw,
+            _targetYaw,
+            ref _currentYawVel,
+            smoothTime
+        );
+        _currentPitch = Mathf.SmoothDampAngle(
+            _currentPitch,
+            _targetPitch,
+            ref _currentPitchVel,
+            smoothTime
+        );
         _currentZoom = Mathf.SmoothDamp(_currentZoom, _targetZoom, ref _currentZoomVel, smoothTime);
 
         // Apply Rotations
@@ -123,7 +168,7 @@ public class CameraController : MonoBehaviour
     // Renamed for clarity. Uses X/Z from input, ignores input Y.
     float GetTerrainHeight(Vector2 xzPos)
     {
-        Vector3 origin = new Vector3(xzPos.x, RAY_HEIGHT, xzPos.y);
+        Vector3 origin = new(xzPos.x, RAY_HEIGHT, xzPos.y);
 
         if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1000f, terrainLayer))
         {

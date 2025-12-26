@@ -4,19 +4,33 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MountainGen : MonoBehaviour
 {
-    public int seed = 0;
-    public bool randomizeOnGenerate = true;
-    public int width = 128; // Grid size
-    public int height = 128;
-    public float scale = 20f; // Noise frequency
-    public float mountainHeight = 50f;
-    public AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
+    [SerializeField]
+    readonly bool randomizeOnGenerate = true;
 
-    private bool canGenerate = true;
+    [SerializeField]
+    readonly int width = 128; // Grid size
+
+    [SerializeField]
+    readonly int height = 128;
+
+    [SerializeField]
+    readonly float scale = 20f; // Noise frequency
+
+    [SerializeField]
+    readonly float mountainHeight = 50f;
+
+    [SerializeField]
+    readonly AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
+
+    [SerializeField]
+    int seed = 0;
+
+    bool canGenerate = true;
 
     IEnumerator ActionRoutine()
     {
-        if (!canGenerate) yield break;
+        if (!canGenerate)
+            yield break;
 
         canGenerate = false;
         yield return new WaitForSeconds(0.5f);
@@ -30,7 +44,7 @@ public class MountainGen : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKey(KeyCode.G) && canGenerate)
+        if (Input.GetKey(KeyCode.G) && canGenerate)
         {
             StartCoroutine(ActionRoutine());
             if (randomizeOnGenerate)
@@ -42,7 +56,7 @@ public class MountainGen : MonoBehaviour
         }
     }
 
-    private void ClearMesh()
+    void ClearMesh()
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         GetComponent<MeshFilter>().mesh = null;

@@ -4,7 +4,7 @@ namespace SkiGame.Maps
 {
     public class MapData
     {
-        TileType[,] _grid;
+        private TileType[,] _grid;
 
         public MapData(MapConfig mapConfig)
         {

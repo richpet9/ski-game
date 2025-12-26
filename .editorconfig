@@ -2,3 +2,4 @@
 
 # IDE0130: Namespace does not match folder structure
 dotnet_style_namespace_match_folder = false
+dotnet_style_require_accessibility_modifiers = always:warning

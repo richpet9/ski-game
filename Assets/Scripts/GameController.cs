@@ -5,26 +5,26 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField]
-    MapConfig _mapConfig;
+    private MapConfig _mapConfig;
 
     [SerializeField]
-    MountainGen _mountainGen;
+    private MountainGen _mountainGen;
 
     [SerializeField]
-    CameraController _cameraController;
+    private CameraController _cameraController;
 
-    static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
+    private static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
 
-    MapData _mapData;
-    bool _canGenerate = true;
+    private MapData _mapData;
+    private bool _canGenerate = true;
 
-    void Start()
+    private void Start()
     {
         _mapData = new MapData(_mapConfig);
         _mountainGen.Generate(_mapConfig, _mapData);
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKey(KeyCode.G) && _canGenerate)
         {
@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    IEnumerator ActionRoutine()
+    private IEnumerator ActionRoutine()
     {
         if (!_canGenerate)
             yield break;

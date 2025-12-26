@@ -5,13 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MountainGen : MonoBehaviour
 {
-    static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
+    private static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
 
     [SerializeField]
-    bool randomizeOnGenerate = true;
+    private bool randomizeOnGenerate = true;
 
     [SerializeField]
-    AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
+    private AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
 
     public void ClearMesh()
     {

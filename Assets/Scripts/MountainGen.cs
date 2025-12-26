@@ -6,10 +6,6 @@ using UnityEngine;
 public class MountainGen : MonoBehaviour
 {
     static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
-    bool _canGenerate = true;
-
-    [SerializeField]
-    MapConfig mapConfig;
 
     [SerializeField]
     bool randomizeOnGenerate = true;
@@ -17,36 +13,7 @@ public class MountainGen : MonoBehaviour
     [SerializeField]
     AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
 
-    IEnumerator ActionRoutine()
-    {
-        if (!_canGenerate)
-            yield break;
-
-        _canGenerate = false;
-        yield return _waitForSeconds0_5;
-        _canGenerate = true;
-    }
-
-    void Start()
-    {
-        Generate();
-    }
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.G) && _canGenerate)
-        {
-            StartCoroutine(ActionRoutine());
-            if (randomizeOnGenerate)
-            {
-                mapConfig.Seed = Random.Range(0, 100000);
-            }
-            ClearMesh();
-            Generate();
-        }
-    }
-
-    void ClearMesh()
+    public void ClearMesh()
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         GetComponent<MeshFilter>().mesh = null;
@@ -54,7 +21,7 @@ public class MountainGen : MonoBehaviour
         Destroy(GetComponent<MeshCollider>());
     }
 
-    void Generate()
+    public void Generate(MapConfig mapConfig, MapData mapData)
     {
         int width = mapConfig.Width;
         int height = mapConfig.Height;

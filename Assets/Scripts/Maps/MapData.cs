@@ -1,18 +1,14 @@
 using SkiGame.Tile;
-using UnityEngine;
 
 namespace SkiGame.Maps
 {
-    public class MapData : MonoBehaviour
+    public class MapData
     {
-        [SerializeField]
-        MapConfig mapConfig;
+        TileType[,] _grid;
 
-        TileType[,] _tiles;
-
-        void Start()
+        public MapData(MapConfig mapConfig)
         {
-            _tiles = new TileType[mapConfig.Width, mapConfig.Height];
+            _grid = new TileType[mapConfig.Width, mapConfig.Height];
         }
     }
 }

@@ -14,6 +14,8 @@ namespace SkiGame.Maps
         [Header("Generation")]
         public int Seed = 0;
 
+        public bool RandomizeOnGenerate = true;
+
         [Range(1, 80)]
         public int MountainHeight = 80;
 

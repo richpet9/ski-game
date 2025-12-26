@@ -3,35 +3,36 @@ using UnityEngine;
 
 namespace SkiGame.Terrain
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class MountainGen : MonoBehaviour
     {
-        private static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
-
-        [SerializeField]
-        private bool randomizeOnGenerate = true;
-
-        [SerializeField]
-        private AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
+        private Mesh _mesh;
+        private Vector3[] _vertices;
+        private float[] _vertexHeights;
 
         public void ClearMesh()
         {
-            Mesh mesh = GetComponent<MeshFilter>().mesh;
             GetComponent<MeshFilter>().mesh = null;
-            Destroy(mesh);
-            Destroy(GetComponent<MeshCollider>());
+            GetComponent<MeshCollider>().sharedMesh = null;
         }
 
         public void Generate(MapConfig mapConfig, MapData mapData)
+        {
+            GenerateVertices(mapConfig);
+            GenerateMapData(mapConfig, mapData);
+            GenerateTriangles(mapConfig);
+            Debug.Log("Generated!");
+        }
+
+        private void GenerateVertices(MapConfig mapConfig)
         {
             int width = mapConfig.Width;
             int height = mapConfig.Height;
             float scale = mapConfig.NoiseScale;
 
-            Mesh mesh = new();
-            Vector3[] vertices = new Vector3[(width + 1) * (height + 1)];
-            Vector2[] uv = new Vector2[vertices.Length];
-            Vector4[] tangents = new Vector4[vertices.Length];
+            _mesh = new Mesh();
+            _vertices = new Vector3[(width + 1) * (height + 1)];
+            _vertexHeights = new float[(width + 1) * (height + 1)];
 
             Vector2 center = new(width / 2f, height / 2f);
             float xOffset = mapConfig.Seed + 9999f;
@@ -41,26 +42,57 @@ namespace SkiGame.Terrain
             {
                 for (int x = 0; x <= width; x++)
                 {
-                    // 1. Calculate base noise
+                    // 1. Calculate base noise.
                     float xCoord = (float)x / width * scale + xOffset;
                     float zCoord = (float)z / height * scale + zOffset;
                     float noise = Mathf.PerlinNoise(xCoord, zCoord);
 
-                    // 2. Apply "Cone" shape to force a central peak
+                    // 2. Apply "Cone" shape to force a central peak.
                     float distFromCenter = Vector2.Distance(new Vector2(x, z), center);
                     float maxDist = width / 2f;
                     float mask = 1f - Mathf.Clamp01(distFromCenter / maxDist);
 
-                    // 3. Apply Curve (Plateaus)
-                    // Evaluate the combined noise + mask through your curve
+                    // 3. Apply Curve (Plateaus).
+                    // Evaluate the combined noise + mask through your curve.
                     float finalHeight =
-                        heightCurve.Evaluate(noise * mask) * mapConfig.MountainHeight;
+                        mapConfig.HeightCurve.Evaluate(noise * mask) * mapConfig.MountainHeight;
 
-                    vertices[z * (width + 1) + x] = new Vector3(x, finalHeight, z);
+                    _vertices[z * (width + 1) + x] = new Vector3(x, finalHeight, z);
+                    _vertexHeights[z * (width + 1) + x] = finalHeight;
                 }
             }
+        }
 
-            // Standard Unity Mesh Triangles generation (The boring part)
+        private void GenerateMapData(MapConfig mapConfig, MapData mapData)
+        {
+            for (int z = 0; z < mapConfig.Height; z++)
+            {
+                for (int x = 0; x < mapConfig.Width; x++)
+                {
+                    // Calculate average height of the quad
+                    float h1 = _vertexHeights[z * (mapConfig.Width + 1) + x];
+                    float h2 = _vertexHeights[(z + 1) * (mapConfig.Width + 1) + x];
+                    float h3 = _vertexHeights[z * (mapConfig.Width + 1) + x + 1];
+                    float h4 = _vertexHeights[(z + 1) * (mapConfig.Width + 1) + x + 1];
+
+                    if (z == 64 && x == 64)
+                    {
+                        Debug.Log($"h1: {h1} h2: {h2} h3: {h3} h4: {h4}");
+                    }
+
+                    float avgHeight = (h1 + h2 + h3 + h4) * 0.25f;
+
+                    // Assign to your data structure
+                    mapData.SetTile(x, z, avgHeight);
+                }
+            }
+        }
+
+        private void GenerateTriangles(MapConfig mapConfig)
+        {
+            int width = mapConfig.Width;
+            int height = mapConfig.Height;
+
             int[] triangles = new int[width * height * 6];
             int tris = 0;
             int vert = 0;
@@ -80,15 +112,11 @@ namespace SkiGame.Terrain
                 vert++;
             }
 
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals(); // Essential for lighting
-            GetComponent<MeshFilter>().mesh = mesh;
-
-            // Add a MeshCollider so you can click on it later
-            MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
-            meshCollider.sharedMesh = mesh;
-            Debug.Log("Generated!");
+            _mesh.vertices = _vertices;
+            _mesh.triangles = triangles;
+            _mesh.RecalculateNormals(); // Essential for lighting.
+            GetComponent<MeshFilter>().mesh = _mesh;
+            GetComponent<MeshCollider>().sharedMesh = _mesh;
         }
     }
 }

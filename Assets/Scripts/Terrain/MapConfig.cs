@@ -20,7 +20,7 @@ namespace SkiGame.Terrain
         public int MountainHeight = 80;
 
         [Range(0, 20)]
-        public float NoiseScale = 2f;
+        public int NoiseScale = 2;
 
         public AnimationCurve HeightCurve;
     }

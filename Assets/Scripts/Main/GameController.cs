@@ -1,4 +1,5 @@
 using System.Collections;
+using SkiGame.Main;
 using SkiGame.Terrain;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ public class GameController : MonoBehaviour
     {
         _mapData = new MapData(_mapConfig);
         _mountainGen.Generate(_mapConfig, _mapData);
+
+        GameContext.RegisterMap(_mapData);
     }
 
     private void Update()

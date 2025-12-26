@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour
 
     [Header("Tilt (Camera Pitch)")]
     [SerializeField]
-    private Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X
+    private Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X.
 
     [SerializeField]
     private float tiltSpeed = 150f;
@@ -35,43 +35,43 @@ public class CameraController : MonoBehaviour
     private float zoomStep = 5f;
 
     [SerializeField]
-    private Vector2 zoomLimits = new(5f, 50f); // Min/Max distance
+    private Vector2 zoomLimits = new(5f, 50f); // Min/Max distance.
 
-    // Smoothing Targets
+    // Smoothing Targets.
     private Vector3 _targetPos;
     private float _targetYaw;
     private float _targetPitch;
     private float _targetZoom;
 
-    // Current State (Where we actually are - used for smoothing)
+    // Current State (Where we actually are - used for smoothing).
     private float _currentZoom;
     private float _currentYaw;
     private float _currentPitch;
 
-    // Velocities for SmoothDamp (Reference variables)
+    // Velocities for SmoothDamp (Reference variables).
     private Vector3 _currentPosVel;
     private float _currentYawVel;
     private float _currentPitchVel;
     private float _currentZoomVel;
 
-    // Constant
+    // Constant.
     private const float RAY_HEIGHT = 500f;
 
     private void Start()
     {
-        // 1. Snap targets to current transform to prevent initial jerk
+        // 1. Snap targets to current transform to prevent initial jerk.
         _targetPos = transform.position;
         _targetYaw = transform.eulerAngles.y;
         _targetPitch = cameraTransform.localEulerAngles.x;
 
-        // 2. Initialize zoom based on distance, not just Z axis
+        // 2. Initialize zoom based on distance, not just Z axis.
         _targetZoom = Mathf.Clamp(
             Vector3.Distance(transform.position, cameraTransform.position),
             zoomLimits.x,
             zoomLimits.y
         );
 
-        // 3. Initialize "Current" variables so we don't start at 0
+        // 3. Initialize "Current" variables so we don't start at 0.
         _currentZoom = _targetZoom;
         _currentYaw = _targetYaw;
         _currentPitch = _targetPitch;
@@ -108,10 +108,10 @@ public class CameraController : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             _targetYaw += Input.GetAxis("Mouse X") * rotateSpeed * dt;
-            _targetPitch -= Input.GetAxis("Mouse Y") * tiltSpeed * dt; // Subtract for intuitive tilt
+            _targetPitch -= Input.GetAxis("Mouse Y") * tiltSpeed * dt; // Subtract for intuitive tilt.
         }
 
-        // Keyboard Rotation
+        // Keyboard Rotation.
         if (Input.GetKey(KeyCode.Q))
         {
             _targetYaw -= rotateSpeed * dt;
@@ -122,7 +122,7 @@ public class CameraController : MonoBehaviour
             _targetYaw += rotateSpeed * dt;
         }
 
-        // Clamp Pitch
+        // Clamp Pitch.
         _targetPitch = Mathf.Clamp(_targetPitch, tiltLimits.x, tiltLimits.y);
 
         // --- Zoom ---
@@ -135,7 +135,7 @@ public class CameraController : MonoBehaviour
 
     private void ApplyTransform()
     {
-        // SmoothDamp is framerate independent and overshoot-proof
+        // SmoothDamp is framerate independent and overshoot-proof.
         transform.position = Vector3.SmoothDamp(
             transform.position,
             _targetPos,
@@ -157,7 +157,7 @@ public class CameraController : MonoBehaviour
         );
         _currentZoom = Mathf.SmoothDamp(_currentZoom, _targetZoom, ref _currentZoomVel, smoothTime);
 
-        // Apply Rotations
+        // Apply Rotations.
         transform.rotation = Quaternion.Euler(0, _currentYaw, 0);
 
         Quaternion pitchRotation = Quaternion.Euler(_currentPitch, 0, 0);

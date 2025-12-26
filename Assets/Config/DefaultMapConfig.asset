@@ -9,11 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 5406f926c41434d7a90db3f75ef77a4d, type: 3}
   m_Name: DefaultMapConfig
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
   Width: 128
   Height: 128
   Seed: 0
+  RandomizeOnGenerate: 1
   MountainHeight: 80
   NoiseScale: 2
+  HeightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

@@ -35,7 +35,8 @@ namespace SkiGame.Terrain
 
         private TileType GetTerrainTypeFromHeight(float height)
         {
-            if (height > 40)
+            // Use a constant in the shader and here.
+            if (height > 10)
             {
                 return TileType.SNOW;
             }

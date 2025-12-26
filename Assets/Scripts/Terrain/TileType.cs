@@ -1,4 +1,4 @@
-namespace SkiGame.Tile
+namespace SkiGame.Terrain
 {
     public enum TileType : byte
     {

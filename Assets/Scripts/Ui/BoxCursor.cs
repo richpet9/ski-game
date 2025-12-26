@@ -1,0 +1,29 @@
+using UnityEngine;
+
+namespace SkiGame.Ui
+{
+    [RequireComponent(typeof(LineRenderer))]
+    public class BoxCursor : MonoBehaviour
+    {
+        [SerializeField]
+        private float size = 1f;
+
+        private void Start()
+        {
+            var line = GetComponent<LineRenderer>();
+
+            // Ensure standard settings for a simple box
+            line.useWorldSpace = false;
+            line.loop = true;
+            line.positionCount = 4;
+
+            // Define the 4 corners of the square on the XZ plane (Local Space)
+            float s = size * 0.5f;
+
+            line.SetPosition(0, new(-s, 0, -s)); // Bottom Left
+            line.SetPosition(1, new(-s, 0, s)); // Top Left
+            line.SetPosition(2, new(s, 0, s)); // Top Right
+            line.SetPosition(3, new(s, 0, -s)); // Bottom Right
+        }
+    }
+}

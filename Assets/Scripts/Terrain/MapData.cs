@@ -1,6 +1,4 @@
-using SkiGame.Tile;
-
-namespace SkiGame.Maps
+namespace SkiGame.Terrain
 {
     public class MapData
     {

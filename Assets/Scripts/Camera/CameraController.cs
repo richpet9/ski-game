@@ -4,60 +4,60 @@ public class CameraController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField]
-    Transform cameraTransform;
+    private Transform cameraTransform;
 
     [SerializeField]
-    LayerMask terrainLayer;
+    private LayerMask terrainLayer;
 
     [Header("Movement (Rig Translation)")]
     [SerializeField]
-    float moveSpeed = 20f;
+    private float moveSpeed = 20f;
 
     [SerializeField]
-    float shiftMult = 2f;
+    private float shiftMult = 2f;
 
     [SerializeField]
-    float smoothTime = 0.2f;
+    private float smoothTime = 0.2f;
 
     [Header("Rotation (Rig Yaw)")]
     [SerializeField]
-    float rotateSpeed = 150f;
+    private float rotateSpeed = 150f;
 
     [Header("Tilt (Camera Pitch)")]
     [SerializeField]
-    Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X
+    private Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X
 
     [SerializeField]
-    float tiltSpeed = 150f;
+    private float tiltSpeed = 150f;
 
     [Header("Zoom (Camera Local Z)")]
     [SerializeField]
-    float zoomStep = 5f;
+    private float zoomStep = 5f;
 
     [SerializeField]
-    Vector2 zoomLimits = new(5f, 50f); // Min/Max distance
+    private Vector2 zoomLimits = new(5f, 50f); // Min/Max distance
 
     // Smoothing Targets
-    Vector3 _targetPos;
-    float _targetYaw;
-    float _targetPitch;
-    float _targetZoom;
+    private Vector3 _targetPos;
+    private float _targetYaw;
+    private float _targetPitch;
+    private float _targetZoom;
 
     // Current State (Where we actually are - used for smoothing)
-    float _currentZoom;
-    float _currentYaw;
-    float _currentPitch;
+    private float _currentZoom;
+    private float _currentYaw;
+    private float _currentPitch;
 
     // Velocities for SmoothDamp (Reference variables)
-    Vector3 _currentPosVel;
-    float _currentYawVel;
-    float _currentPitchVel;
-    float _currentZoomVel;
+    private Vector3 _currentPosVel;
+    private float _currentYawVel;
+    private float _currentPitchVel;
+    private float _currentZoomVel;
 
     // Constant
-    const float RAY_HEIGHT = 500f;
+    private const float RAY_HEIGHT = 500f;
 
-    void Start()
+    private void Start()
     {
         // 1. Snap targets to current transform to prevent initial jerk
         _targetPos = transform.position;
@@ -77,13 +77,13 @@ public class CameraController : MonoBehaviour
         _currentPitch = _targetPitch;
     }
 
-    void Update()
+    private void Update()
     {
         HandleInput();
         ApplyTransform();
     }
 
-    void HandleInput()
+    private void HandleInput()
     {
         float dt = Time.deltaTime;
         float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? shiftMult : 1f);
@@ -133,7 +133,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void ApplyTransform()
+    private void ApplyTransform()
     {
         // SmoothDamp is framerate independent and overshoot-proof
         transform.position = Vector3.SmoothDamp(
@@ -161,12 +161,14 @@ public class CameraController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, _currentYaw, 0);
 
         Quaternion pitchRotation = Quaternion.Euler(_currentPitch, 0, 0);
-        cameraTransform.localRotation = pitchRotation;
-        cameraTransform.localPosition = pitchRotation * Vector3.back * _currentZoom;
+        cameraTransform.SetLocalPositionAndRotation(
+            pitchRotation * Vector3.back * _currentZoom,
+            pitchRotation
+        );
     }
 
     // Renamed for clarity. Uses X/Z from input, ignores input Y.
-    float GetTerrainHeight(Vector2 xzPos)
+    private float GetTerrainHeight(Vector2 xzPos)
     {
         Vector3 origin = new(xzPos.x, RAY_HEIGHT, xzPos.y);
 

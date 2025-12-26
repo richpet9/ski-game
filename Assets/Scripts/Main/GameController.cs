@@ -1,5 +1,5 @@
 using System.Collections;
-using SkiGame.Maps;
+using SkiGame.Terrain;
 using UnityEngine;
 
 public class GameController : MonoBehaviour

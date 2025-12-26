@@ -5,22 +5,22 @@ using UnityEngine;
 public class MountainGen : MonoBehaviour
 {
     [SerializeField]
-    readonly bool randomizeOnGenerate = true;
+    bool randomizeOnGenerate = true;
 
     [SerializeField]
-    readonly int width = 128; // Grid size
+    int width = 128; // Grid size
 
     [SerializeField]
-    readonly int height = 128;
+    int height = 128;
 
     [SerializeField]
-    readonly float scale = 20f; // Noise frequency
+    float scale = 2f; // Noise frequency
 
     [SerializeField]
-    readonly float mountainHeight = 50f;
+    float mountainHeight = 80f;
 
     [SerializeField]
-    readonly AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
+    AnimationCurve heightCurve; // Use this in Inspector to flatten areas for plateaus!
 
     [SerializeField]
     int seed = 0;

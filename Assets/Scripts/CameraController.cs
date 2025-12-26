@@ -4,35 +4,35 @@ public class CameraController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField]
-    readonly Transform cameraTransform;
+    Transform cameraTransform;
 
     [SerializeField]
     LayerMask terrainLayer;
 
     [Header("Movement (Rig Translation)")]
     [SerializeField]
-    readonly float moveSpeed = 20f;
+    float moveSpeed = 20f;
 
     [SerializeField]
-    readonly float shiftMult = 2f;
+    float shiftMult = 2f;
 
     [SerializeField]
-    readonly float smoothTime = 0.2f;
+    float smoothTime = 0.2f;
 
     [Header("Rotation (Rig Yaw)")]
     [SerializeField]
-    readonly float rotateSpeed = 150f;
+    float rotateSpeed = 150f;
 
     [Header("Tilt (Camera Pitch)")]
     [SerializeField]
     Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X
 
     [SerializeField]
-    readonly float tiltSpeed = 150f;
+    float tiltSpeed = 150f;
 
     [Header("Zoom (Camera Local Z)")]
     [SerializeField]
-    readonly float zoomStep = 5f;
+    float zoomStep = 5f;
 
     [SerializeField]
     Vector2 zoomLimits = new(5f, 50f); // Min/Max distance

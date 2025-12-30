@@ -37,11 +37,11 @@ namespace SkiGame.Model.Terrain
             // Use a constant in the shader and here.
             if (height > 10)
             {
-                return TileType.SNOW;
+                return TileType.Snow;
             }
             else
             {
-                return TileType.GRASS;
+                return TileType.Grass;
             }
         }
     }

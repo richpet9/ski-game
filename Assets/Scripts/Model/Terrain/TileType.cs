@@ -2,7 +2,7 @@ namespace SkiGame.Model.Terrain
 {
     public enum TileType : byte
     {
-        GRASS,
-        SNOW,
+        Grass = 0,
+        Snow = 1,
     }
 }

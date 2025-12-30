@@ -11,7 +11,8 @@ namespace SkiGame.Model.Terrain
             int seed,
             float scale,
             float mountainHeight,
-            AnimationCurve curve
+            AnimationCurve curve,
+            MapData mapData
         )
         {
             float[] heights = new float[(width + 1) * (height + 1)];
@@ -29,7 +30,9 @@ namespace SkiGame.Model.Terrain
                     float distFromCenter = Vector2.Distance(new Vector2(x, z), center);
                     float mask = 1f - Mathf.Clamp01(distFromCenter / (width / 2f));
 
-                    heights[z * (width + 1) + x] = curve.Evaluate(noise * mask) * mountainHeight;
+                    float heightValue = curve.Evaluate(noise * mask) * mountainHeight;
+                    heights[z * (width + 1) + x] = heightValue;
+                    mapData.SetTile(x, z, heightValue);
                 }
             }
             return heights;

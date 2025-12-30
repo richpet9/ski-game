@@ -22,10 +22,9 @@ namespace SkiGame.View.App
 
         private void Start()
         {
-            MapData mapData = new MapData(_mapConfig.Width, _mapConfig.Height);
-            RenderMountainTerrain();
+            GameContext.RegisterMap(new MapData(_mapConfig.Width, _mapConfig.Height));
 
-            GameContext.RegisterMap(mapData);
+            RenderMountainTerrain();
         }
 
         private void Update()
@@ -54,19 +53,18 @@ namespace SkiGame.View.App
 
         private void RenderMountainTerrain()
         {
+            float[] heights = _mountainGen.GenerateHeights(
+                _mapConfig.Width,
+                _mapConfig.Height,
+                _mapConfig.Seed,
+                _mapConfig.NoiseScale,
+                _mapConfig.MountainHeight,
+                _mapConfig.HeightCurve,
+                GameContext.Map
+            );
+
             _terrainView.Render(
-                _mountainGen.GenerateMeshData(
-                    _mapConfig.Width,
-                    _mapConfig.Height,
-                    _mountainGen.GenerateHeights(
-                        _mapConfig.Width,
-                        _mapConfig.Height,
-                        _mapConfig.Seed,
-                        _mapConfig.NoiseScale,
-                        _mapConfig.MountainHeight,
-                        _mapConfig.HeightCurve
-                    )
-                )
+                _mountainGen.GenerateMeshData(_mapConfig.Width, _mapConfig.Height, heights)
             );
         }
     }

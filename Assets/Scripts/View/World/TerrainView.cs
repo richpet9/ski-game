@@ -1,12 +1,24 @@
 using SkiGame.Model.Terrain;
-using SkiGame.View.Data;
+using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SkiGame.View.World
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    [RequireComponent(typeof(NavMeshSurface))]
     public class TerrainView : MonoBehaviour
     {
+        private NavMeshSurface _surface;
+
+        private void Awake()
+        {
+            _surface = GetComponent<NavMeshSurface>();
+            // Settings for the bake.
+            _surface.collectObjects = CollectObjects.Children;
+            _surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+        }
+
         public void Render(MeshData meshData)
         {
             Mesh mesh = new Mesh()
@@ -16,9 +28,7 @@ namespace SkiGame.View.World
                 uv = meshData.UVs,
             };
             mesh.RecalculateNormals();
-
-            GetComponent<MeshFilter>().mesh = mesh;
-            GetComponent<MeshCollider>().sharedMesh = mesh;
+            UpdateTerrainMesh(mesh);
 
             Debug.Log("Rendered Terrain.");
         }
@@ -27,6 +37,13 @@ namespace SkiGame.View.World
         {
             GetComponent<MeshFilter>().mesh = null;
             GetComponent<MeshCollider>().sharedMesh = null;
+        }
+
+        public void UpdateTerrainMesh(Mesh mesh)
+        {
+            GetComponent<MeshFilter>().mesh = mesh;
+            GetComponent<MeshCollider>().sharedMesh = mesh;
+            _surface.BuildNavMesh();
         }
     }
 }

@@ -18,6 +18,7 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private GameObject cursorVisual;
 
+        public Vector2Int GridPosition { get; private set; }
         public event Action<Vector2Int> OnTileClicked;
 
         private const float RAY_HEIGHT = 2000f;
@@ -34,13 +35,14 @@ namespace SkiGame.View.Controller
 
                 Vector3 snappedPos = new(x + 0.5f, hit.point.y + 0.1f, z + 0.5f);
 
+                GridPosition = new Vector2Int(x, z);
                 cursorVisual.transform.position = snappedPos;
                 cursorVisual.SetActive(true);
 
                 // Debug interaction.
                 if (Input.GetMouseButton(0))
                 {
-                    OnTileClicked?.Invoke(new Vector2Int(x, z));
+                    OnTileClicked?.Invoke(GridPosition);
                 }
             }
             else

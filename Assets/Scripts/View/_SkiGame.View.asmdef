@@ -2,7 +2,8 @@
     "name": "SkiGameView",
     "rootNamespace": "SkiGame.View",
     "references": [
-        "GUID:d1071832e64884b10816f092fd948159"
+        "GUID:d1071832e64884b10816f092fd948159",
+        "GUID:8c4dd21966739024fbd72155091d199e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

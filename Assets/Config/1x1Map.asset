@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5406f926c41434d7a90db3f75ef77a4d, type: 3}
   m_Name: 1x1Map
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
-  Width: 128
-  Height: 128
+  Width: 1
+  Height: 1
   Seed: 0
   RandomizeOnGenerate: 1
   MountainHeight: 80

@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 135845664}
   - component: {fileID: 135845666}
   m_Layer: 0
-  m_Name: CameraRig
+  m_Name: CameraController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,14 +156,14 @@ MonoBehaviour:
   terrainLayer:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: 20
-  shiftMult: 2
-  smoothTime: 0.2
-  rotateSpeed: 150
-  tiltLimits: {x: 5, y: 80}
-  tiltSpeed: 150
-  zoomStep: 5
-  zoomLimits: {x: 5, y: 200}
+  _moveSpeed: 20
+  _shiftMult: 2
+  _smoothTime: 0.2
+  _rotateSpeed: 150
+  _tiltLimits: {x: 20, y: 85}
+  _tiltSpeed: 150
+  _zoomStep: 5
+  _zoomLimits: {x: 5, y: 50}
 --- !u!4 &135845665
 Transform:
   m_ObjectHideFlags: 0
@@ -172,14 +172,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135845663}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1823688467}
   - {fileID: 699277240}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 298316583}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &135845666
 CapsuleCollider:
@@ -446,11 +446,12 @@ Transform:
   m_GameObject: {fileID: 298316582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.0300007, z: -5.88}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1909696327}
+  - {fileID: 135845665}
   - {fileID: 1929428067}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1115,7 +1116,7 @@ Transform:
   m_GameObject: {fileID: 1909696325}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -5.0300007, z: 5.88}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1164,7 +1165,7 @@ Transform:
   m_GameObject: {fileID: 1929428065}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -5.0300007, z: 5.88}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1259,5 +1260,4 @@ SceneRoots:
   - {fileID: 157207114}
   - {fileID: 432432461}
   - {fileID: 2013410475}
-  - {fileID: 135845665}
   - {fileID: 1970954226}

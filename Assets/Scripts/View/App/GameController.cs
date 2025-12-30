@@ -25,7 +25,7 @@ namespace SkiGame.View.App
 
         private void Start()
         {
-            _mapData = new MapData(_mapConfig);
+            _mapData = new MapData(_mapConfig.Width, _mapConfig.Height);
             _mountainGen.Generate(_mapConfig, _mapData);
 
             GameContext.RegisterMap(_mapData);

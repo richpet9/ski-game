@@ -1,3 +1,4 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="SkiGameView.csproj" />
+  <Project Path="SkiGameModel.csproj" />
 </Solution>

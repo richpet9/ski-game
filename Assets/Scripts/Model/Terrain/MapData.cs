@@ -1,4 +1,3 @@
-using SkiGame.View.Data;
 using UnityEngine;
 
 namespace SkiGame.Model.Terrain
@@ -7,9 +6,9 @@ namespace SkiGame.Model.Terrain
     {
         private readonly TileData[,] _grid;
 
-        public MapData(MapConfig mapConfig)
+        public MapData(int width, int height)
         {
-            _grid = new TileData[mapConfig.Width + 1, mapConfig.Height + 1];
+            _grid = new TileData[width + 1, height + 1];
         }
 
         public void SetTile(Vector2Int loc, float height)

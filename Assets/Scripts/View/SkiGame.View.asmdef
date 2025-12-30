@@ -1,0 +1,16 @@
+{
+    "name": "SkiGameView",
+    "rootNamespace": "SkiGame.View",
+    "references": [
+        "GUID:d1071832e64884b10816f092fd948159"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

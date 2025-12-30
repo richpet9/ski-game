@@ -4,7 +4,7 @@ namespace SkiGame.View.Controller
 {
     public class CameraController : MonoBehaviour
     {
-        [Header("References")]
+        [Header("Dependencies")]
         [SerializeField]
         private Transform cameraTransform;
 

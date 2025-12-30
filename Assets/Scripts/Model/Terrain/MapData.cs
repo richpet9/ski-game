@@ -1,3 +1,5 @@
+using PlasticPipe.PlasticProtocol.Messages;
+using SkiGame.Model.Structure;
 using UnityEngine;
 
 namespace SkiGame.Model.Terrain
@@ -32,6 +34,27 @@ namespace SkiGame.Model.Terrain
             return _grid[x, z];
         }
 
+        public bool TrySetStructure(Vector2Int loc, StructureType structure)
+        {
+            return TrySetStructure(loc.x, loc.y, structure);
+        }
+
+        public bool TrySetStructure(int x, int z, StructureType structure)
+        {
+            if (!InBounds(x, z))
+            {
+                return false;
+            }
+
+            if (_grid[x, z].Structure != StructureType.None)
+            {
+                return false;
+            }
+
+            _grid[x, z].Structure = structure;
+            return true;
+        }
+
         private TileType GetTerrainTypeFromHeight(float height)
         {
             // Use a constant in the shader and here.
@@ -43,6 +66,11 @@ namespace SkiGame.Model.Terrain
             {
                 return TileType.Grass;
             }
+        }
+
+        private bool InBounds(int x, int z)
+        {
+            return x >= 0 && x < _grid.GetLength(0) && z >= 0 && z < _grid.GetLength(1);
         }
     }
 }

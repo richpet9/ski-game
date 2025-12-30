@@ -9,9 +9,11 @@ namespace SkiGame.View.Controller
 {
     public class GameController : MonoBehaviour
     {
+        [Header("Config")]
         [SerializeField]
         private MapConfig _mapConfig;
 
+        [Header("Dependencies")]
         [SerializeField]
         private TerrainView _terrainView;
 

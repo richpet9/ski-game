@@ -1,3 +1,4 @@
+using System;
 using SkiGame.Model.Core;
 using SkiGame.Model.Terrain;
 using UnityEngine;
@@ -6,14 +7,18 @@ namespace SkiGame.View.Controller
 {
     public class SelectorController : MonoBehaviour
     {
+        [Header("Dependencies")]
         [SerializeField]
         private Camera cam;
 
         [SerializeField]
         private LayerMask terrainLayer;
 
+        [Header("Visuals")]
         [SerializeField]
         private GameObject cursorVisual;
+
+        public event Action<Vector2Int> OnTileClicked;
 
         private const float RAY_HEIGHT = 2000f;
 
@@ -35,10 +40,7 @@ namespace SkiGame.View.Controller
                 // Debug interaction.
                 if (Input.GetMouseButton(0))
                 {
-                    TileData data = GameContext.Map.GetTile(x, z);
-                    Debug.Log(
-                        $"Painting Tile at: {x}, {z}; Type: {data.Type} Height: {data.Height}"
-                    );
+                    OnTileClicked?.Invoke(new Vector2Int(x, z));
                 }
             }
             else

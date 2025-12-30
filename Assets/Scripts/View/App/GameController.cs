@@ -59,9 +59,15 @@ namespace SkiGame.View.App
                 _mapConfig.Seed,
                 _mapConfig.NoiseScale,
                 _mapConfig.MountainHeight,
-                _mapConfig.HeightCurve,
-                GameContext.Map
+                _mapConfig.HeightCurve
             );
+
+            for (int i = 0; i < heights.Length; i++)
+            {
+                int x = i % (_mapConfig.Width + 1);
+                int z = i / (_mapConfig.Width + 1);
+                GameContext.Map.SetTile(x, z, heights[i]);
+            }
 
             _terrainView.Render(
                 _mountainGen.GenerateMeshData(_mapConfig.Width, _mapConfig.Height, heights)

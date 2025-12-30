@@ -1,3 +1,4 @@
 [*.{cs,vb}]
 
+dotnet_style_namespace_match_folder = false
 dotnet_style_require_accessibility_modifiers = always:warning

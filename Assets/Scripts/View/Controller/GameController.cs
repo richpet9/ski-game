@@ -5,7 +5,7 @@ using SkiGame.View.Data;
 using SkiGame.View.World;
 using UnityEngine;
 
-namespace SkiGame.View.App
+namespace SkiGame.View.Controller
 {
     public class GameController : MonoBehaviour
     {

@@ -1,4 +1,4 @@
 ﻿<Solution>
-  <Project Path="SkiGameView.csproj" />
   <Project Path="SkiGameModel.csproj" />
+  <Project Path="SkiGameView.csproj" />
 </Solution>

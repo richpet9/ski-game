@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SkiGame.View.App
+namespace SkiGame.View.Controller
 {
     public class CameraController : MonoBehaviour
     {
@@ -13,31 +13,31 @@ namespace SkiGame.View.App
 
         [Header("Movement (Rig Translation)")]
         [SerializeField]
-        private float moveSpeed = 20f;
+        private float _moveSpeed = 20f;
 
         [SerializeField]
-        private float shiftMult = 2f;
+        private float _shiftMult = 2f;
 
         [SerializeField]
-        private float smoothTime = 0.2f;
+        private float _smoothTime = 0.2f;
 
         [Header("Rotation (Rig Yaw)")]
         [SerializeField]
-        private float rotateSpeed = 150f;
+        private float _rotateSpeed = 150f;
 
         [Header("Tilt (Camera Pitch)")]
         [SerializeField]
-        private Vector2 tiltLimits = new(20f, 85f); // Min/Max angle X.
+        private Vector2 _tiltLimits = new(20f, 85f); // Min/Max angle X.
 
         [SerializeField]
-        private float tiltSpeed = 150f;
+        private float _tiltSpeed = 150f;
 
         [Header("Zoom (Camera Local Z)")]
         [SerializeField]
-        private float zoomStep = 5f;
+        private float _zoomStep = 5f;
 
         [SerializeField]
-        private Vector2 zoomLimits = new(5f, 50f); // Min/Max distance.
+        private Vector2 _zoomLimits = new(5f, 50f); // Min/Max distance.
 
         // Smoothing Targets.
         private Vector3 _targetPos;
@@ -69,8 +69,8 @@ namespace SkiGame.View.App
             // 2. Initialize zoom based on distance, not just Z axis.
             _targetZoom = Mathf.Clamp(
                 Vector3.Distance(transform.position, cameraTransform.position),
-                zoomLimits.x,
-                zoomLimits.y
+                _zoomLimits.x,
+                _zoomLimits.y
             );
 
             // 3. Initialize "Current" variables so we don't start at 0.
@@ -88,7 +88,7 @@ namespace SkiGame.View.App
         private void HandleInput()
         {
             float dt = Time.deltaTime;
-            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? shiftMult : 1f);
+            float speed = _moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? _shiftMult : 1f);
 
             // --- Movement ---
             Vector3 forward = transform.forward;
@@ -109,29 +109,29 @@ namespace SkiGame.View.App
             // --- Rotation & Tilt ---
             if (Input.GetMouseButton(1))
             {
-                _targetYaw += Input.GetAxis("Mouse X") * rotateSpeed * dt;
-                _targetPitch -= Input.GetAxis("Mouse Y") * tiltSpeed * dt; // Subtract for intuitive tilt.
+                _targetYaw += Input.GetAxis("Mouse X") * _rotateSpeed * dt;
+                _targetPitch -= Input.GetAxis("Mouse Y") * _tiltSpeed * dt; // Subtract for intuitive tilt.
             }
 
             // Keyboard Rotation.
             if (Input.GetKey(KeyCode.Q))
             {
-                _targetYaw -= rotateSpeed * dt;
+                _targetYaw -= _rotateSpeed * dt;
             }
 
             if (Input.GetKey(KeyCode.E))
             {
-                _targetYaw += rotateSpeed * dt;
+                _targetYaw += _rotateSpeed * dt;
             }
 
             // Clamp Pitch.
-            _targetPitch = Mathf.Clamp(_targetPitch, tiltLimits.x, tiltLimits.y);
+            _targetPitch = Mathf.Clamp(_targetPitch, _tiltLimits.x, _tiltLimits.y);
 
             // --- Zoom ---
             if (Input.mouseScrollDelta.y != 0)
             {
-                _targetZoom -= Input.mouseScrollDelta.y * zoomStep;
-                _targetZoom = Mathf.Clamp(_targetZoom, zoomLimits.x, zoomLimits.y);
+                _targetZoom -= Input.mouseScrollDelta.y * _zoomStep;
+                _targetZoom = Mathf.Clamp(_targetZoom, _zoomLimits.x, _zoomLimits.y);
             }
         }
 
@@ -142,26 +142,26 @@ namespace SkiGame.View.App
                 transform.position,
                 _targetPos,
                 ref _currentPosVel,
-                smoothTime
+                _smoothTime
             );
 
             _currentYaw = Mathf.SmoothDampAngle(
                 _currentYaw,
                 _targetYaw,
                 ref _currentYawVel,
-                smoothTime
+                _smoothTime
             );
             _currentPitch = Mathf.SmoothDampAngle(
                 _currentPitch,
                 _targetPitch,
                 ref _currentPitchVel,
-                smoothTime
+                _smoothTime
             );
             _currentZoom = Mathf.SmoothDamp(
                 _currentZoom,
                 _targetZoom,
                 ref _currentZoomVel,
-                smoothTime
+                _smoothTime
             );
 
             // Apply Rotations.

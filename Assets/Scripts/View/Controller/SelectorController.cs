@@ -2,9 +2,9 @@ using SkiGame.Model.Core;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 
-namespace SkiGame.View.World
+namespace SkiGame.View.Controller
 {
-    public class TileSelector : MonoBehaviour
+    public class SelectorController : MonoBehaviour
     {
         [SerializeField]
         private Camera cam;

@@ -4,20 +4,32 @@ namespace SkiGame.Model.Core
 {
     public static class GameContext
     {
-        public static MapData Map { get; private set; }
+        private static MapData _map;
+
+        public static MapData Map
+        {
+            get
+            {
+                if (_map == null)
+                {
+                    UnityEngine.Debug.LogError("GameContext: Map accessed but is null.");
+                }
+                return _map;
+            }
+        }
 
         public static void RegisterMap(MapData map)
         {
-            if (Map != null)
+            if (_map != null)
             {
                 UnityEngine.Debug.LogWarning("GameContext: MapData is being overwritten!");
             }
-            Map = map;
+            _map = map;
         }
 
         public static void Clear()
         {
-            Map = null;
+            _map = null;
         }
     }
 }

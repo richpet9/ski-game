@@ -24,12 +24,10 @@ namespace SkiGame.View.World
             if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, terrainLayer))
             {
                 // Snap to integer grid.
-                int x = Mathf.RoundToInt(hit.point.x);
-                int z = Mathf.RoundToInt(hit.point.z);
+                int x = Mathf.FloorToInt(hit.point.x);
+                int z = Mathf.FloorToInt(hit.point.z);
 
-                // Get the precise height of the mesh at this integer coordinate.
-                // (Optional: You could also read this from your MountainGen data if accessible).
-                Vector3 snappedPos = new(x, hit.point.y, z);
+                Vector3 snappedPos = new(x + 0.5f, hit.point.y + 0.1f, z + 0.5f);
 
                 cursorVisual.transform.position = snappedPos;
                 cursorVisual.SetActive(true);

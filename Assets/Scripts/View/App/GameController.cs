@@ -13,22 +13,19 @@ namespace SkiGame.View.App
         private MapConfig _mapConfig;
 
         [SerializeField]
-        private MountainGen _mountainGen;
-
-        [SerializeField]
-        private CameraController _cameraController;
+        private TerrainView _terrainView;
 
         private static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
 
-        private MapData _mapData;
+        private readonly MountainGenerator _mountainGen = new MountainGenerator();
         private bool _canGenerate = true;
 
         private void Start()
         {
-            _mapData = new MapData(_mapConfig.Width, _mapConfig.Height);
-            _mountainGen.Generate(_mapConfig, _mapData);
+            MapData mapData = new MapData(_mapConfig.Width, _mapConfig.Height);
+            RenderMountainTerrain();
 
-            GameContext.RegisterMap(_mapData);
+            GameContext.RegisterMap(mapData);
         }
 
         private void Update()
@@ -40,8 +37,8 @@ namespace SkiGame.View.App
                 {
                     _mapConfig.Seed = Random.Range(0, 100000);
                 }
-                _mountainGen.ClearMesh();
-                _mountainGen.Generate(_mapConfig, _mapData);
+                _terrainView.ClearMesh();
+                RenderMountainTerrain();
             }
         }
 
@@ -53,6 +50,24 @@ namespace SkiGame.View.App
             _canGenerate = false;
             yield return _waitForSeconds0_5;
             _canGenerate = true;
+        }
+
+        private void RenderMountainTerrain()
+        {
+            _terrainView.Render(
+                _mountainGen.GenerateMeshData(
+                    _mapConfig.Width,
+                    _mapConfig.Height,
+                    _mountainGen.GenerateHeights(
+                        _mapConfig.Width,
+                        _mapConfig.Height,
+                        _mapConfig.Seed,
+                        _mapConfig.NoiseScale,
+                        _mapConfig.MountainHeight,
+                        _mapConfig.HeightCurve
+                    )
+                )
+            );
         }
     }
 }

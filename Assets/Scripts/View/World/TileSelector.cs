@@ -1,7 +1,8 @@
-using SkiGame.Main;
+using SkiGame.Model.Core;
+using SkiGame.Model.Terrain;
 using UnityEngine;
 
-namespace SkiGame.Terrain
+namespace SkiGame.View.World
 {
     public class TileSelector : MonoBehaviour
     {

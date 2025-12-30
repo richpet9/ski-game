@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SkiGame.Ui
+namespace SkiGame.View.UI
 {
     [RequireComponent(typeof(LineRenderer))]
     public class BoxCursor : MonoBehaviour

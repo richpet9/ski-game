@@ -1,6 +1,6 @@
-using SkiGame.Terrain;
+using SkiGame.Model.Terrain;
 
-namespace SkiGame.Main
+namespace SkiGame.Model.Core
 {
     public static class GameContext
     {

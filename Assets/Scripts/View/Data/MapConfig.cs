@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SkiGame.Terrain
+namespace SkiGame.View.Data
 {
     public class MapConfig : ScriptableObject
     {

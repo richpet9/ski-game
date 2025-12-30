@@ -1,7 +1,8 @@
-using System.Collections;
+using SkiGame.Model.Terrain;
+using SkiGame.View.Data;
 using UnityEngine;
 
-namespace SkiGame.Terrain
+namespace SkiGame.View.World
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class MountainGen : MonoBehaviour

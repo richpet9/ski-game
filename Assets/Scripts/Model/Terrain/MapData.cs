@@ -1,7 +1,7 @@
-using System;
+using SkiGame.View.Data;
 using UnityEngine;
 
-namespace SkiGame.Terrain
+namespace SkiGame.Model.Terrain
 {
     public class MapData
     {

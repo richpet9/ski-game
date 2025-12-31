@@ -106,6 +106,8 @@ namespace SkiGame.Model.Agents
         {
             Vector3 randomPoint = Data.Position + (Random.insideUnitSphere * WANDER_RADIUS);
             if (
+                // TODO: This should not be referenced in this assmebly, try to find a
+                // a way to store potential wander points in the model.
                 NavMesh.SamplePosition(
                     randomPoint,
                     out NavMeshHit hit,

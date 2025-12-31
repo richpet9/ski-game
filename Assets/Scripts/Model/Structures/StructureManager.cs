@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using SkiGame.Model.Economy;
+using SkiGame.Model.Terrain;
 using UnityEngine;
 
 namespace SkiGame.Model.Structures
@@ -6,5 +9,66 @@ namespace SkiGame.Model.Structures
     public class StructureManager
     {
         public readonly List<Vector2Int> Lodges = new List<Vector2Int>();
+        public readonly List<Vector2Int> ParkingLots = new List<Vector2Int>();
+
+        public event Action<Vector2Int, StructureType> OnStructureBuilt;
+
+        private readonly MapManager _map;
+        private readonly EconomyManager _economy;
+
+        public StructureManager(MapManager map, EconomyManager economy)
+        {
+            _map = map;
+            _economy = economy;
+        }
+
+        public int GetCost(StructureType type) =>
+            type switch
+            {
+                StructureType.Lodge => 100,
+                StructureType.ParkingLot => 50,
+                _ => 0,
+            };
+
+        public bool TryBuild(Vector2Int gridPos, StructureType structure)
+        {
+            if (!_map.InBounds(gridPos))
+            {
+                return false;
+            }
+
+            if (_map.GetTile(gridPos).Structure != StructureType.None)
+            {
+                Debug.Log("Tile already has a structure!");
+                return false;
+            }
+
+            int cost = GetCost(structure);
+            if (!_economy.TrySpendMoney(cost))
+            {
+                Debug.Log("Not enough money!");
+                return false;
+            }
+
+            Build(gridPos, structure);
+            return true;
+        }
+
+        private void Build(Vector2Int gridPos, StructureType structure)
+        {
+            _map.SetStructure(gridPos, structure);
+
+            // TODO: Replace these lists with a dictionary, probably. Or a typed getter.
+            if (structure == StructureType.Lodge)
+            {
+                Lodges.Add(gridPos);
+            }
+            else if (structure == StructureType.ParkingLot)
+            {
+                ParkingLots.Add(gridPos);
+            }
+
+            OnStructureBuilt?.Invoke(gridPos, structure);
+        }
     }
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace SkiGame.Model.Terrain
 {
-    public class MapData
+    public class MapManager
     {
         private readonly TileData[,] _grid;
 
-        public MapData(int width, int height)
+        public MapManager(int width, int height)
         {
             _grid = new TileData[width + 1, height + 1];
         }
@@ -35,25 +35,24 @@ namespace SkiGame.Model.Terrain
             return _grid[x, z];
         }
 
-        public bool TrySetStructure(Vector2Int loc, StructureType structure)
+        public void SetStructure(Vector2Int loc, StructureType structure)
         {
-            return TrySetStructure(loc.x, loc.y, structure);
+            SetStructure(loc.x, loc.y, structure);
         }
 
-        public bool TrySetStructure(int x, int z, StructureType structure)
+        public void SetStructure(int x, int z, StructureType structure)
         {
-            if (!InBounds(x, z))
-            {
-                return false;
-            }
-
-            if (_grid[x, z].Structure != StructureType.None)
-            {
-                return false;
-            }
-
             _grid[x, z].Structure = structure;
-            return true;
+        }
+
+        public bool InBounds(Vector2Int loc)
+        {
+            return InBounds(loc.x, loc.y);
+        }
+
+        public bool InBounds(int x, int z)
+        {
+            return x >= 0 && x < _grid.GetLength(0) && z >= 0 && z < _grid.GetLength(1);
         }
 
         private TileType GetTerrainTypeFromHeight(float height)
@@ -67,11 +66,6 @@ namespace SkiGame.Model.Terrain
             {
                 return TileType.Grass;
             }
-        }
-
-        private bool InBounds(int x, int z)
-        {
-            return x >= 0 && x < _grid.GetLength(0) && z >= 0 && z < _grid.GetLength(1);
         }
     }
 }

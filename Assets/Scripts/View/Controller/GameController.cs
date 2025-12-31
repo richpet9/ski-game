@@ -27,10 +27,14 @@ namespace SkiGame.View.Controller
 
         private void Awake()
         {
-            GameContext.Register(new MapData(_mapConfig.Width, _mapConfig.Height));
-            GameContext.Register(new StructureManager());
-            GameContext.Register(new EconomyManager());
-            GameContext.Economy.AddMoney(200);
+            MapManager map = new MapManager(_mapConfig.Width, _mapConfig.Height);
+            EconomyManager economy = new EconomyManager();
+            StructureManager structures = new StructureManager(map, economy);
+
+            GameContext.Register(map);
+            GameContext.Register(economy);
+            GameContext.Register(structures);
+            economy.AddMoney(200);
         }
 
         private void Start()

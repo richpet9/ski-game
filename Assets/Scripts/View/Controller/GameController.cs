@@ -27,7 +27,7 @@ namespace SkiGame.View.Controller
 
         private void Awake()
         {
-            MapManager map = new MapManager(_mapConfig.Width, _mapConfig.Height);
+            Map map = new Map(_mapConfig.Width, _mapConfig.Height);
             EconomyManager economy = new EconomyManager();
             StructureManager structures = new StructureManager(map, economy);
 

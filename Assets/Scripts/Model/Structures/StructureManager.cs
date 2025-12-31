@@ -15,10 +15,10 @@ namespace SkiGame.Model.Structures
         public event Action<Vector2Int, StructureType> OnStructureBuilt;
         public event Action<Vector2Int, Vector2Int> OnLiftBuilt;
 
-        private readonly MapManager _map;
+        private readonly Map _map;
         private readonly EconomyManager _economy;
 
-        public StructureManager(MapManager map, EconomyManager economy)
+        public StructureManager(Map map, EconomyManager economy)
         {
             _map = map;
             _economy = economy;

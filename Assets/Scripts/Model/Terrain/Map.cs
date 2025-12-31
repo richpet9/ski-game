@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace SkiGame.Model.Terrain
 {
-    public class MapManager
+    public class Map
     {
         private readonly TileData[,] _grid;
 
-        public MapManager(int width, int height)
+        public Map(int width, int height)
         {
             _grid = new TileData[width + 1, height + 1];
         }

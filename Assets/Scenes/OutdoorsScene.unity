@@ -504,6 +504,8 @@ MonoBehaviour:
   _selector: {fileID: 1929428066}
   _lodgePrefab: {fileID: 6792820619471131773, guid: 56b15c6531fbb457ba6cd7d7d66fa8a3,
     type: 3}
+  _parkingLotPrefab: {fileID: 1359727422855643037, guid: f542593204e5b456a9e1c68eb2c669fb,
+    type: 3}
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0

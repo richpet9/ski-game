@@ -4,5 +4,6 @@ namespace SkiGame.Model.Structures
     {
         None = 0,
         Lodge = 1,
+        ParkingLot = 2,
     }
 }

@@ -12,17 +12,19 @@ namespace SkiGame.View.Agents
             Wandering = 0,
             InsideLodge = 1,
             WalkingToLodge = 2,
+            Leaving = 3,
         }
 
         private const float WANDER_RADIUS = 20f;
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
+        private const float SQRT_2 = 1.142f;
 
         private NavMeshAgent _agent;
         private MeshRenderer[] _renderers;
+        private Vector3 _homePosition;
         private State _state = State.WalkingToLodge;
         private float _timer = 0f;
-        private bool _shown = true;
 
         private void Awake()
         {
@@ -33,66 +35,80 @@ namespace SkiGame.View.Agents
             _agent.acceleration = 10f;
         }
 
-        private void Update()
+        public void SetHome(Vector3 homePos)
         {
-            switch (_state)
-            {
-                case State.Wandering:
-                    Wander();
-                    break;
-                case State.InsideLodge:
-                    InsideLodge();
-                    break;
-                case State.WalkingToLodge:
-                    WalkToLodge();
-                    break;
-            }
+            _homePosition = homePos;
         }
 
-        private void Wander()
+        public void Start()
         {
-            if (!_agent.hasPath && !_agent.pathPending)
+            SetNewDestination();
+        }
+
+        private void Update()
+        {
+            if (_state == State.WalkingToLodge)
+            {
+                if (!_agent.pathPending && _agent.remainingDistance < SQRT_2)
+                {
+                    EnterLodge();
+                }
+            }
+            else if (_state == State.InsideLodge)
             {
                 _timer += Time.deltaTime;
-                if (_timer > WANDER_WAIT_TIME)
+                if (_timer >= LODGE_WAIT_TIME)
                 {
-                    SetRandomDestination();
-                    _timer = 0;
+                    ExitLodge();
+                }
+            }
+            else if (_state == State.Leaving)
+            {
+                if (!_agent.pathPending && _agent.remainingDistance < SQRT_2)
+                {
+                    Destroy(gameObject);
+                }
+            }
+            else if (_state == State.Wandering)
+            {
+                if (!_agent.hasPath && !_agent.pathPending)
+                {
+                    _timer += Time.deltaTime;
+                    if (_timer >= WANDER_WAIT_TIME)
+                    {
+                        SetNewDestination();
+                    }
                 }
             }
         }
 
-        private void InsideLodge()
+        private void SetNewDestination()
         {
-            if (_shown)
+            if (GameContext.Structures.Lodges.Count > 0)
             {
-                Hide();
-            }
+                Vector2Int targetGrid = GameContext.Structures.Lodges[
+                    Random.Range(0, GameContext.Structures.Lodges.Count)
+                ];
 
-            _timer += Time.deltaTime;
-            if (_timer > LODGE_WAIT_TIME)
+                // TODO: We should ideally cache the world height in GameContext or
+                // MapData to avoid doing "GetTile" checks here, but this works for now.
+                // This can be implemented when we check that we only place structures
+                // on flat ground.
+                float y = 0;
+                if (GameContext.Map != null)
+                {
+                    y = GameContext.Map.GetTile(targetGrid).Height;
+                }
+
+                Vector3 targetPos = new(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
+
+                _agent.SetDestination(targetPos);
+                _state = State.WalkingToLodge;
+            }
+            else
             {
-                Show();
                 SetRandomDestination();
                 _state = State.Wandering;
-                _timer = 0;
-            }
-        }
-
-        private void WalkToLodge()
-        {
-            if (!_agent.hasPath && !_agent.pathPending && GameContext.Structures.Lodges.Count > 0)
-            {
-                // TODO: Change from first lodge to nearest (or other hueristic).
-                Vector2Int lodgePos = GameContext.Structures.Lodges[0];
-                float tileHeight = GameContext.Map.GetTile(lodgePos).Height;
-                _agent.SetDestination(new Vector3(lodgePos.x + .5f, tileHeight, lodgePos.y + .5f));
-            }
-            else if (_agent.remainingDistance <= 1.42f)
-            {
-                _agent.ResetPath();
-                _timer = 0;
-                _state = State.InsideLodge;
             }
         }
 
@@ -109,6 +125,29 @@ namespace SkiGame.View.Agents
             }
         }
 
+        private void EnterLodge()
+        {
+            Hide();
+            _state = State.InsideLodge;
+            _timer = 0f;
+        }
+
+        private void ExitLodge()
+        {
+            Show();
+            _state = State.Leaving;
+            _timer = 0f;
+
+            if (_homePosition != null)
+            {
+                _agent.SetDestination(_homePosition);
+            }
+            else
+            {
+                _agent.ResetPath();
+            }
+        }
+
         // TODO: Maybe visuals should be handled in a GuestView class.
         private void Hide()
         {
@@ -116,7 +155,6 @@ namespace SkiGame.View.Agents
             {
                 _renderers[i].enabled = false;
             }
-            _shown = false;
         }
 
         // TODO: Maybe visuals should be handled in a GuestView class.
@@ -126,7 +164,6 @@ namespace SkiGame.View.Agents
             {
                 _renderers[i].enabled = true;
             }
-            _shown = true;
         }
     }
 }

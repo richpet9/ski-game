@@ -53,8 +53,6 @@ namespace SkiGame.Model.Terrain
             }
 
             _grid[x, z].Structure = structure;
-            // TODO: Change to handle not just lodges.
-            GameContext.Structures.Lodges.Add(new Vector2Int(x, z));
             return true;
         }
 

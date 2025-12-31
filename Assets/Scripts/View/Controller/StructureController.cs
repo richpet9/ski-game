@@ -15,6 +15,26 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private GameObject _lodgePrefab;
 
+        [SerializeField]
+        private GameObject _parkingLotPrefab;
+
+        private StructureType _structureType = StructureType.Lodge;
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                _structureType = StructureType.Lodge;
+                Debug.Log("Selected: Lodge");
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                _structureType = StructureType.ParkingLot;
+                Debug.Log("Selected: Parking Lot");
+            }
+        }
+
         private void OnEnable()
         {
             if (_selector != null)
@@ -34,24 +54,33 @@ namespace SkiGame.View.Controller
         private void HandleTileClick(Vector2Int gridPos)
         {
             MapData map = GameContext.Map;
-            if (map == null)
+            if (map.TrySetStructure(gridPos, _structureType))
             {
-                return;
+                if (_structureType == StructureType.Lodge)
+                {
+                    GameContext.Structures.Lodges.Add(gridPos);
+                }
+                SpawnStructureVisual(gridPos, map.GetTile(gridPos).Height);
             }
-
-            bool success = map.TrySetStructure(gridPos, StructureType.Lodge);
-            if (!success)
-            {
-                Debug.Log("Cannot build here.");
-                return;
-            }
-            SpawnStructureVisual(gridPos, map.GetTile(gridPos).Height);
         }
 
         private void SpawnStructureVisual(Vector2Int gridPos, float height)
         {
             Vector3 worldPos = new(gridPos.x + 0.5f, height, gridPos.y + 0.5f);
-            GameObject structure = Instantiate(_lodgePrefab, worldPos, Quaternion.identity);
+            GameObject prefab = _structureType switch
+            {
+                StructureType.Lodge => _lodgePrefab,
+                StructureType.ParkingLot => _parkingLotPrefab,
+                _ => null,
+            };
+
+            if (prefab == null)
+            {
+                Debug.LogError("Failed to find a prefab to spawn.");
+                return;
+            }
+
+            GameObject structure = Instantiate(prefab, worldPos, Quaternion.identity);
             structure.transform.parent = transform;
         }
     }

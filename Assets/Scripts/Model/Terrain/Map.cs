@@ -6,11 +6,20 @@ namespace SkiGame.Model.Terrain
 {
     public class Map
     {
-        private readonly TileData[,] _grid;
+        private readonly TileData[] _grid;
+        private readonly int Width;
+        private readonly int Height;
 
         public Map(int width, int height)
         {
-            _grid = new TileData[width + 1, height + 1];
+            _grid = new TileData[width * height];
+            Width = width;
+            Height = height;
+        }
+
+        private int GetIndex(int x, int z)
+        {
+            return x + z * Width;
         }
 
         public void SetTile(Vector2Int loc, float height)
@@ -20,8 +29,14 @@ namespace SkiGame.Model.Terrain
 
         public void SetTile(int x, int z, float height)
         {
-            _grid[x, z].Height = height;
-            _grid[x, z].Type = GetTerrainTypeFromHeight(height);
+            if (!InBounds(x, z))
+            {
+                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
+                return;
+            }
+
+            _grid[GetIndex(x, z)].Height = height;
+            _grid[GetIndex(x, z)].Type = GetTerrainTypeFromHeight(height);
         }
 
         public TileData GetTile(Vector2Int loc)
@@ -31,7 +46,13 @@ namespace SkiGame.Model.Terrain
 
         public TileData GetTile(int x, int z)
         {
-            return _grid[x, z];
+            if (!InBounds(x, z))
+            {
+                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
+                return new TileData();
+            }
+
+            return _grid[GetIndex(x, z)];
         }
 
         public void SetStructure(Vector2Int loc, StructureType structure)
@@ -41,7 +62,13 @@ namespace SkiGame.Model.Terrain
 
         public void SetStructure(int x, int z, StructureType structure)
         {
-            _grid[x, z].Structure = structure;
+            if (!InBounds(x, z))
+            {
+                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
+                return;
+            }
+
+            _grid[GetIndex(x, z)].Structure = structure;
         }
 
         public bool InBounds(Vector2Int loc)
@@ -51,7 +78,7 @@ namespace SkiGame.Model.Terrain
 
         public bool InBounds(int x, int z)
         {
-            return x >= 0 && x < _grid.GetLength(0) && z >= 0 && z < _grid.GetLength(1);
+            return GetIndex(x, z) >= 0 && GetIndex(x, z) < _grid.Length;
         }
 
         private TileType GetTerrainTypeFromHeight(float height)

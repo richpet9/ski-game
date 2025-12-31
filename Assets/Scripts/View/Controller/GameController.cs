@@ -78,11 +78,17 @@ namespace SkiGame.View.Controller
                 _mapConfig.HeightCurve
             );
 
-            for (int i = 0; i < heights.Length; i++)
+            for (int z = 0; z < _mapConfig.Height; z++)
             {
-                int x = i % (_mapConfig.Width + 1);
-                int z = i / (_mapConfig.Width + 1);
-                GameContext.Map.SetTile(x, z, heights[i]);
+                for (int x = 0; x < _mapConfig.Width; x++)
+                {
+                    float h1 = heights[z * (_mapConfig.Width + 1) + x];
+                    float h2 = heights[z * (_mapConfig.Width + 1) + x + 1];
+                    float h3 = heights[(z + 1) * (_mapConfig.Width + 1) + x];
+                    float h4 = heights[(z + 1) * (_mapConfig.Width + 1) + x + 1];
+                    float avg = (h1 + h2 + h3 + h4) * 0.25f;
+                    GameContext.Map.SetTile(x, z, avg);
+                }
             }
 
             _terrainView.Render(

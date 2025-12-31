@@ -1,3 +1,4 @@
+using SkiGame.Model.Agents;
 using SkiGame.Model.Guest;
 using SkiGame.View.Agents;
 using UnityEngine;
@@ -36,9 +37,11 @@ namespace SkiGame.View.Controller
                         HomePosition = null,
                         State = GuestState.Wandering,
                         Money = 0,
+                        Color = Color.white,
                     }
                 );
             guest.transform.parent = transform;
+            GuestManager.AddGuest();
         }
     }
 }

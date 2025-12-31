@@ -47,6 +47,7 @@ namespace SkiGame.View.Agents
                 if (_agent?.QueuedForDestruction == true)
                 {
                     Destroy(gameObject);
+                    GuestManager.RemoveGuest();
                 }
                 return;
             }

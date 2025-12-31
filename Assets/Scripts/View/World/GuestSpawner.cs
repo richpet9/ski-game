@@ -48,6 +48,11 @@ namespace SkiGame.View.World
                         Money = 0,
                     }
                 );
+                GuestManager.AddGuest();
+            }
+            else
+            {
+                Destroy(guestObj);
             }
         }
     }

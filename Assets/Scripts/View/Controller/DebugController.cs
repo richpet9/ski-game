@@ -27,7 +27,7 @@ namespace SkiGame.View.Controller
             Vector3 worldPos = new Vector3(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
             GameObject guest = Instantiate(_guestPrefab, worldPos, Quaternion.identity);
             guest
-                .GetComponent<GuestAgent>()
+                .GetComponent<GuestView>()
                 .Initialize(
                     new GuestData
                     {

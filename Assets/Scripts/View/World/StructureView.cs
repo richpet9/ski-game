@@ -32,6 +32,7 @@ namespace SkiGame.View.World
         private void SpawnStructure(Vector2Int pos, StructureType type)
         {
             float height = GameContext.Map.GetTile(pos).Height;
+            // TODO: Use world coord converter.
             Vector3 worldPos = new Vector3(pos.x + 0.5f, height, pos.y + 0.5f);
 
             GameObject prefab = type switch

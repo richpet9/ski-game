@@ -54,6 +54,30 @@ namespace SkiGame.Model.Structures
             return true;
         }
 
+        public bool TryBuildLift(Vector2Int startPos, Vector2Int endPos)
+        {
+            if (!_map.InBounds(startPos) || !_map.InBounds(endPos))
+            {
+                return false;
+            }
+
+            if (_map.GetTile(startPos).Structure != StructureType.None)
+            {
+                Debug.Log("Start position is occupied!");
+                return false;
+            }
+
+            if (_map.GetTile(endPos).Structure != StructureType.None)
+            {
+                Debug.Log("End position is occupied!");
+                return false;
+            }
+
+            Build(startPos, StructureType.Lift);
+            Build(endPos, StructureType.Lift);
+            return true;
+        }
+
         private void Build(Vector2Int gridPos, StructureType structure)
         {
             _map.SetStructure(gridPos, structure);

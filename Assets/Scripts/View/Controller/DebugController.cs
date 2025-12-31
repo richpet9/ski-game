@@ -24,6 +24,7 @@ namespace SkiGame.View.Controller
 
         private void SpawnGuest(Vector2Int gridPos)
         {
+            // TODO: Use world coord converter.
             Vector3 worldPos = new Vector3(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
             GameObject guest = Instantiate(_guestPrefab, worldPos, Quaternion.identity);
             guest

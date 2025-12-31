@@ -92,6 +92,7 @@ namespace SkiGame.Model.Agents
                     Random.Range(0, GameContext.Structures.Lodges.Count)
                 ];
                 float y = GameContext.Map.GetTile(targetGrid).Height;
+                // TODO: Use world coord converter.
                 Data.TargetPosition = new Vector3(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
                 Data.State = GuestState.WalkingToLodge;
             }

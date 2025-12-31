@@ -1,5 +1,4 @@
-using PlasticPipe.PlasticProtocol.Messages;
-using SkiGame.Model.Core;
+using SkiGame.Model.Data;
 using SkiGame.Model.Structures;
 using UnityEngine;
 

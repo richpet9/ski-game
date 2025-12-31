@@ -1,6 +1,6 @@
 using SkiGame.Model.Structures;
 
-namespace SkiGame.Model.Terrain
+namespace SkiGame.Model.Data
 {
     public struct TileData
     {

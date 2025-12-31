@@ -1,4 +1,5 @@
 using System.Collections;
+using SkiGame.Model.Guest;
 using SkiGame.View.Agents;
 using UnityEngine;
 
@@ -33,8 +34,15 @@ namespace SkiGame.View.World
             GameObject guestObj = Instantiate(_guestPrefab, spawnPos, Quaternion.identity);
             if (guestObj.TryGetComponent(out GuestAgent agent))
             {
-                agent.SetHome(transform.position);
-                agent.Start();
+                agent.Initialize(
+                    new GuestData
+                    {
+                        Position = spawnPos,
+                        HomePosition = transform.position,
+                        State = GuestState.Wandering,
+                        Money = 0,
+                    }
+                );
             }
         }
     }

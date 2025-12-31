@@ -1,4 +1,5 @@
 using SkiGame.Model.Core;
+using SkiGame.Model.Guest;
 using UnityEngine;
 using UnityEngine.AI; // Standard namespace for Agents
 
@@ -7,54 +8,44 @@ namespace SkiGame.View.Agents
     [RequireComponent(typeof(NavMeshAgent))]
     public class GuestAgent : MonoBehaviour
     {
-        private enum State : byte
-        {
-            Wandering = 0,
-            InsideLodge = 1,
-            WalkingToLodge = 2,
-            Leaving = 3,
-        }
+        private GuestData _data;
 
         private const float WANDER_RADIUS = 20f;
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
-        private const float SQRT_2 = 1.142f;
 
         private NavMeshAgent _agent;
         private MeshRenderer[] _renderers;
-        private Vector3 _homePosition;
-        private State _state = State.WalkingToLodge;
         private float _timer = 0f;
 
-        private void Awake()
+        public void Initialize(GuestData data)
+        {
+            _data = data;
+        }
+
+        private void Start()
         {
             _renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             _agent = GetComponent<NavMeshAgent>();
             _agent.speed = 3.5f;
             _agent.angularSpeed = 200f;
             _agent.acceleration = 10f;
-        }
 
-        public void SetHome(Vector3 homePos)
-        {
-            _homePosition = homePos;
-        }
-
-        public void Start()
-        {
             SetNewDestination();
         }
 
         private void Update()
         {
-            if (_state == State.WalkingToLodge)
+            _data.Position = transform.position;
+
+            if (_data.State == GuestState.WalkingToLodge)
             {
-                if (!_agent.pathPending && _agent.remainingDistance < SQRT_2)
+                if (!_agent.pathPending && _agent.remainingDistance < 1.2f)
                 {
                     EnterLodge();
                 }
             }
-            else if (_state == State.InsideLodge)
+            else if (_data.State == GuestState.InsideLodge)
             {
                 _timer += Time.deltaTime;
                 if (_timer >= LODGE_WAIT_TIME)
@@ -62,14 +53,14 @@ namespace SkiGame.View.Agents
                     ExitLodge();
                 }
             }
-            else if (_state == State.Leaving)
+            else if (_data.State == GuestState.Leaving)
             {
-                if (!_agent.pathPending && _agent.remainingDistance < SQRT_2)
+                if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
                 {
                     Destroy(gameObject);
                 }
             }
-            else if (_state == State.Wandering)
+            else if (_data.State == GuestState.Wandering)
             {
                 if (!_agent.hasPath && !_agent.pathPending)
                 {
@@ -98,12 +89,12 @@ namespace SkiGame.View.Agents
                 Vector3 targetPos = new Vector3(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
 
                 _agent.SetDestination(targetPos);
-                _state = State.WalkingToLodge;
+                _data.State = GuestState.WalkingToLodge;
             }
             else
             {
                 SetRandomDestination();
-                _state = State.Wandering;
+                _data.State = GuestState.Wandering;
             }
         }
 
@@ -123,7 +114,7 @@ namespace SkiGame.View.Agents
         private void EnterLodge()
         {
             Hide();
-            _state = State.InsideLodge;
+            _data.State = GuestState.InsideLodge;
             _timer = 0f;
 
             GameContext.Economy.AddMoney(15);
@@ -132,12 +123,12 @@ namespace SkiGame.View.Agents
         private void ExitLodge()
         {
             Show();
-            _state = State.Leaving;
+            _data.State = GuestState.Leaving;
             _timer = 0f;
 
-            if (_homePosition != null)
+            if (_data.HomePosition != null)
             {
-                _agent.SetDestination(_homePosition);
+                _agent.SetDestination((Vector3)_data.HomePosition);
             }
             else
             {

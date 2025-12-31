@@ -19,8 +19,12 @@ namespace SkiGame.View.Configs
         [Range(1, 80)]
         public int MountainHeight = 80;
 
+        [Header("Noise")]
         [Range(0, 20)]
         public int NoiseScale = 2;
+
+        [Range(0, 1)]
+        public float NoiseIntensity = 0.5f;
 
         public AnimationCurve HeightCurve;
     }

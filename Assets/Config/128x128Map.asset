@@ -14,30 +14,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
   Width: 128
   Height: 128
-  Seed: 0
+  Seed: 56660
   RandomizeOnGenerate: 1
-  MountainHeight: 80
-  NoiseScale: 2
+  MountainHeight: 20
+  NoiseScale: 10
+  NoiseIntensity: 0.3
   HeightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 0.06003486
+      outSlope: 0.06003486
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.44799083
+      value: 0.070655
+      inSlope: 0.657333
+      outSlope: 0.657333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.29425016
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.86821187
+      value: 0.7827491
+      inSlope: -0.022888906
+      outSlope: -0.022888906
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: -0.008708074
+      outSlope: -0.008708074
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 1
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

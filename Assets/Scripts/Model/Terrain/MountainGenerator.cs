@@ -9,7 +9,8 @@ namespace SkiGame.Model.Terrain
             int width,
             int height,
             int seed,
-            float scale,
+            float noiseScale,
+            float noiseIntensity,
             float mountainHeight,
             AnimationCurve curve
         )
@@ -23,13 +24,15 @@ namespace SkiGame.Model.Terrain
             {
                 for (int x = 0; x <= width; x++)
                 {
-                    float xCoord = (float)x / width * scale + xOffset;
-                    float zCoord = (float)z / height * scale + zOffset;
-                    float noise = Mathf.PerlinNoise(xCoord, zCoord);
+                    float xCoord = (float)x / width * noiseScale + xOffset;
+                    float zCoord = (float)z / height * noiseScale + zOffset;
                     float distFromCenter = Vector2.Distance(new Vector2(x, z), center);
-                    float mask = 1f - Mathf.Clamp01(distFromCenter / (width / 2f));
 
-                    float heightValue = curve.Evaluate(noise * mask) * mountainHeight;
+                    float mask = 1f - Mathf.Clamp01(distFromCenter / (width / 2f));
+                    float noise =
+                        (Mathf.PerlinNoise(xCoord, zCoord) - 0.5f) * noiseIntensity * mask;
+
+                    float heightValue = (curve.Evaluate(mask) + noise) * mountainHeight;
                     heights[z * (width + 1) + x] = heightValue;
                 }
             }

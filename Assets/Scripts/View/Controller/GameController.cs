@@ -73,6 +73,7 @@ namespace SkiGame.View.Controller
                 _mapConfig.Height,
                 _mapConfig.Seed,
                 _mapConfig.NoiseScale,
+                _mapConfig.NoiseIntensity,
                 _mapConfig.MountainHeight,
                 _mapConfig.HeightCurve
             );

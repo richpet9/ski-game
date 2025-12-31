@@ -8,13 +8,11 @@ namespace SkiGame.Model.Terrain
     {
         private readonly TileData[] _grid;
         private readonly int Width;
-        private readonly int Height;
 
         public Map(int width, int height)
         {
             _grid = new TileData[width * height];
             Width = width;
-            Height = height;
         }
 
         private int GetIndex(int x, int z)

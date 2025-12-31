@@ -2,7 +2,6 @@ using System.Collections;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Guest;
 using SkiGame.View.Agents;
-using SkiGame.View.Controller;
 using UnityEngine;
 
 namespace SkiGame.View.World

@@ -44,7 +44,8 @@ namespace SkiGame.View.Agents
                 return;
             }
 
-            if (_agent.Data.TargetPosition.HasValue)
+            bool targetChanged = _agent.Data.TargetPosition != _navAgent.destination;
+            if (targetChanged)
             {
                 _navAgent.SetDestination(_agent.Data.TargetPosition.Value);
             }

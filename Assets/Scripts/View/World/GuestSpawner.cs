@@ -44,6 +44,7 @@ namespace SkiGame.View.World
                         Position = spawnPos,
                         HomePosition = transform.position,
                         State = GuestState.Wandering,
+                        Color = Random.ColorHSV(),
                         Money = 0,
                     }
                 );

@@ -8,6 +8,7 @@ namespace SkiGame.Model.Guest
         public Vector3? HomePosition;
         public Vector3? TargetPosition;
         public GuestState State;
+        public Color Color;
         public ushort Money;
         public bool IsVisible = true;
     }

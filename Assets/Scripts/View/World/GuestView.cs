@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Guest;
 using UnityEngine;
@@ -19,6 +21,11 @@ namespace SkiGame.View.Agents
         public void Initialize(GuestData data)
         {
             _agent = new GuestAgent(data);
+
+            foreach (MeshRenderer renderer in _renderers)
+            {
+                renderer.material.color = data.Color;
+            }
         }
 
         private void Awake()

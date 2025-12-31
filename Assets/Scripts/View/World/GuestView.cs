@@ -58,7 +58,6 @@ namespace SkiGame.View.Agents
 
             if (_navAgent.isOnOffMeshLink && !_isTraversingLink)
             {
-                Debug.Log("Starting lift traverse.");
                 StartCoroutine(TraverseLift());
                 return;
             }

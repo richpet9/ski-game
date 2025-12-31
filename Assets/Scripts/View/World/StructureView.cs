@@ -7,7 +7,7 @@ namespace SkiGame.View.World
 {
     public class StructureView : MonoBehaviour
     {
-        [Header("Assets")]
+        [Header("Prefabs")]
         [SerializeField]
         private GameObject _lodgePrefab;
 
@@ -17,12 +17,16 @@ namespace SkiGame.View.World
         [SerializeField]
         private GameObject _liftPrefab;
 
+        [Header("Materials")]
+        [SerializeField]
+        private Material _liftCableMaterial;
+
         private void OnEnable()
         {
             if (GameContext.Structures != null)
             {
                 GameContext.Structures.OnStructureBuilt += SpawnStructure;
-                GameContext.Structures.OnLiftBuilt += ConfigureLift;
+                GameContext.Structures.OnLiftBuilt += SpawnLiftStructure;
             }
         }
 
@@ -31,17 +35,26 @@ namespace SkiGame.View.World
             if (GameContext.Structures != null)
             {
                 GameContext.Structures.OnStructureBuilt -= SpawnStructure;
-                GameContext.Structures.OnLiftBuilt -= ConfigureLift;
+                GameContext.Structures.OnLiftBuilt -= SpawnLiftStructure;
             }
         }
 
-        private void SpawnStructure(Vector2Int pos, StructureType type)
+        private void SpawnStructure(Vector2Int gridPos, StructureType structureType)
         {
-            float height = GameContext.Map.GetTile(pos).Height;
-            // TODO: Use world coord converter.
-            Vector3 worldPos = new Vector3(pos.x + 0.5f, height, pos.y + 0.5f);
+            SpawnStructure(gridPos, structureType, transform);
+        }
 
-            GameObject prefab = type switch
+        private void SpawnStructure(
+            Vector2Int gridPos,
+            StructureType structureType,
+            Transform parent
+        )
+        {
+            float height = GameContext.Map.GetTile(gridPos).Height;
+            // TODO: Use world coord converter.
+            Vector3 worldPos = new Vector3(gridPos.x + 0.5f, height, gridPos.y + 0.5f);
+
+            GameObject prefab = structureType switch
             {
                 StructureType.Lodge => _lodgePrefab,
                 StructureType.ParkingLot => _parkingLotPrefab,
@@ -54,34 +67,44 @@ namespace SkiGame.View.World
                 Debug.LogError("Failed to find a prefab to spawn.");
                 return;
             }
-            Instantiate(prefab, worldPos, Quaternion.identity, transform);
+            Instantiate(prefab, worldPos, Quaternion.identity, parent);
         }
 
-        private void ConfigureLift(Vector2Int startGrid, Vector2Int endGrid)
+        private void SpawnLiftStructure(Vector2Int startGrid, Vector2Int endGrid)
         {
-            // TODO: Draw cables as well...
-
             // TODO: Use world coord converter.
             float startHeight = GameContext.Map.GetTile(startGrid).Height;
             float endHeight = GameContext.Map.GetTile(endGrid).Height;
-
             Vector3 startPos = new Vector3(startGrid.x + 0.5f, startHeight, startGrid.y + 0.5f);
             Vector3 endPos = new Vector3(endGrid.x + 0.5f, endHeight, endGrid.y + 0.5f);
+
+            GameObject liftParent = new GameObject("LiftContainer");
+            liftParent.transform.parent = transform;
+
+            SpawnStructure(startGrid, StructureType.Lift, liftParent.transform);
+            SpawnStructure(endGrid, StructureType.Lift, liftParent.transform);
+
+            LineRenderer lineRenderer = liftParent.AddComponent<LineRenderer>();
+            lineRenderer.material = _liftCableMaterial;
+            lineRenderer.startColor = Color.gray;
+            lineRenderer.endColor = Color.gray;
+            lineRenderer.startWidth = 0.1f;
+            lineRenderer.endWidth = 0.1f;
+            lineRenderer.SetPosition(0, startPos + Vector3.up * 3f);
+            lineRenderer.SetPosition(1, endPos + Vector3.up * 3f);
+
             GameObject linkObj = new GameObject("LiftLink");
             linkObj.transform.position = startPos;
-            linkObj.transform.parent = transform;
+            linkObj.transform.parent = liftParent.transform;
 
             NavMeshLink link = linkObj.AddComponent<NavMeshLink>();
 
-            Vector3 localStart = Vector3.zero;
-            localStart.y += 0.5f;
-
-            Vector3 localEnd = endPos - startPos;
-            localEnd.y += 0.5f;
+            Vector3 localStart = Vector3.zero + Vector3.up * 0.5f;
+            Vector3 localEnd = endPos - startPos + Vector3.up * 0.5f;
 
             link.startPoint = localStart;
             link.endPoint = localEnd;
-            link.width = 2f;
+            link.width = 1f;
             link.bidirectional = false;
             link.costModifier = -1000000;
             link.area = 0;

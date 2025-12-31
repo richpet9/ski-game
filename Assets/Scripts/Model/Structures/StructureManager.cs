@@ -53,6 +53,7 @@ namespace SkiGame.Model.Structures
             }
 
             Build(gridPos, structure);
+            OnStructureBuilt?.Invoke(gridPos, structure);
             return true;
         }
 
@@ -98,8 +99,6 @@ namespace SkiGame.Model.Structures
             {
                 Lifts.Add(gridPos);
             }
-
-            OnStructureBuilt?.Invoke(gridPos, structure);
         }
     }
 }

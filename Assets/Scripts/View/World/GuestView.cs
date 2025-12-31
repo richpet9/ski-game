@@ -17,6 +17,7 @@ namespace SkiGame.View.Agents
         // Cache variables for prevent spamming operations.
         private Vector3? _lastTargetPos;
         private bool _isVisible = true;
+        private bool _isTraversingLink = false;
 
         public void Initialize(GuestData data)
         {
@@ -36,6 +37,7 @@ namespace SkiGame.View.Agents
             _navAgent.speed = 3.5f;
             _navAgent.angularSpeed = 200f;
             _navAgent.acceleration = 10f;
+            _navAgent.autoTraverseOffMeshLink = false;
         }
 
         private void Update()
@@ -46,6 +48,18 @@ namespace SkiGame.View.Agents
                 {
                     Destroy(gameObject);
                 }
+                return;
+            }
+
+            if (_isTraversingLink)
+            {
+                return;
+            }
+
+            if (_navAgent.isOnOffMeshLink && !_isTraversingLink)
+            {
+                Debug.Log("Starting lift traverse.");
+                StartCoroutine(TraverseLift());
                 return;
             }
 
@@ -69,6 +83,40 @@ namespace SkiGame.View.Agents
             _agent.Tick(Time.deltaTime, transform.position, distance);
 
             SyncVisible();
+        }
+
+        private IEnumerator TraverseLift()
+        {
+            _isTraversingLink = true;
+
+            // Capture the destination before disabling the agent.
+            OffMeshLinkData data = _navAgent.currentOffMeshLinkData;
+            Vector3 startPos = transform.position;
+            Vector3 endPos = data.endPos + Vector3.up * _navAgent.baseOffset;
+
+            // DISABLE the agent. This frees up the "Start Node" immediately,
+            // allowing the next agent to enter the lift behind us.
+            _navAgent.enabled = false;
+
+            float duration = Vector3.Distance(startPos, endPos) / _navAgent.speed;
+            float time = 0;
+
+            while (time < duration)
+            {
+                transform.position = Vector3.Lerp(startPos, endPos, time / duration);
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.position = endPos;
+
+            // Re-enable and warp to ensure the internal state matches the visual state.
+            _navAgent.enabled = true;
+            _navAgent.Warp(endPos);
+
+            // Since we disabled the agent, we don't need CompleteOffMeshLink().
+            // We just resume normal behavior next frame.
+            _isTraversingLink = false;
         }
 
         private void SyncVisible()

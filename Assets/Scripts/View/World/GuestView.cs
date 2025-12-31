@@ -79,9 +79,9 @@ namespace SkiGame.View.Agents
                 ? float.PositiveInfinity
                 : _navAgent.remainingDistance;
 
-            _agent.Tick(Time.deltaTime, transform.position, distance);
-
             SyncVisible();
+
+            _agent.Tick(Time.deltaTime, transform.position, distance);
         }
 
         private IEnumerator TraverseLift()

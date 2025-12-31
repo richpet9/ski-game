@@ -40,7 +40,7 @@ namespace SkiGame.View.Controller
                 cursorVisual.SetActive(true);
 
                 // Debug interaction.
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonDown(0))
                 {
                     OnTileClicked?.Invoke(GridPosition);
                 }

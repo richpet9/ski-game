@@ -30,13 +30,13 @@ namespace SkiGame.View.Controller
 
         private void Update()
         {
-            if (Input.GetKeyUp(KeyCode.Alpha1))
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 _structureType = StructureType.Lodge;
                 Debug.Log("Selected: Lodge");
             }
 
-            if (Input.GetKeyUp(KeyCode.Alpha2))
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 _structureType = StructureType.ParkingLot;
                 Debug.Log("Selected: Parking Lot");

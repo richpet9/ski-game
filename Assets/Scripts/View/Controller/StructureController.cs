@@ -20,15 +20,23 @@ namespace SkiGame.View.Controller
 
         private StructureType _structureType = StructureType.Lodge;
 
+        private int GetStructureCost(StructureType structure) =>
+            structure switch
+            {
+                StructureType.Lodge => 100,
+                StructureType.ParkingLot => 50,
+                _ => 0,
+            };
+
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyUp(KeyCode.Alpha1))
             {
                 _structureType = StructureType.Lodge;
                 Debug.Log("Selected: Lodge");
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+            if (Input.GetKeyUp(KeyCode.Alpha2))
             {
                 _structureType = StructureType.ParkingLot;
                 Debug.Log("Selected: Parking Lot");
@@ -53,6 +61,13 @@ namespace SkiGame.View.Controller
 
         private void HandleTileClick(Vector2Int gridPos)
         {
+            int cost = GetStructureCost(_structureType);
+            if (!GameContext.Economy.TrySpendMoney(cost))
+            {
+                Debug.Log("Not enough money!");
+                return;
+            }
+
             MapData map = GameContext.Map;
             if (map.TrySetStructure(gridPos, _structureType))
             {
@@ -61,6 +76,14 @@ namespace SkiGame.View.Controller
                     GameContext.Structures.Lodges.Add(gridPos);
                 }
                 SpawnStructureVisual(gridPos, map.GetTile(gridPos).Height);
+                Debug.Log(
+                    $"Built {_structureType} for ${cost}. Remaining: ${GameContext.Economy.Money}"
+                );
+            }
+            else
+            {
+                Debug.Log("Failed to build structure, refunding cost.");
+                GameContext.Economy.AddMoney(cost);
             }
         }
 

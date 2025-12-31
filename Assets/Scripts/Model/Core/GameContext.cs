@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SkiGame.Model.Economy;
 using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace SkiGame.Model.Core
 
         public static MapData Map => Get<MapData>();
         public static StructureManager Structures => Get<StructureManager>();
+        public static EconomyManager Economy => Get<EconomyManager>();
 
         public static T Get<T>()
             where T : class

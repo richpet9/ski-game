@@ -1,5 +1,6 @@
 using System.Collections;
 using SkiGame.Model.Core;
+using SkiGame.Model.Economy;
 using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using SkiGame.View.Data;
@@ -8,6 +9,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
+    [DefaultExecutionOrder(-999999)]
     public class GameController : MonoBehaviour
     {
         [Header("Config")]
@@ -23,11 +25,16 @@ namespace SkiGame.View.Controller
         private readonly MountainGenerator _mountainGen = new MountainGenerator();
         private bool _canGenerate = true;
 
-        private void Start()
+        private void Awake()
         {
             GameContext.Register(new MapData(_mapConfig.Width, _mapConfig.Height));
             GameContext.Register(new StructureManager());
+            GameContext.Register(new EconomyManager());
+            GameContext.Economy.AddMoney(200);
+        }
 
+        private void Start()
+        {
             RenderMountainTerrain();
         }
 

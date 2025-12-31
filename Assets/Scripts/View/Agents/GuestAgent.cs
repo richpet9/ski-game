@@ -94,12 +94,7 @@ namespace SkiGame.View.Agents
                 // MapData to avoid doing "GetTile" checks here, but this works for now.
                 // This can be implemented when we check that we only place structures
                 // on flat ground.
-                float y = 0;
-                if (GameContext.Map != null)
-                {
-                    y = GameContext.Map.GetTile(targetGrid).Height;
-                }
-
+                float y = GameContext.Map.GetTile(targetGrid).Height;
                 Vector3 targetPos = new Vector3(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
 
                 _agent.SetDestination(targetPos);
@@ -130,6 +125,8 @@ namespace SkiGame.View.Agents
             Hide();
             _state = State.InsideLodge;
             _timer = 0f;
+
+            GameContext.Economy.AddMoney(15);
         }
 
         private void ExitLodge()

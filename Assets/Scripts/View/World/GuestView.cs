@@ -12,6 +12,8 @@ namespace SkiGame.View.Agents
         private NavMeshAgent _navAgent;
         private MeshRenderer[] _renderers;
 
+        // Cache variables for prevent spamming operations.
+        private Vector3? _lastTargetPos;
         private bool _isVisible = true;
 
         public void Initialize(GuestData data)
@@ -31,26 +33,33 @@ namespace SkiGame.View.Agents
 
         private void Update()
         {
-            if (_agent == null)
+            if (_agent == null || _agent.QueuedForDestruction)
             {
-                Debug.LogError("Agent is null. Destroying GameObject.");
-                Destroy(gameObject);
+                if (_agent?.QueuedForDestruction == true)
+                {
+                    Destroy(gameObject);
+                }
                 return;
             }
 
-            if (_agent.QueuedForDestruction)
+            if (_agent.Data.TargetPosition.HasValue)
             {
-                Destroy(gameObject);
-                return;
+                Vector3 newTarget = _agent.Data.TargetPosition.Value;
+                if (
+                    !_lastTargetPos.HasValue
+                    || Vector3.Distance(_lastTargetPos.Value, newTarget) > 0.1f
+                )
+                {
+                    _navAgent.SetDestination(newTarget);
+                    _lastTargetPos = newTarget;
+                }
             }
 
-            bool targetChanged = _agent.Data.TargetPosition != _navAgent.destination;
-            if (targetChanged)
-            {
-                _navAgent.SetDestination(_agent.Data.TargetPosition.Value);
-            }
+            float distance = _navAgent.pathPending
+                ? float.PositiveInfinity
+                : _navAgent.remainingDistance;
 
-            _agent.Tick(Time.deltaTime, transform.position, _navAgent.remainingDistance);
+            _agent.Tick(Time.deltaTime, transform.position, distance);
 
             SyncVisible();
         }

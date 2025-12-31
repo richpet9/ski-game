@@ -2,5 +2,6 @@
     "recommendations": [
       "visualstudiotoolsforunity.vstuc",
       "csharpier.csharpier-vscode",
+      "DanielAtanasov.todo",
     ]
 }

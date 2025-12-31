@@ -73,4 +73,24 @@
     "[csharp]": {
         "editor.defaultFormatter": "csharpier.csharpier-vscode"
     },
+    "todo.annotations": [
+        {
+        "name": "todo",
+        "pattern": "TODO(@[_a-zA-Z0-9]+)?:",
+        "color": "#ffcc00",
+        "isMarkdown": true
+        },
+        {
+        "name": "note",
+        "pattern": "NOTE(@[_a-zA-Z0-9]+)?:",
+        "color": "#00bbbb",
+        "isMarkdown": true
+        },
+        {
+        "name": "bug",
+        "pattern": "BUG(@[_a-zA-Z0-9]+)?:",
+        "color": "#ff8800",
+        "isMarkdown": true
+        }
+  ]
 }

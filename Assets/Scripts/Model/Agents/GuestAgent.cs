@@ -10,7 +10,7 @@ namespace SkiGame.Model.Agents
         public GuestData Data { get; }
         public bool QueuedForDestruction { get; private set; }
 
-        private const float WANDER_RADIUS = 20f;
+        private const float WANDER_RADIUS = 128f;
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
 

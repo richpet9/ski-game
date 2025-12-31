@@ -1119,6 +1119,8 @@ MonoBehaviour:
     type: 3}
   _parkingLotPrefab: {fileID: 1359727422855643037, guid: f542593204e5b456a9e1c68eb2c669fb,
     type: 3}
+  _liftPrefab: {fileID: 6023449307802073522, guid: 5b199b3ae12f3488fba597d9c30b0b58,
+    type: 3}
 --- !u!1 &1377339051
 GameObject:
   m_ObjectHideFlags: 0

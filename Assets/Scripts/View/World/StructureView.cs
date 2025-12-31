@@ -13,6 +13,9 @@ namespace SkiGame.View.World
         [SerializeField]
         private GameObject _parkingLotPrefab;
 
+        [SerializeField]
+        private GameObject _liftPrefab;
+
         private void OnEnable()
         {
             if (GameContext.Structures != null)
@@ -39,6 +42,7 @@ namespace SkiGame.View.World
             {
                 StructureType.Lodge => _lodgePrefab,
                 StructureType.ParkingLot => _parkingLotPrefab,
+                StructureType.Lift => _liftPrefab,
                 _ => null,
             };
 

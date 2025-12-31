@@ -133,9 +133,18 @@ namespace SkiGame.Model.Agents
         private void ExitLodge()
         {
             Data.State = GuestState.Leaving;
-            Data.TargetPosition = Data.HomePosition;
             Data.IsVisible = true;
             _timer = 0f;
+
+            if (Data.HomePosition.HasValue)
+            {
+                Data.TargetPosition = Data.HomePosition.Value;
+            }
+            else
+            {
+                Data.State = GuestState.Wandering;
+                SetRandomDestination();
+            }
         }
     }
 }

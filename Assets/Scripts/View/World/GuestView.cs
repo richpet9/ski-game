@@ -116,6 +116,7 @@ namespace SkiGame.View.Agents
 
             // Since we disabled the agent, we don't need CompleteOffMeshLink().
             // We just resume normal behavior next frame.
+            _lastTargetPos = null;
             _isTraversingLink = false;
         }
 

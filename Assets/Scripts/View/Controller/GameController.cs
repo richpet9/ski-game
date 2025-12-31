@@ -3,7 +3,7 @@ using SkiGame.Model.Core;
 using SkiGame.Model.Economy;
 using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
-using SkiGame.View.Data;
+using SkiGame.View.Configs;
 using SkiGame.View.World;
 using UnityEngine;
 

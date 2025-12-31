@@ -13,12 +13,15 @@ namespace SkiGame.View.World
         [SerializeField]
         private GameObject _parkingLotPrefab;
 
-        private void Start()
+        private void OnEnable()
         {
-            GameContext.Structures.OnStructureBuilt += SpawnStructure;
+            if (GameContext.Structures != null)
+            {
+                GameContext.Structures.OnStructureBuilt += SpawnStructure;
+            }
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             if (GameContext.Structures != null)
             {

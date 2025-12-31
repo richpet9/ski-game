@@ -15,15 +15,18 @@ namespace SkiGame.View.Agents
         }
 
         private const float WANDER_RADIUS = 20f;
-        private const float WAIT_TIME = 2f;
-        private const float LODGE_TIME = 5f;
+        private const float WANDER_WAIT_TIME = 2f;
+        private const float LODGE_WAIT_TIME = 3f;
 
-        private State _state = State.WalkingToLodge;
         private NavMeshAgent _agent;
-        private float _timer;
+        private MeshRenderer[] _renderers;
+        private State _state = State.WalkingToLodge;
+        private float _timer = 0f;
+        private bool _shown = true;
 
         private void Awake()
         {
+            _renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             _agent = GetComponent<NavMeshAgent>();
             _agent.speed = 3.5f;
             _agent.angularSpeed = 200f;
@@ -51,7 +54,7 @@ namespace SkiGame.View.Agents
             if (!_agent.hasPath && !_agent.pathPending)
             {
                 _timer += Time.deltaTime;
-                if (_timer > WAIT_TIME)
+                if (_timer > WANDER_WAIT_TIME)
                 {
                     SetRandomDestination();
                     _timer = 0;
@@ -61,9 +64,16 @@ namespace SkiGame.View.Agents
 
         private void InsideLodge()
         {
-            _timer += Time.deltaTime;
-            if (_timer > LODGE_TIME)
+            if (_shown)
             {
+                Hide();
+            }
+
+            _timer += Time.deltaTime;
+            if (_timer > LODGE_WAIT_TIME)
+            {
+                Show();
+                SetRandomDestination();
                 _state = State.Wandering;
                 _timer = 0;
             }
@@ -97,6 +107,26 @@ namespace SkiGame.View.Agents
             {
                 _agent.SetDestination(hit.position);
             }
+        }
+
+        // TODO: Maybe visuals should be handled in a GuestView class.
+        private void Hide()
+        {
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                _renderers[i].enabled = false;
+            }
+            _shown = false;
+        }
+
+        // TODO: Maybe visuals should be handled in a GuestView class.
+        private void Show()
+        {
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                _renderers[i].enabled = true;
+            }
+            _shown = true;
         }
     }
 }

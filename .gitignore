@@ -100,4 +100,4 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
 # TMPro Assets are very large.
-/Assets/Text Mesh Pro/
+/Assets/TextMesh Pro/

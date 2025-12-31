@@ -27,7 +27,7 @@ namespace SkiGame.View.Controller
 
         [Header("Tilt (Camera Pitch)")]
         [SerializeField]
-        private Vector2 _tiltLimits = new(20f, 85f); // Min/Max angle X.
+        private Vector2 _tiltLimits = new Vector2(20f, 85f); // Min/Max angle X.
 
         [SerializeField]
         private float _tiltSpeed = 150f;
@@ -37,7 +37,7 @@ namespace SkiGame.View.Controller
         private float _zoomStep = 5f;
 
         [SerializeField]
-        private Vector2 _zoomLimits = new(5f, 50f); // Min/Max distance.
+        private Vector2 _zoomLimits = new Vector2(5f, 50f); // Min/Max distance.
 
         // Smoothing Targets.
         private Vector3 _targetPos;
@@ -177,7 +177,7 @@ namespace SkiGame.View.Controller
         // Renamed for clarity. Uses X/Z from input, ignores input Y.
         private float GetTerrainHeight(Vector2 xzPos)
         {
-            Vector3 origin = new(xzPos.x, RAY_HEIGHT, xzPos.y);
+            Vector3 origin = new Vector3(xzPos.x, RAY_HEIGHT, xzPos.y);
 
             if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1000f, terrainLayer))
             {

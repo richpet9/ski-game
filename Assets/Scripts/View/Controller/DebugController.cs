@@ -22,7 +22,7 @@ namespace SkiGame.View.Controller
 
         private void SpawnGuest(Vector2Int gridPos)
         {
-            Vector3 worldPos = new(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
+            Vector3 worldPos = new Vector3(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
             GameObject guest = Instantiate(_guestPrefab, worldPos, Quaternion.identity);
             guest.transform.parent = transform;
         }

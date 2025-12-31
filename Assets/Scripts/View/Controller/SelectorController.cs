@@ -33,7 +33,7 @@ namespace SkiGame.View.Controller
                 int x = Mathf.FloorToInt(hit.point.x);
                 int z = Mathf.FloorToInt(hit.point.z);
 
-                Vector3 snappedPos = new(x + 0.5f, hit.point.y + 0.1f, z + 0.5f);
+                Vector3 snappedPos = new Vector3(x + 0.5f, hit.point.y + 0.1f, z + 0.5f);
 
                 GridPosition = new Vector2Int(x, z);
                 cursorVisual.transform.position = snappedPos;

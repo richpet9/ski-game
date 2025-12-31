@@ -100,7 +100,7 @@ namespace SkiGame.View.Agents
                     y = GameContext.Map.GetTile(targetGrid).Height;
                 }
 
-                Vector3 targetPos = new(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
+                Vector3 targetPos = new Vector3(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
 
                 _agent.SetDestination(targetPos);
                 _state = State.WalkingToLodge;

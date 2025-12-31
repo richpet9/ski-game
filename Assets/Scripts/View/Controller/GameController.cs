@@ -18,7 +18,7 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private TerrainView _terrainView;
 
-        private static readonly WaitForSeconds _waitForSeconds0_5 = new(0.5f);
+        private static readonly WaitForSeconds _waitForSeconds0_5 = new WaitForSeconds(0.5f);
 
         private readonly MountainGenerator _mountainGen = new MountainGenerator();
         private bool _canGenerate = true;

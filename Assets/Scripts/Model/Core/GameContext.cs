@@ -1,59 +1,49 @@
+using System;
+using System.Collections.Generic;
 using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
+using UnityEngine;
 
 namespace SkiGame.Model.Core
 {
     public static class GameContext
     {
-        private static MapData _map;
-        private static StructureManager _structures;
+        private static readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
 
-        public static MapData Map
+        public static MapData Map => Get<MapData>();
+        public static StructureManager Structures => Get<StructureManager>();
+
+        public static T Get<T>()
+            where T : class
         {
-            get
+            var type = typeof(T);
+            if (_services.TryGetValue(type, out var service))
             {
-                if (_map == null)
-                {
-                    UnityEngine.Debug.LogError("GameContext: Map accessed but is null.");
-                }
-                return _map;
+                return (T)service;
             }
+
+            Debug.LogError(
+                $"GameContext: Service of type '{type.Name}' accessed but is not registered."
+            );
+            return null;
         }
 
-        public static StructureManager Structures
+        public static void Register<T>(T service)
+            where T : class
         {
-            get
+            var type = typeof(T);
+            if (_services.ContainsKey(type))
             {
-                if (_structures == null)
-                {
-                    UnityEngine.Debug.LogError("GameContext: Structures accessed but is null.");
-                }
-                return _structures;
+                Debug.LogWarning(
+                    $"GameContext: Service of type '{type.Name}' is being overwritten!"
+                );
             }
-        }
-
-        public static void RegisterMap(MapData map)
-        {
-            if (_map != null)
-            {
-                UnityEngine.Debug.LogWarning("GameContext: MapData is being overwritten!");
-            }
-            _map = map;
-        }
-
-        public static void RegisterStructures(StructureManager structures)
-        {
-            if (_structures != null)
-            {
-                UnityEngine.Debug.LogWarning("GameContext: StructureManager is being overwritten!");
-            }
-            _structures = structures;
+            _services[type] = service;
         }
 
         public static void Clear()
         {
-            _map = null;
-            _structures = null;
+            _services.Clear();
         }
     }
 }

@@ -25,8 +25,8 @@ namespace SkiGame.View.Controller
 
         private void Start()
         {
-            GameContext.RegisterMap(new MapData(_mapConfig.Width, _mapConfig.Height));
-            GameContext.RegisterStructures(new StructureManager());
+            GameContext.Register(new MapData(_mapConfig.Width, _mapConfig.Height));
+            GameContext.Register(new StructureManager());
 
             RenderMountainTerrain();
         }

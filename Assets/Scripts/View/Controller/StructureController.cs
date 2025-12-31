@@ -1,5 +1,5 @@
 using SkiGame.Model.Core;
-using SkiGame.Model.Structure;
+using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 

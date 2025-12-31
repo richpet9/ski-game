@@ -1,4 +1,4 @@
-namespace SkiGame.Model.Structure
+namespace SkiGame.Model.Structures
 {
     public enum StructureType : byte
     {

@@ -1,5 +1,6 @@
 using PlasticPipe.PlasticProtocol.Messages;
-using SkiGame.Model.Structure;
+using SkiGame.Model.Core;
+using SkiGame.Model.Structures;
 using UnityEngine;
 
 namespace SkiGame.Model.Terrain
@@ -52,6 +53,8 @@ namespace SkiGame.Model.Terrain
             }
 
             _grid[x, z].Structure = structure;
+            // TODO: Change to handle not just lodges.
+            GameContext.Structures.Lodges.Add(new Vector2Int(x, z));
             return true;
         }
 

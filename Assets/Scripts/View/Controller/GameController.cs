@@ -1,5 +1,6 @@
 using System.Collections;
 using SkiGame.Model.Core;
+using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using SkiGame.View.Data;
 using SkiGame.View.World;
@@ -25,6 +26,7 @@ namespace SkiGame.View.Controller
         private void Start()
         {
             GameContext.RegisterMap(new MapData(_mapConfig.Width, _mapConfig.Height));
+            GameContext.RegisterStructures(new StructureManager());
 
             RenderMountainTerrain();
         }

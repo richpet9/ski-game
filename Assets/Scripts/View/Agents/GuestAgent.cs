@@ -1,3 +1,4 @@
+using SkiGame.Model.Core;
 using UnityEngine;
 using UnityEngine.AI; // Standard namespace for Agents
 
@@ -6,9 +7,18 @@ namespace SkiGame.View.Agents
     [RequireComponent(typeof(NavMeshAgent))]
     public class GuestAgent : MonoBehaviour
     {
+        private enum State : byte
+        {
+            Wandering = 0,
+            InsideLodge = 1,
+            WalkingToLodge = 2,
+        }
+
         private const float WANDER_RADIUS = 20f;
         private const float WAIT_TIME = 2f;
+        private const float LODGE_TIME = 5f;
 
+        private State _state = State.WalkingToLodge;
         private NavMeshAgent _agent;
         private float _timer;
 
@@ -22,7 +32,23 @@ namespace SkiGame.View.Agents
 
         private void Update()
         {
-            if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
+            switch (_state)
+            {
+                case State.Wandering:
+                    Wander();
+                    break;
+                case State.InsideLodge:
+                    InsideLodge();
+                    break;
+                case State.WalkingToLodge:
+                    WalkToLodge();
+                    break;
+            }
+        }
+
+        private void Wander()
+        {
+            if (!_agent.hasPath && !_agent.pathPending)
             {
                 _timer += Time.deltaTime;
                 if (_timer > WAIT_TIME)
@@ -30,6 +56,33 @@ namespace SkiGame.View.Agents
                     SetRandomDestination();
                     _timer = 0;
                 }
+            }
+        }
+
+        private void InsideLodge()
+        {
+            _timer += Time.deltaTime;
+            if (_timer > LODGE_TIME)
+            {
+                _state = State.Wandering;
+                _timer = 0;
+            }
+        }
+
+        private void WalkToLodge()
+        {
+            if (!_agent.hasPath && !_agent.pathPending && GameContext.Structures.Lodges.Count > 0)
+            {
+                // TODO: Change from first lodge to nearest (or other hueristic).
+                Vector2Int lodgePos = GameContext.Structures.Lodges[0];
+                float tileHeight = GameContext.Map.GetTile(lodgePos).Height;
+                _agent.SetDestination(new Vector3(lodgePos.x + .5f, tileHeight, lodgePos.y + .5f));
+            }
+            else if (_agent.remainingDistance <= 1.42f)
+            {
+                _agent.ResetPath();
+                _timer = 0;
+                _state = State.InsideLodge;
             }
         }
 

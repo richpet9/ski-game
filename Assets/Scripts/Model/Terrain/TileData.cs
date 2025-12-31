@@ -1,4 +1,4 @@
-using SkiGame.Model.Structure;
+using SkiGame.Model.Structures;
 
 namespace SkiGame.Model.Terrain
 {

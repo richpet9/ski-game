@@ -67,10 +67,13 @@ namespace SkiGame.View.Controller
                 return;
             }
 
-            bool success = GameContext.Map.Structures.TryBuild(gridPos, _structureType);
+            (bool success, string error) = GameContext.Map.Structures.TryBuild(
+                gridPos,
+                _structureType
+            );
             if (!success)
             {
-                Debug.Log($"Failed to build structure: {_structureType}");
+                Debug.Log($"Failed to build {_structureType}: {error}");
             }
         }
 
@@ -90,7 +93,14 @@ namespace SkiGame.View.Controller
                 Vector2Int endPos = gridPos;
                 if (endPos != _liftStartPos)
                 {
-                    GameContext.Map.Structures.TryBuildLift((Vector2Int)_liftStartPos, endPos);
+                    (bool success, string error) = GameContext.Map.Structures.TryBuildLift(
+                        (Vector2Int)_liftStartPos,
+                        endPos
+                    );
+                    if (!success)
+                    {
+                        Debug.Log($"Failed to build lift: {error}");
+                    }
                 }
 
                 // Reset

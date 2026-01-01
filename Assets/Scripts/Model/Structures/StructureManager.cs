@@ -29,57 +29,61 @@ namespace SkiGame.Model.Structures
             {
                 StructureType.Lodge => 100,
                 StructureType.ParkingLot => 50,
+                StructureType.Lift => 25,
                 _ => 0,
             };
 
-        public bool TryBuild(Vector2Int gridPos, StructureType structure)
+        public (bool, string) TryBuild(Vector2Int gridPos, StructureType structure)
         {
             if (!_map.InBounds(gridPos))
             {
-                return false;
+                return (false, "Position out of bounds");
             }
 
             if (_map.GetTile(gridPos).Structure != StructureType.None)
             {
-                Debug.Log("Tile already has a structure!");
-                return false;
+                return (false, "Tile already has a structure");
             }
 
             int cost = GetCost(structure);
             if (!_economy.TrySpendMoney(cost))
             {
-                Debug.Log("Not enough money!");
-                return false;
+                return (false, "Not enough money");
             }
 
             Build(gridPos, structure);
             OnStructureBuilt?.Invoke(gridPos, structure);
-            return true;
+            return (true, null);
         }
 
-        public bool TryBuildLift(Vector2Int startPos, Vector2Int endPos)
+        public (bool, string) TryBuildLift(Vector2Int startPos, Vector2Int endPos)
         {
             if (!_map.InBounds(startPos) || !_map.InBounds(endPos))
             {
-                return false;
+                return (false, "Position out of bounds");
             }
 
             if (_map.GetTile(startPos).Structure != StructureType.None)
             {
-                Debug.Log("Start position is occupied!");
-                return false;
+                return (false, "Start position is occupied");
             }
 
             if (_map.GetTile(endPos).Structure != StructureType.None)
             {
-                Debug.Log("End position is occupied!");
-                return false;
+                return (false, "End position is occupied");
+            }
+
+            // TODO: Base cost on distance.
+            int cost = GetCost(StructureType.Lift) * 2; // There are two lift towers.
+            if (!_economy.TrySpendMoney(cost))
+            {
+                return (false, "Not enough money");
             }
 
             Build(startPos, StructureType.Lift);
             Build(endPos, StructureType.Lift);
             OnLiftBuilt?.Invoke(startPos, endPos);
-            return true;
+            return (true, null);
         }
 
         private void Build(Vector2Int gridPos, StructureType structure)

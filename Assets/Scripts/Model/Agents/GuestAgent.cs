@@ -15,7 +15,7 @@ namespace SkiGame.Model.Agents
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
 
-        private Map _map;
+        private readonly Map _map;
         private float _timer = 0f;
         private float _remainingDistance = float.PositiveInfinity;
 

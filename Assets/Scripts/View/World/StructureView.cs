@@ -1,5 +1,6 @@
 using SkiGame.Model.Core;
 using SkiGame.Model.Structures;
+using SkiGame.Model.Terrain;
 using Unity.AI.Navigation;
 using UnityEngine;
 
@@ -51,8 +52,7 @@ namespace SkiGame.View.World
         )
         {
             float height = GameContext.Map.GetTile(gridPos).Height;
-            // TODO: Use world coord converter.
-            Vector3 worldPos = new Vector3(gridPos.x + 0.5f, height, gridPos.y + 0.5f);
+            Vector3 worldPos = MapUtil.GridToWorld(gridPos, height);
 
             GameObject prefab = structureType switch
             {
@@ -72,11 +72,10 @@ namespace SkiGame.View.World
 
         private void SpawnLiftStructure(Vector2Int startGrid, Vector2Int endGrid)
         {
-            // TODO: Use world coord converter.
             float startHeight = GameContext.Map.GetTile(startGrid).Height;
             float endHeight = GameContext.Map.GetTile(endGrid).Height;
-            Vector3 startPos = new Vector3(startGrid.x + 0.5f, startHeight, startGrid.y + 0.5f);
-            Vector3 endPos = new Vector3(endGrid.x + 0.5f, endHeight, endGrid.y + 0.5f);
+            Vector3 startPos = MapUtil.GridToWorld(startGrid, startHeight);
+            Vector3 endPos = MapUtil.GridToWorld(endGrid, endHeight);
 
             GameObject liftParent = new GameObject("LiftContainer");
             liftParent.transform.parent = transform;

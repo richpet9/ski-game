@@ -18,11 +18,11 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private GameObject cursorVisual;
 
-        public Vector2Int GridPosition { get; private set; }
-        public Vector3 WorldPosition { get; private set; }
-        public event Action<Vector2Int> OnTileClicked;
-
+        private const float VERTICAL_OFFSET = 0.1f;
         private const float RAY_HEIGHT = 2000f;
+
+        public Vector2Int GridPosition { get; private set; }
+        public event Action<Vector2Int> OnTileClicked;
 
         private void Update()
         {
@@ -30,14 +30,11 @@ namespace SkiGame.View.Controller
 
             if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, terrainLayer))
             {
-                // Snap to integer grid.
-                int x = Mathf.FloorToInt(hit.point.x);
-                int z = Mathf.FloorToInt(hit.point.z);
-
-                GridPosition = new Vector2Int(x, z);
-                // TODO: Use world coord converter.
-                WorldPosition = new Vector3(x + 0.5f, hit.point.y + 0.1f, z + 0.5f);
-                cursorVisual.transform.position = WorldPosition;
+                GridPosition = MapUtil.WorldToGrid(hit.point);
+                cursorVisual.transform.position = MapUtil.GridToWorld(
+                    GridPosition,
+                    hit.point.y + VERTICAL_OFFSET
+                );
                 cursorVisual.SetActive(true);
 
                 // Debug interaction.

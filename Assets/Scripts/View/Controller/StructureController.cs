@@ -14,6 +14,8 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private LineRenderer _previewCable;
 
+        private const float PREVIEW_CABLE_HEIGHT = 2f;
+
         private StructureType _structureType = StructureType.Lodge;
         private Vector2Int? _liftStartPos;
 
@@ -21,7 +23,7 @@ namespace SkiGame.View.Controller
         {
             if (_liftStartPos.HasValue)
             {
-                HandleLiftPreview();
+                DrawListPreviewEndpoint();
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -79,14 +81,12 @@ namespace SkiGame.View.Controller
 
         private void HandleLiftInput(Vector2Int gridPos)
         {
-            // TODO: Use world coord converter.
-            Vector3 worldPos = new Vector3(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
             if (_liftStartPos == null)
             {
                 _liftStartPos = gridPos;
 
                 _previewCable.gameObject.SetActive(true);
-                _previewCable.SetPosition(0, worldPos);
+                _previewCable.SetPosition(0, MapUtil.GridToWorld(gridPos, PREVIEW_CABLE_HEIGHT));
             }
             else
             {
@@ -103,15 +103,18 @@ namespace SkiGame.View.Controller
                     }
                 }
 
-                // Reset.
+                // Reset preview cable.
                 _liftStartPos = null;
                 _previewCable.gameObject.SetActive(false);
             }
         }
 
-        private void HandleLiftPreview()
+        private void DrawListPreviewEndpoint()
         {
-            _previewCable.SetPosition(1, _selector.WorldPosition);
+            _previewCable.SetPosition(
+                1,
+                MapUtil.GridToWorld(_selector.GridPosition, PREVIEW_CABLE_HEIGHT)
+            );
         }
     }
 }

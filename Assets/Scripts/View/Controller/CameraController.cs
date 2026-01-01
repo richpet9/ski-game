@@ -39,6 +39,8 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private Vector2 _zoomLimits = new Vector2(5f, 50f); // Min/Max distance.
 
+        private const float RAY_HEIGHT = 500f;
+
         // Smoothing Targets.
         private Vector3 _targetPos;
         private float _targetYaw;
@@ -55,9 +57,6 @@ namespace SkiGame.View.Controller
         private float _currentYawVel;
         private float _currentPitchVel;
         private float _currentZoomVel;
-
-        // Constant.
-        private const float RAY_HEIGHT = 500f;
 
         private void Start()
         {

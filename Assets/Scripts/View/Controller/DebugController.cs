@@ -1,6 +1,6 @@
-using SkiGame.Model.Agents;
 using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
+using SkiGame.Model.Terrain;
 using SkiGame.View.Agents;
 using UnityEngine;
 
@@ -16,6 +16,8 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private GameObject _guestPrefab;
 
+        private const float SPAWN_HEIGHT = 1f;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -26,8 +28,7 @@ namespace SkiGame.View.Controller
 
         private void SpawnGuest(Vector2Int gridPos)
         {
-            // TODO: Use world coord converter.
-            Vector3 worldPos = new Vector3(gridPos.x + 0.5f, 1f, gridPos.y + 0.5f);
+            Vector3 worldPos = MapUtil.GridToWorld(gridPos, SPAWN_HEIGHT);
             GameObject guest = Instantiate(_guestPrefab, worldPos, Quaternion.identity);
             guest
                 .GetComponent<GuestView>()

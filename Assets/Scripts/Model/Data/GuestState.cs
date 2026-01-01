@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace SkiGame.Model.Guest
 {
     public enum GuestState : byte

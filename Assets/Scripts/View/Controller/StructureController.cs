@@ -103,7 +103,7 @@ namespace SkiGame.View.Controller
                     }
                 }
 
-                // Reset
+                // Reset.
                 _liftStartPos = null;
                 _previewCable.gameObject.SetActive(false);
             }

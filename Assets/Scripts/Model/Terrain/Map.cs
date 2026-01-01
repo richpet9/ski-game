@@ -1,4 +1,6 @@
+using SkiGame.Model.Agents;
 using SkiGame.Model.Data;
+using SkiGame.Model.Economy;
 using SkiGame.Model.Structures;
 using UnityEngine;
 
@@ -6,18 +8,26 @@ namespace SkiGame.Model.Terrain
 {
     public class Map
     {
+        public GuestManager Guests { get; private set; }
+        public EconomyManager Economy { get; private set; }
+        public StructureManager Structures { get; private set; }
+
         private readonly TileData[] _grid;
-        private readonly int Width;
+        private readonly int _width;
 
         public Map(int width, int height)
         {
             _grid = new TileData[width * height];
-            Width = width;
+            _width = width;
+
+            Guests = new GuestManager();
+            Economy = new EconomyManager(300);
+            Structures = new StructureManager(this, Economy);
         }
 
         private int GetIndex(int x, int z)
         {
-            return x + z * Width;
+            return x + z * _width;
         }
 
         public void SetTile(Vector2Int loc, float height)

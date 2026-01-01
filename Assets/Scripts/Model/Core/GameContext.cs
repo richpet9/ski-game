@@ -12,8 +12,6 @@ namespace SkiGame.Model.Core
         private static readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
 
         public static Map Map => Get<Map>();
-        public static StructureManager Structures => Get<StructureManager>();
-        public static EconomyManager Economy => Get<EconomyManager>();
 
         public static T Get<T>()
             where T : class

@@ -12,12 +12,12 @@ namespace SkiGame.View.UI
 
         private void Start()
         {
-            UpdateLabel(GuestManager.GuestCount);
+            UpdateLabel(GameContext.Map.Guests.GuestCount);
         }
 
-        private void OnEnable() => GuestManager.OnGuestCountChanged += UpdateLabel;
+        private void OnEnable() => GameContext.Map.Guests.OnGuestCountChanged += UpdateLabel;
 
-        private void OnDisable() => GuestManager.OnGuestCountChanged -= UpdateLabel;
+        private void OnDisable() => GameContext.Map.Guests.OnGuestCountChanged -= UpdateLabel;
 
         private void UpdateLabel(ushort guestCount)
         {

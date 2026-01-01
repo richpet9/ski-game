@@ -23,19 +23,19 @@ namespace SkiGame.View.World
 
         private void OnEnable()
         {
-            if (GameContext.Structures != null)
+            if (GameContext.Map.Structures != null)
             {
-                GameContext.Structures.OnStructureBuilt += SpawnStructure;
-                GameContext.Structures.OnLiftBuilt += SpawnLiftStructure;
+                GameContext.Map.Structures.OnStructureBuilt += SpawnStructure;
+                GameContext.Map.Structures.OnLiftBuilt += SpawnLiftStructure;
             }
         }
 
         private void OnDisable()
         {
-            if (GameContext.Structures != null)
+            if (GameContext.Map.Structures != null)
             {
-                GameContext.Structures.OnStructureBuilt -= SpawnStructure;
-                GameContext.Structures.OnLiftBuilt -= SpawnLiftStructure;
+                GameContext.Map.Structures.OnStructureBuilt -= SpawnStructure;
+                GameContext.Map.Structures.OnLiftBuilt -= SpawnLiftStructure;
             }
         }
 

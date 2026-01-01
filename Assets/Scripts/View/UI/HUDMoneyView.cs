@@ -11,12 +11,12 @@ namespace SkiGame.View.UI
 
         private void Start()
         {
-            UpdateLabel(GameContext.Economy.Money);
+            UpdateLabel(GameContext.Map.Economy.Money);
         }
 
-        private void OnEnable() => GameContext.Economy.OnMoneyChanged += UpdateLabel;
+        private void OnEnable() => GameContext.Map.Economy.OnMoneyChanged += UpdateLabel;
 
-        private void OnDisable() => GameContext.Economy.OnMoneyChanged -= UpdateLabel;
+        private void OnDisable() => GameContext.Map.Economy.OnMoneyChanged -= UpdateLabel;
 
         private void UpdateLabel(int amount)
         {

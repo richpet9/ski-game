@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using SkiGame.Model.Agents;
+using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
 using UnityEngine;
 using UnityEngine.AI;
@@ -47,7 +48,7 @@ namespace SkiGame.View.Agents
                 if (_agent?.QueuedForDestruction == true)
                 {
                     Destroy(gameObject);
-                    GuestManager.RemoveGuest();
+                    GameContext.Map.Guests.RemoveGuest();
                 }
                 return;
             }

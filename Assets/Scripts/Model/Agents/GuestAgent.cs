@@ -1,5 +1,6 @@
 using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
+using SkiGame.Model.Terrain;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,11 +15,14 @@ namespace SkiGame.Model.Agents
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
 
-        private float _timer;
-        private float _remainingDistance;
+        private Map _map;
+        private float _timer = 0f;
+        private float _remainingDistance = float.PositiveInfinity;
 
         public GuestAgent(GuestData data)
         {
+            _map = GameContext.Map;
+
             Data = data;
             SetNewDestination();
         }
@@ -86,12 +90,12 @@ namespace SkiGame.Model.Agents
         {
             _timer = 0f;
 
-            if (GameContext.Structures.Lodges.Count > 0)
+            if (_map.Structures.Lodges.Count > 0)
             {
-                var targetGrid = GameContext.Structures.Lodges[
-                    Random.Range(0, GameContext.Structures.Lodges.Count)
+                var targetGrid = _map.Structures.Lodges[
+                    Random.Range(0, _map.Structures.Lodges.Count)
                 ];
-                float y = GameContext.Map.GetTile(targetGrid).Height;
+                float y = _map.GetTile(targetGrid).Height;
                 // TODO: Use world coord converter.
                 Data.TargetPosition = new Vector3(targetGrid.x + 0.5f, y, targetGrid.y + 0.5f);
                 Data.State = GuestState.WalkingToLodge;
@@ -127,7 +131,7 @@ namespace SkiGame.Model.Agents
             Data.TargetPosition = null;
             Data.IsVisible = false;
             _timer = 0f;
-            GameContext.Economy.AddMoney(15);
+            _map.Economy.AddMoney(15);
         }
 
         private void ExitLodge()

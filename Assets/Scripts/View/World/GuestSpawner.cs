@@ -1,5 +1,6 @@
 using System.Collections;
 using SkiGame.Model.Agents;
+using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
 using SkiGame.View.Agents;
 using UnityEngine;
@@ -47,7 +48,7 @@ namespace SkiGame.View.World
                         Money = 0,
                     }
                 );
-                GuestManager.AddGuest();
+                GameContext.Map.Guests.AddGuest();
             }
             else
             {

@@ -4,16 +4,16 @@ namespace SkiGame.Model.Agents
 {
     public class GuestManager
     {
-        public static ushort GuestCount { get; private set; }
-        public static event Action<ushort> OnGuestCountChanged;
+        public ushort GuestCount { get; private set; }
+        public event Action<ushort> OnGuestCountChanged;
 
-        public static void AddGuest()
+        public void AddGuest()
         {
             GuestCount++;
             OnGuestCountChanged(GuestCount);
         }
 
-        public static void RemoveGuest()
+        public void RemoveGuest()
         {
             GuestCount--;
             OnGuestCountChanged(GuestCount);

@@ -7,6 +7,11 @@ namespace SkiGame.Model.Economy
         public Action<int> OnMoneyChanged;
         public int Money { get; private set; }
 
+        public EconomyManager(int initialMoney)
+        {
+            Money = initialMoney;
+        }
+
         public bool TrySpendMoney(int amount)
         {
             if (Money >= amount)

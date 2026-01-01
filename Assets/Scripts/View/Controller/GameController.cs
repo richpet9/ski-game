@@ -1,9 +1,8 @@
 using System.Collections;
 using SkiGame.Model.Core;
-using SkiGame.Model.Economy;
-using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using SkiGame.View.Configs;
+using SkiGame.View.Services;
 using SkiGame.View.World;
 using UnityEngine;
 
@@ -30,6 +29,7 @@ namespace SkiGame.View.Controller
             Map map = new Map(_mapConfig.Width, _mapConfig.Height);
 
             GameContext.Register(map);
+            GameContext.Register<INavigationService>(new NavigationService());
         }
 
         private void Start()

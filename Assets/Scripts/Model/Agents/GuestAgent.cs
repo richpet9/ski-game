@@ -2,7 +2,6 @@ using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
 using SkiGame.Model.Terrain;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace SkiGame.Model.Agents
 {
@@ -16,12 +15,14 @@ namespace SkiGame.Model.Agents
         private const float LODGE_WAIT_TIME = 3f;
 
         private readonly Map _map;
+        private readonly INavigationService _navService;
         private float _timer = 0f;
         private float _remainingDistance = float.PositiveInfinity;
 
         public GuestAgent(GuestData data)
         {
             _map = GameContext.Map;
+            _navService = GameContext.Get<INavigationService>();
 
             Data = data;
             SetNewDestination();
@@ -109,18 +110,9 @@ namespace SkiGame.Model.Agents
         private void SetRandomDestination()
         {
             Vector3 randomPoint = Data.Position + (Random.insideUnitSphere * WANDER_RADIUS);
-            if (
-                // TODO: This should not be referenced in this assmebly, try to find a
-                // a way to store potential wander points in the model.
-                NavMesh.SamplePosition(
-                    randomPoint,
-                    out NavMeshHit hit,
-                    WANDER_RADIUS,
-                    NavMesh.AllAreas
-                )
-            )
+            if (_navService.SamplePosition(randomPoint, out Vector3 hitPoint, WANDER_RADIUS))
             {
-                Data.TargetPosition = hit.position;
+                Data.TargetPosition = hitPoint;
             }
         }
 

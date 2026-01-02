@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SkiGame.Model.Core
+namespace SkiGame.Model.Services
 {
     public interface INavigationService
     {

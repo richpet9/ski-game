@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SkiGame.Model.Economy;
-using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 

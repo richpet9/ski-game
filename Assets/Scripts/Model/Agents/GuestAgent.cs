@@ -1,37 +1,46 @@
 using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
+using SkiGame.Model.Services;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 
 namespace SkiGame.Model.Agents
 {
-    public class GuestAgent
+    public class GuestAgent : ITickable
     {
         public GuestData Data { get; }
         public bool QueuedForDestruction { get; private set; }
 
-        private const float WANDER_RADIUS = 128f;
+        private const float WANDER_RADIUS = 12f;
         private const float WANDER_WAIT_TIME = 2f;
         private const float LODGE_WAIT_TIME = 3f;
 
         private readonly Map _map;
+        private readonly TickManager _tickManager;
         private readonly INavigationService _navService;
         private float _timer = 0f;
-        private float _remainingDistance = float.PositiveInfinity;
 
         public GuestAgent(GuestData data)
         {
+            Data = data;
             _map = GameContext.Map;
             _navService = GameContext.Get<INavigationService>();
-
-            Data = data;
+            _tickManager = GameContext.Get<TickManager>();
+            _tickManager.Register(this);
             SetNewDestination();
         }
 
-        public void Tick(float deltaTime, Vector3 currentPosition, float remainingDistance)
+        public void Dispose()
         {
-            Data.Position = currentPosition;
-            _remainingDistance = remainingDistance;
+            _tickManager.Unregister(this);
+        }
+
+        public void Tick(float deltaTime)
+        {
+            if (QueuedForDestruction)
+            {
+                return;
+            }
 
             switch (Data.State)
             {
@@ -50,9 +59,13 @@ namespace SkiGame.Model.Agents
             }
         }
 
+        public void TickLong(float deltaTime) { }
+
+        public void TickRare(float deltaTime) { }
+
         private void HandleWalkingToLodge()
         {
-            if (_remainingDistance <= 1.5f)
+            if (Data.RemainingDistance <= 1.5f)
             {
                 EnterLodge();
             }
@@ -69,7 +82,7 @@ namespace SkiGame.Model.Agents
 
         private void HandleLeaving()
         {
-            if (_remainingDistance <= 0.5f)
+            if (Data.RemainingDistance <= 0.5f)
             {
                 QueuedForDestruction = true;
             }
@@ -77,11 +90,14 @@ namespace SkiGame.Model.Agents
 
         private void HandleWandering(float deltaTime)
         {
-            if (_remainingDistance <= 0.5f)
+            Debug.Log("Remaining distance: " + Data.RemainingDistance);
+            if (Data.RemainingDistance <= 0.5f)
             {
+                Debug.Log("Incr. timer");
                 _timer += deltaTime;
                 if (_timer >= WANDER_WAIT_TIME)
                 {
+                    Debug.Log("Set new destination.");
                     SetNewDestination();
                 }
             }

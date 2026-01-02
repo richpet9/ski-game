@@ -11,5 +11,6 @@ namespace SkiGame.Model.Guest
         public Color Color;
         public ushort Money;
         public bool IsVisible = true;
+        public float RemainingDistance = 0f;
     }
 }

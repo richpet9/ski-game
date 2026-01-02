@@ -1,4 +1,4 @@
-using SkiGame.Model.Core;
+using SkiGame.Model.Services;
 using UnityEngine;
 using UnityEngine.AI;
 

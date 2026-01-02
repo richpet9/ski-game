@@ -1,5 +1,6 @@
 using System.Collections;
 using SkiGame.Model.Core;
+using SkiGame.Model.Services;
 using SkiGame.Model.Terrain;
 using SkiGame.View.Configs;
 using SkiGame.View.Services;
@@ -27,8 +28,10 @@ namespace SkiGame.View.Controller
         private void Awake()
         {
             Map map = new Map(_mapConfig.Width, _mapConfig.Height);
+            TickManager tickManager = new TickManager();
 
             GameContext.Register(map);
+            GameContext.Register(tickManager);
             GameContext.Register<INavigationService>(new NavigationService());
         }
 

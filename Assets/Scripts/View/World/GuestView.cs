@@ -18,7 +18,7 @@ namespace SkiGame.View.Agents
         // Cache variables for prevent spamming operations.
         private Vector3? _lastTargetPos;
         private bool _isVisible = true;
-        private bool _isTraversingLink = false;
+        private bool _isTraversingLift = false;
 
         public void Initialize(GuestData data)
         {
@@ -43,22 +43,22 @@ namespace SkiGame.View.Agents
 
         private void Update()
         {
-            if (_agent == null || _agent.QueuedForDestruction)
-            {
-                if (_agent?.QueuedForDestruction == true)
-                {
-                    Destroy(gameObject);
-                    GameContext.Map.Guests.RemoveGuest();
-                }
-                return;
-            }
-
-            if (_isTraversingLink)
+            if (_agent == null || TryDestroy())
             {
                 return;
             }
 
-            if (_navAgent.isOnOffMeshLink && !_isTraversingLink)
+            _agent.Data.Position = transform.position;
+            _agent.Data.RemainingDistance = _navAgent.pathPending
+                ? float.PositiveInfinity
+                : _navAgent.remainingDistance;
+
+            if (_isTraversingLift)
+            {
+                return;
+            }
+
+            if (_navAgent.isOnOffMeshLink && !_isTraversingLift)
             {
                 StartCoroutine(TraverseLift());
                 return;
@@ -77,18 +77,23 @@ namespace SkiGame.View.Agents
                 }
             }
 
-            float distance = _navAgent.pathPending
-                ? float.PositiveInfinity
-                : _navAgent.remainingDistance;
-
             SyncVisible();
+        }
 
-            _agent.Tick(Time.deltaTime, transform.position, distance);
+        private bool TryDestroy()
+        {
+            if (_agent.QueuedForDestruction)
+            {
+                _agent.Dispose();
+                Destroy(gameObject);
+                return true;
+            }
+            return false;
         }
 
         private IEnumerator TraverseLift()
         {
-            _isTraversingLink = true;
+            _isTraversingLift = true;
 
             // Capture the destination before disabling the agent.
             OffMeshLinkData data = _navAgent.currentOffMeshLinkData;
@@ -118,7 +123,7 @@ namespace SkiGame.View.Agents
             // Since we disabled the agent, we don't need CompleteOffMeshLink().
             // We just resume normal behavior next frame.
             _lastTargetPos = null;
-            _isTraversingLink = false;
+            _isTraversingLift = false;
         }
 
         private void SyncVisible()

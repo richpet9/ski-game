@@ -1,3 +1,4 @@
+using System;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Data;
 using SkiGame.Model.Economy;
@@ -11,14 +12,17 @@ namespace SkiGame.Model.Terrain
         public GuestManager Guests { get; private set; }
         public EconomyManager Economy { get; private set; }
         public StructureManager Structures { get; private set; }
+        public readonly int Width;
+        public readonly int Height;
 
         private readonly TileData[] _grid;
-        private readonly int _width;
 
         public Map(int width, int height)
         {
+            Width = width;
+            Height = height;
+
             _grid = new TileData[width * height];
-            _width = width;
 
             Guests = new GuestManager();
             Economy = new EconomyManager(300);
@@ -27,7 +31,7 @@ namespace SkiGame.Model.Terrain
 
         private int GetIndex(int x, int z)
         {
-            return x + z * _width;
+            return x + z * Width;
         }
 
         public void SetTile(Vector2Int loc, float height)
@@ -99,6 +103,21 @@ namespace SkiGame.Model.Terrain
             else
             {
                 return TileType.Grass;
+            }
+        }
+
+        public void ApplyTrees(bool[] trees)
+        {
+            for (int i = 0; i < trees.Length; i++)
+            {
+                if (trees[i])
+                {
+                    // Only place a tree if the spot is empty.
+                    if (_grid[i].Structure == StructureType.None)
+                    {
+                        _grid[i].Structure = StructureType.Tree;
+                    }
+                }
             }
         }
     }

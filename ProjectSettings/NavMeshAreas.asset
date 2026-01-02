@@ -12,9 +12,9 @@ NavMeshProjectSettings:
   - name: Jump
     cost: 2
   - name: Snow
+    cost: 25
+  - name: Piste
     cost: 10
-  - name: 
-    cost: 1
   - name: 
     cost: 1
   - name: 

@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace SkiGame.Model.Terrain
 {
-    public class MountainGenerator
+    public static class MountainGenerator
     {
         // Pure Logic: Returns the height map data, doesn't touch MeshFilters
-        public float[] GenerateHeights(
+        public static float[] GenerateHeights(
             int width,
             int height,
             int seed,
@@ -40,7 +40,7 @@ namespace SkiGame.Model.Terrain
         }
 
         // Helper to generate mesh data arrays (Vertices/Indices) purely in memory
-        public MeshData GenerateMeshData(int width, int height, float[] heights)
+        public static MeshData GenerateMeshData(int width, int height, float[] heights)
         {
             int[] triangles = new int[width * height * 6];
             Vector3[] vertices = new Vector3[heights.Length];

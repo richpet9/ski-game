@@ -3,8 +3,9 @@ namespace SkiGame.Model.Structures
     public enum StructureType : byte
     {
         None = 0,
-        Lodge = 1,
-        ParkingLot = 2,
-        Lift = 3,
+        Tree = 1,
+        Lodge = 2,
+        ParkingLot = 3,
+        Lift = 4,
     }
 }

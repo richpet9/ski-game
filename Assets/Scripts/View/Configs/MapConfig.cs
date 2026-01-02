@@ -27,5 +27,18 @@ namespace SkiGame.View.Configs
         public float NoiseIntensity = 0.5f;
 
         public AnimationCurve HeightCurve;
+
+        [Header("Foliage")]
+        [Range(0, 1)]
+        public float ForestDensity = 0.3f;
+
+        [Range(0, 20)]
+        public int ForestNoiseScale = 10;
+
+        [Range(0, 1)]
+        public float TreeLinePercent = 0.6f;
+
+        [Range(0.01f, 2f)]
+        public float TreeScale = 0.12f;
     }
 }

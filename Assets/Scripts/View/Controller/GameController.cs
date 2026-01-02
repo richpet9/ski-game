@@ -20,24 +20,27 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private TerrainView _terrainView;
 
+        [SerializeField]
+        private FoliageView _foliageView;
+
         private static readonly WaitForSeconds _waitForSeconds0_5 = new WaitForSeconds(0.5f);
 
-        private readonly MountainGenerator _mountainGen = new MountainGenerator();
+        private Map _map;
         private bool _canGenerate = true;
 
         private void Awake()
         {
-            Map map = new Map(_mapConfig.Width, _mapConfig.Height);
+            _map = new Map(_mapConfig.Width, _mapConfig.Height);
             TickManager tickManager = new TickManager();
 
-            GameContext.Register(map);
+            GameContext.Register(_map);
             GameContext.Register(tickManager);
             GameContext.Register<INavigationService>(new NavigationService());
         }
 
         private void Start()
         {
-            RenderMountainTerrain();
+            InitializeTerrain();
         }
 
         private void Update()
@@ -50,7 +53,7 @@ namespace SkiGame.View.Controller
                     _mapConfig.Seed = Random.Range(0, 100000);
                 }
                 _terrainView.ClearMesh();
-                RenderMountainTerrain();
+                InitializeTerrain();
             }
         }
 
@@ -64,9 +67,9 @@ namespace SkiGame.View.Controller
             _canGenerate = true;
         }
 
-        private void RenderMountainTerrain()
+        private void InitializeTerrain()
         {
-            float[] heights = _mountainGen.GenerateHeights(
+            float[] heights = MountainGenerator.GenerateHeights(
                 _mapConfig.Width,
                 _mapConfig.Height,
                 _mapConfig.Seed,
@@ -89,8 +92,22 @@ namespace SkiGame.View.Controller
                 }
             }
 
+            _map.ApplyTrees(
+                TreesGenerator.GenerateTrees(
+                    _mapConfig.Width,
+                    _mapConfig.Height,
+                    heights,
+                    _mapConfig.MountainHeight,
+                    _mapConfig.Seed,
+                    _mapConfig.ForestDensity,
+                    _mapConfig.ForestNoiseScale,
+                    _mapConfig.TreeLinePercent
+                )
+            );
+
+            _foliageView.Initialize(_map, _mapConfig.TreeScale);
             _terrainView.Render(
-                _mountainGen.GenerateMeshData(_mapConfig.Width, _mapConfig.Height, heights)
+                MountainGenerator.GenerateMeshData(_mapConfig.Width, _mapConfig.Height, heights)
             );
         }
     }

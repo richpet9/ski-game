@@ -111,9 +111,10 @@ namespace SkiGame.View.Controller
 
         private void DrawListPreviewEndpoint()
         {
+            float height = GameContext.Map.GetTile(_selector.GridPosition).Height;
             _previewCable.SetPosition(
                 1,
-                MapUtil.GridToWorld(_selector.GridPosition, PREVIEW_CABLE_HEIGHT)
+                MapUtil.GridToWorld(_selector.GridPosition, height + PREVIEW_CABLE_HEIGHT)
             );
         }
     }

@@ -24,7 +24,7 @@ namespace SkiGame.View.World
 
         private const int NAV_LINK_COST_MODIFIER = -1000000;
         private const float NAV_LINK_WIDTH = 0.5f;
-        private const float LIFT_CABLE_HEIGHT = 2f;
+        private const float LIFT_CABLE_HEIGHT = 2.5f;
         private const float LIFT_CABLE_WIDTH = 0.1f;
 
         private void OnEnable()

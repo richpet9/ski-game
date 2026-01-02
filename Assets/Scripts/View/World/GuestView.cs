@@ -19,6 +19,7 @@ namespace SkiGame.View.Agents
         private Vector3? _lastTargetPos;
         private bool _isVisible = true;
         private bool _isTraversingLift = false;
+        private bool _hasNotifiedArrival;
 
         public void Initialize(GuestData data)
         {
@@ -55,14 +56,28 @@ namespace SkiGame.View.Agents
                 return;
             }
 
-            _agent.Data.RemainingDistance = _navAgent.pathPending
-                ? float.PositiveInfinity
-                : _navAgent.remainingDistance;
-
             if (_navAgent.isOnOffMeshLink && !_isTraversingLift)
             {
                 StartCoroutine(TraverseLift());
                 return;
+            }
+
+            if (
+                _agent.Data.TargetPosition.HasValue
+                && !_navAgent.pathPending
+                && (!_navAgent.hasPath || _navAgent.velocity.sqrMagnitude == 0f)
+                && Vector3.Distance(_agent.Data.Position, _agent.Data.TargetPosition.Value) < 0.1f
+            )
+            {
+                if (!_hasNotifiedArrival)
+                {
+                    _agent.NotifyArrival();
+                    _hasNotifiedArrival = true;
+                }
+            }
+            else
+            {
+                _hasNotifiedArrival = false;
             }
 
             if (_agent.Data.TargetPosition.HasValue)

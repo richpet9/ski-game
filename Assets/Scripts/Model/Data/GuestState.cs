@@ -2,9 +2,10 @@ namespace SkiGame.Model.Guest
 {
     public enum GuestState : byte
     {
-        Wandering = 0,
-        InsideLodge = 1,
-        WalkingToLodge = 2,
-        Leaving = 3,
+        Waiting = 0,
+        Wandering = 1,
+        InsideLodge = 2,
+        WalkingToLodge = 3,
+        Leaving = 4,
     }
 }

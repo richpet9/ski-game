@@ -12,7 +12,7 @@ namespace SkiGame.Model.Agents
         public bool QueuedForDestruction { get; private set; }
 
         private const float WANDER_RADIUS = 12f;
-        private const float WANDER_WAIT_TIME = 2f;
+        private const float WANDER_WAIT_TIME = 1f;
         private const float LODGE_WAIT_TIME = 3f;
 
         private readonly Map _map;
@@ -44,17 +44,12 @@ namespace SkiGame.Model.Agents
 
             switch (Data.State)
             {
-                case GuestState.WalkingToLodge:
-                    HandleWalkingToLodge();
-                    break;
                 case GuestState.InsideLodge:
                     HandleInsideLodge(deltaTime);
                     break;
-                case GuestState.Leaving:
-                    HandleLeaving();
-                    break;
-                case GuestState.Wandering:
-                    HandleWandering(deltaTime);
+
+                case GuestState.Waiting:
+                    HandleWaiting(deltaTime);
                     break;
             }
         }
@@ -62,14 +57,6 @@ namespace SkiGame.Model.Agents
         public void TickLong(float deltaTime) { }
 
         public void TickRare(float deltaTime) { }
-
-        private void HandleWalkingToLodge()
-        {
-            if (Data.RemainingDistance <= 1.5f)
-            {
-                EnterLodge();
-            }
-        }
 
         private void HandleInsideLodge(float deltaTime)
         {
@@ -80,26 +67,31 @@ namespace SkiGame.Model.Agents
             }
         }
 
-        private void HandleLeaving()
+        private void HandleWaiting(float deltaTime)
         {
-            if (Data.RemainingDistance <= 0.5f)
+            _timer += deltaTime;
+            if (_timer >= WANDER_WAIT_TIME)
             {
-                QueuedForDestruction = true;
+                SetNewDestination();
             }
         }
 
-        private void HandleWandering(float deltaTime)
+        public void NotifyArrival()
         {
-            Debug.Log("Remaining distance: " + Data.RemainingDistance);
-            if (Data.RemainingDistance <= 0.5f)
+            switch (Data.State)
             {
-                Debug.Log("Incr. timer");
-                _timer += deltaTime;
-                if (_timer >= WANDER_WAIT_TIME)
-                {
-                    Debug.Log("Set new destination.");
-                    SetNewDestination();
-                }
+                case GuestState.WalkingToLodge:
+                    EnterLodge();
+                    break;
+
+                case GuestState.Leaving:
+                    QueuedForDestruction = true;
+                    break;
+
+                case GuestState.Wandering:
+                    Data.State = GuestState.Waiting;
+                    _timer = 0f;
+                    break;
             }
         }
 

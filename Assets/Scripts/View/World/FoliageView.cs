@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SkiGame.Model.Data;
 using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
-using SkiGame.View.Configs;
 using UnityEngine;
 
 namespace SkiGame.View.World

@@ -1,4 +1,3 @@
-using System;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Data;
 using SkiGame.Model.Economy;

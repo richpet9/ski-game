@@ -22,6 +22,11 @@ namespace SkiGame.View.World
         [SerializeField]
         private Material _liftCableMaterial;
 
+        private const int NAV_LINK_COST_MODIFIER = -1000000;
+        private const float NAV_LINK_WIDTH = 0.5f;
+        private const float LIFT_CABLE_HEIGHT = 2f;
+        private const float LIFT_CABLE_WIDTH = 0.1f;
+
         private void OnEnable()
         {
             if (GameContext.Map.Structures != null)
@@ -87,10 +92,10 @@ namespace SkiGame.View.World
             lineRenderer.material = _liftCableMaterial;
             lineRenderer.startColor = Color.gray;
             lineRenderer.endColor = Color.gray;
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.1f;
-            lineRenderer.SetPosition(0, startPos + Vector3.up * 3f);
-            lineRenderer.SetPosition(1, endPos + Vector3.up * 3f);
+            lineRenderer.startWidth = LIFT_CABLE_WIDTH;
+            lineRenderer.endWidth = LIFT_CABLE_WIDTH;
+            lineRenderer.SetPosition(0, startPos + Vector3.up * LIFT_CABLE_HEIGHT);
+            lineRenderer.SetPosition(1, endPos + Vector3.up * LIFT_CABLE_HEIGHT);
 
             GameObject linkObj = new GameObject("LiftLink");
             linkObj.transform.position = startPos;
@@ -103,9 +108,9 @@ namespace SkiGame.View.World
 
             link.startPoint = localStart;
             link.endPoint = localEnd;
-            link.width = 1f;
+            link.width = NAV_LINK_WIDTH;
             link.bidirectional = false;
-            link.costModifier = -1000000;
+            link.costModifier = NAV_LINK_COST_MODIFIER;
             link.area = 0;
         }
     }

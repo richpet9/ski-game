@@ -11,6 +11,12 @@ namespace SkiGame.View.Agents
     [RequireComponent(typeof(NavMeshAgent))]
     public class GuestView : MonoBehaviour
     {
+        private const float SPEED = 3.5f;
+        private const float ANGULAR_SPEED = 200f;
+        private const float ACCELERATION = 10f;
+        private const float ARRIVAL_DIST = 0.5f;
+        private const float MINIMUM_PATH_DIST = 0.1f;
+
         private GuestAgent _agent;
         private NavMeshAgent _navAgent;
         private MeshRenderer[] _renderers;
@@ -36,9 +42,9 @@ namespace SkiGame.View.Agents
             _navAgent = GetComponent<NavMeshAgent>();
             _renderers = GetComponentsInChildren<MeshRenderer>();
 
-            _navAgent.speed = 3.5f;
-            _navAgent.angularSpeed = 200f;
-            _navAgent.acceleration = 10f;
+            _navAgent.speed = SPEED;
+            _navAgent.angularSpeed = ANGULAR_SPEED;
+            _navAgent.acceleration = ACCELERATION;
             _navAgent.autoTraverseOffMeshLink = false;
         }
 
@@ -66,10 +72,13 @@ namespace SkiGame.View.Agents
                 _agent.Data.TargetPosition.HasValue
                 && !_navAgent.pathPending
                 && (!_navAgent.hasPath || _navAgent.velocity.sqrMagnitude == 0f)
-                && Vector3.Distance(_agent.Data.Position, _agent.Data.TargetPosition.Value) < 0.5f
             )
             {
-                if (!_hasNotifiedArrival)
+                float distFromTarget = Vector3.Distance(
+                    _agent.Data.TargetPosition.Value,
+                    _agent.Data.Position
+                );
+                if (!_hasNotifiedArrival && distFromTarget < ARRIVAL_DIST)
                 {
                     _agent.NotifyArrival();
                     _hasNotifiedArrival = true;
@@ -85,7 +94,7 @@ namespace SkiGame.View.Agents
                 Vector3 newTarget = _agent.Data.TargetPosition.Value;
                 if (
                     !_lastTargetPos.HasValue
-                    || Vector3.Distance(_lastTargetPos.Value, newTarget) > 0.1f
+                    || Vector3.Distance(_lastTargetPos.Value, newTarget) > MINIMUM_PATH_DIST
                 )
                 {
                     _navAgent.SetDestination(newTarget);

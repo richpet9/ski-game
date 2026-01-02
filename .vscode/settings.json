@@ -92,5 +92,6 @@
         "color": "#ff8800",
         "isMarkdown": true
         }
-  ]
+  ],
+  "geminicodeassist.rules": "1. All comments must end with a period.\n2. All comments must start with a capital letter.\n3. In C#, never use the shorthand new (...) syntax."
 }

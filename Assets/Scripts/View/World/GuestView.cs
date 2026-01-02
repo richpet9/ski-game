@@ -66,7 +66,7 @@ namespace SkiGame.View.Agents
                 _agent.Data.TargetPosition.HasValue
                 && !_navAgent.pathPending
                 && (!_navAgent.hasPath || _navAgent.velocity.sqrMagnitude == 0f)
-                && Vector3.Distance(_agent.Data.Position, _agent.Data.TargetPosition.Value) < 0.1f
+                && Vector3.Distance(_agent.Data.Position, _agent.Data.TargetPosition.Value) < 0.5f
             )
             {
                 if (!_hasNotifiedArrival)

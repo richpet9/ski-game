@@ -49,14 +49,15 @@ namespace SkiGame.View.Agents
             }
 
             _agent.Data.Position = transform.position;
-            _agent.Data.RemainingDistance = _navAgent.pathPending
-                ? float.PositiveInfinity
-                : _navAgent.remainingDistance;
 
             if (_isTraversingLift)
             {
                 return;
             }
+
+            _agent.Data.RemainingDistance = _navAgent.pathPending
+                ? float.PositiveInfinity
+                : _navAgent.remainingDistance;
 
             if (_navAgent.isOnOffMeshLink && !_isTraversingLift)
             {

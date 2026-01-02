@@ -64,9 +64,11 @@ namespace SkiGame.Model.Agents
 
                 case GuestState.Skiing:
                 case GuestState.WalkingToLodge:
-                case GuestState.WalkingToLift:
                 case GuestState.RidingLift:
                 case GuestState.Leaving:
+                case GuestState.Wandering:
+                case GuestState.WalkingToLift:
+                default:
                     break;
             }
         }
@@ -102,6 +104,7 @@ namespace SkiGame.Model.Agents
                 case GuestState.InsideLodge:
                 case GuestState.RidingLift:
                 case GuestState.Leaving:
+                default:
                     break;
             }
         }
@@ -158,6 +161,12 @@ namespace SkiGame.Model.Agents
                 case GuestState.Wandering:
                     Data.State = GuestState.Waiting;
                     _timer = 0f;
+                    break;
+
+                case GuestState.Waiting:
+                case GuestState.InsideLodge:
+                case GuestState.WalkingToLift:
+                default:
                     break;
             }
         }

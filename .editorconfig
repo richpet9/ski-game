@@ -1,6 +1,15 @@
 [*.{cs,vb}]
 
-dotnet_diagnostic.IDE0090.severity = none
 dotnet_style_namespace_match_folder = false
 dotnet_style_require_accessibility_modifiers = always:warning
 dotnet_style_implicit_object_creation_when_type_is_apparent = false
+
+# Un-enforce the new(...) syntax recommendation.
+dotnet_diagnostic.IDE0090.severity = none
+# Enforce exhaustive checks for Switch EXPRESSIONS ( e => e switch { ... } )
+# This is usually an error by default in C# 8+, but you can force it here.
+dotnet_diagnostic.CS8509.severity = error
+# Enforce exhaustive checks for legacy Switch STATEMENTS ( switch(e) { case... } )
+# This triggers if you miss a case and don't have a 'default'.
+dotnet_diagnostic.IDE0010.severity = warning
+dotnet_diagnostic.CS8524.severity = error

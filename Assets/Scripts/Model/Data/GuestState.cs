@@ -7,5 +7,8 @@ namespace SkiGame.Model.Guest
         InsideLodge = 2,
         WalkingToLodge = 3,
         Leaving = 4,
+        WalkingToLift = 5,
+        RidingLift = 6,
+        Skiing = 7,
     }
 }

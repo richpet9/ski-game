@@ -8,9 +8,15 @@ namespace SkiGame.Model.Structures
 {
     public class StructureManager
     {
+        public struct Lift
+        {
+            public Vector2Int StartGrid;
+            public Vector2Int EndGrid;
+        }
+
         public readonly List<Vector2Int> Lodges = new List<Vector2Int>();
         public readonly List<Vector2Int> ParkingLots = new List<Vector2Int>();
-        public readonly List<Vector2Int> Lifts = new List<Vector2Int>();
+        public readonly List<Lift> Lifts = new List<Lift>();
 
         public event Action<Vector2Int, StructureType> OnStructureBuilt;
         public event Action<Vector2Int, Vector2Int> OnLiftBuilt;
@@ -83,6 +89,7 @@ namespace SkiGame.Model.Structures
             Build(startPos, StructureType.Lift);
             Build(endPos, StructureType.Lift);
             OnLiftBuilt?.Invoke(startPos, endPos);
+            Lifts.Add(new Lift { StartGrid = startPos, EndGrid = endPos });
             return (true, null);
         }
 
@@ -98,10 +105,6 @@ namespace SkiGame.Model.Structures
             else if (structure == StructureType.ParkingLot)
             {
                 ParkingLots.Add(gridPos);
-            }
-            else if (structure == StructureType.Lift)
-            {
-                Lifts.Add(gridPos);
             }
         }
     }

@@ -32,6 +32,7 @@ namespace SkiGame.Model.Agents
 
         public void Dispose()
         {
+            GameContext.Map.Guests.RemoveGuest();
             _tickManager.Unregister(this);
         }
 
@@ -51,12 +52,28 @@ namespace SkiGame.Model.Agents
                 case GuestState.Waiting:
                     HandleWaiting(deltaTime);
                     break;
+
+                // The Skiing and RidingLift states are managed by the NavMeshAgent and GuestView coroutine.
+                // No special logic is needed here for now.
+                case GuestState.Skiing:
+                case GuestState.RidingLift:
+                case GuestState.Wandering:
+                case GuestState.WalkingToLift:
+                    break;
             }
         }
 
         public void TickLong(float deltaTime) { }
 
         public void TickRare(float deltaTime) { }
+
+        public void BeginLiftTraversal()
+        {
+            if (Data.State == GuestState.WalkingToLift)
+            {
+                Data.State = GuestState.RidingLift;
+            }
+        }
 
         private void HandleInsideLodge(float deltaTime)
         {
@@ -78,10 +95,23 @@ namespace SkiGame.Model.Agents
 
         public void NotifyArrival()
         {
+            Debug.Log("Arrived.");
             switch (Data.State)
             {
                 case GuestState.WalkingToLodge:
                     EnterLodge();
+                    break;
+
+                case GuestState.RidingLift:
+                    // This is called when the agent reaches the end of the lift path.
+                    // The state was set to RidingLift by the GuestView's TraverseLift coroutine.
+                    SetSkiingDestination();
+                    Data.State = GuestState.Skiing;
+                    break;
+
+                case GuestState.Skiing:
+                    Data.State = GuestState.InsideLodge;
+                    _timer = 0f;
                     break;
 
                 case GuestState.Leaving:
@@ -99,9 +129,24 @@ namespace SkiGame.Model.Agents
         {
             _timer = 0f;
 
-            if (_map.Structures.Lodges.Count > 0)
+            // For now, let's prioritize skiing if possible.
+            // This assumes StructureManager has a public List<Lift> Lifts.
+            // A more complex decision-making process can be added later.
+            if (_map.Structures.Lifts.Count > 0)
             {
-                var targetGrid = _map.Structures.Lodges[
+                var targetLift = _map.Structures.Lifts[
+                    Random.Range(0, _map.Structures.Lifts.Count)
+                ];
+                // The destination is the END of the lift. The pathfinder will route
+                // the agent to the start and across the NavMeshLink.
+                var targetGrid = targetLift.EndGrid;
+                float y = _map.GetTile(targetGrid).Height;
+                Data.TargetPosition = MapUtil.GridToWorld(targetGrid, y);
+                Data.State = GuestState.WalkingToLift;
+            }
+            else if (_map.Structures.Lodges.Count > 0)
+            {
+                Vector2Int targetGrid = _map.Structures.Lodges[
                     Random.Range(0, _map.Structures.Lodges.Count)
                 ];
                 float y = _map.GetTile(targetGrid).Height;
@@ -112,6 +157,24 @@ namespace SkiGame.Model.Agents
             {
                 SetRandomDestination();
                 Data.State = GuestState.Wandering;
+            }
+        }
+
+        private void SetSkiingDestination()
+        {
+            // After getting off a lift, ski towards a parking lot to simulate skiing to the base.
+            // This assumes StructureManager has a public List<Vector2Int> ParkingLots.
+            if (_map.Structures.Lodges.Count > 0)
+            {
+                Vector2Int gridPos = _map.Structures.Lodges[
+                    Random.Range(0, _map.Structures.Lodges.Count)
+                ];
+                float y = _map.GetTile(gridPos).Height;
+                Data.TargetPosition = MapUtil.GridToWorld(gridPos, y);
+            }
+            else
+            {
+                SetRandomDestination();
             }
         }
 

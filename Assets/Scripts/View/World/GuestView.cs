@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
@@ -11,10 +10,12 @@ namespace SkiGame.View.Agents
     [RequireComponent(typeof(NavMeshAgent))]
     public class GuestView : MonoBehaviour
     {
-        private const float SPEED = 3.5f;
-        private const float ANGULAR_SPEED = 200f;
         private const float ACCELERATION = 10f;
-        private const float ARRIVAL_DIST = 0.5f;
+        private const float ANGULAR_SPEED = 200f;
+        private const float WALK_SPEED = 3.5f;
+        private const float SKI_SPEED = 12f;
+        private const float LIFT_SPEED = 10f;
+        private const float MINIMUM_TARGET_DIST = 0.5f;
         private const float MINIMUM_PATH_DIST = 0.1f;
 
         private GuestAgent _agent;
@@ -42,7 +43,7 @@ namespace SkiGame.View.Agents
             _navAgent = GetComponent<NavMeshAgent>();
             _renderers = GetComponentsInChildren<MeshRenderer>();
 
-            _navAgent.speed = SPEED;
+            _navAgent.speed = WALK_SPEED;
             _navAgent.angularSpeed = ANGULAR_SPEED;
             _navAgent.acceleration = ACCELERATION;
             _navAgent.autoTraverseOffMeshLink = false;
@@ -57,6 +58,20 @@ namespace SkiGame.View.Agents
 
             _agent.Data.Position = transform.position;
 
+            // Adjust speed based on state.
+            // TODO: Move this to agent.
+            if (_agent.Data.State == GuestState.Skiing)
+            {
+                if (_navAgent.speed != SKI_SPEED)
+                {
+                    _navAgent.speed = SKI_SPEED;
+                }
+            }
+            else if (_navAgent.speed != WALK_SPEED)
+            {
+                _navAgent.speed = WALK_SPEED;
+            }
+
             if (_isTraversingLift)
             {
                 return;
@@ -64,21 +79,24 @@ namespace SkiGame.View.Agents
 
             if (_navAgent.isOnOffMeshLink && !_isTraversingLift)
             {
-                StartCoroutine(TraverseLift());
-                return;
+                // Only traverse if we are heading to a lift.
+                // This prevents accidentally traversing other off-mesh links.
+                if (_agent.Data.State == GuestState.WalkingToLift)
+                {
+                    StartCoroutine(TraverseLift());
+                    return;
+                }
             }
 
-            if (
-                _agent.Data.TargetPosition.HasValue
-                && !_navAgent.pathPending
-                && (!_navAgent.hasPath || _navAgent.velocity.sqrMagnitude == 0f)
-            )
+            // More robust arrival detection that correctly handles off-mesh links.
+            if (_agent.Data.TargetPosition.HasValue && _navAgent.hasPath && !_navAgent.pathPending)
             {
-                float distFromTarget = Vector3.Distance(
-                    _agent.Data.TargetPosition.Value,
-                    _agent.Data.Position
-                );
-                if (!_hasNotifiedArrival && distFromTarget < ARRIVAL_DIST)
+                float dist = Vector3.Distance(_agent.Data.TargetPosition.Value, transform.position);
+                if (
+                    !_hasNotifiedArrival
+                    && !_navAgent.isOnOffMeshLink
+                    && dist < MINIMUM_TARGET_DIST
+                )
                 {
                     _agent.NotifyArrival();
                     _hasNotifiedArrival = true;
@@ -119,6 +137,7 @@ namespace SkiGame.View.Agents
         private IEnumerator TraverseLift()
         {
             _isTraversingLift = true;
+            _agent.BeginLiftTraversal();
 
             // Capture the destination before disabling the agent.
             OffMeshLinkData data = _navAgent.currentOffMeshLinkData;
@@ -129,7 +148,7 @@ namespace SkiGame.View.Agents
             // allowing the next agent to enter the lift behind us.
             _navAgent.enabled = false;
 
-            float duration = Vector3.Distance(startPos, endPos) / _navAgent.speed;
+            float duration = Vector3.Distance(startPos, endPos) / LIFT_SPEED;
             float time = 0;
 
             while (time < duration)
@@ -149,6 +168,9 @@ namespace SkiGame.View.Agents
             // We just resume normal behavior next frame.
             _lastTargetPos = null;
             _isTraversingLift = false;
+
+            // Explicitly notify the agent that it has arrived at the end of the lift.
+            _agent.NotifyArrival();
         }
 
         private void SyncVisible()

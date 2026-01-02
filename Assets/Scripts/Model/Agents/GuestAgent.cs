@@ -14,6 +14,8 @@ namespace SkiGame.Model.Agents
         private const float WANDER_RADIUS = 12f;
         private const float WANDER_WAIT_TIME = 1f;
         private const float LODGE_WAIT_TIME = 3f;
+        private const byte SKIING_ENERGY_COST = 3;
+        private const byte WALKING_ENERGY_COST = 1;
 
         private readonly Map _map;
         private readonly TickManager _tickManager;
@@ -43,6 +45,12 @@ namespace SkiGame.Model.Agents
                 return;
             }
 
+            if (Data.Energy <= 0.25 && Data.State != GuestState.Leaving)
+            {
+                Leave();
+                return;
+            }
+
             switch (Data.State)
             {
                 case GuestState.InsideLodge:
@@ -53,17 +61,31 @@ namespace SkiGame.Model.Agents
                     HandleWaiting(deltaTime);
                     break;
 
-                // The Skiing and RidingLift states are managed by the NavMeshAgent and GuestView coroutine.
-                // No special logic is needed here for now.
                 case GuestState.Skiing:
-                case GuestState.RidingLift:
+                    Data.Energy -= SKIING_ENERGY_COST;
+                    break;
+
                 case GuestState.Wandering:
                 case GuestState.WalkingToLift:
+                    Data.Energy -= WALKING_ENERGY_COST;
                     break;
             }
         }
 
-        public void TickLong(float deltaTime) { }
+        public void TickLong(float deltaTime)
+        {
+            switch (Data.State)
+            {
+                case GuestState.Skiing:
+                    Data.Energy -= SKIING_ENERGY_COST;
+                    break;
+
+                case GuestState.Wandering:
+                case GuestState.WalkingToLift:
+                    Data.Energy -= WALKING_ENERGY_COST;
+                    break;
+            }
+        }
 
         public void TickRare(float deltaTime) { }
 
@@ -198,16 +220,21 @@ namespace SkiGame.Model.Agents
 
         private void ExitLodge()
         {
-            Data.State = GuestState.Leaving;
             Data.IsVisible = true;
             _timer = 0f;
+            Leave();
+        }
 
+        private void Leave()
+        {
+            Data.State = GuestState.Leaving;
             if (Data.HomePosition.HasValue)
             {
                 Data.TargetPosition = Data.HomePosition.Value;
             }
             else
             {
+                Debug.Log("Guest cannot leave!");
                 Data.State = GuestState.Wandering;
                 SetRandomDestination();
             }

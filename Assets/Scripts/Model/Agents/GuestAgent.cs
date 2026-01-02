@@ -16,6 +16,7 @@ namespace SkiGame.Model.Agents
         private const float LODGE_WAIT_TIME = 3f;
         private const byte SKIING_ENERGY_COST = 3;
         private const byte WALKING_ENERGY_COST = 1;
+        private const byte ENERGY_LEAVE_THRESHOLD = 67;
 
         private readonly Map _map;
         private readonly TickManager _tickManager;
@@ -45,9 +46,9 @@ namespace SkiGame.Model.Agents
                 return;
             }
 
-            if (Data.Energy <= 0.25 && Data.State != GuestState.Leaving)
+            if (Data.Energy <= ENERGY_LEAVE_THRESHOLD && Data.State != GuestState.Leaving)
             {
-                Leave();
+                TryLeave();
                 return;
             }
 
@@ -62,18 +63,29 @@ namespace SkiGame.Model.Agents
                     break;
 
                 case GuestState.Skiing:
-                    Data.Energy -= SKIING_ENERGY_COST;
-                    break;
-
-                case GuestState.Wandering:
+                case GuestState.WalkingToLodge:
                 case GuestState.WalkingToLift:
-                    Data.Energy -= WALKING_ENERGY_COST;
+                case GuestState.RidingLift:
+                case GuestState.Leaving:
                     break;
             }
         }
 
         public void TickLong(float deltaTime)
         {
+            ApplyEnergyCosts();
+        }
+
+        public void TickRare(float deltaTime) { }
+
+        private void ApplyEnergyCosts()
+        {
+            if (Data.Energy <= 0)
+            {
+                Data.Energy = 0;
+                return;
+            }
+
             switch (Data.State)
             {
                 case GuestState.Skiing:
@@ -84,10 +96,15 @@ namespace SkiGame.Model.Agents
                 case GuestState.WalkingToLift:
                     Data.Energy -= WALKING_ENERGY_COST;
                     break;
+
+                case GuestState.Waiting:
+                case GuestState.WalkingToLodge:
+                case GuestState.InsideLodge:
+                case GuestState.RidingLift:
+                case GuestState.Leaving:
+                    break;
             }
         }
-
-        public void TickRare(float deltaTime) { }
 
         public void BeginLiftTraversal()
         {
@@ -117,7 +134,6 @@ namespace SkiGame.Model.Agents
 
         public void NotifyArrival()
         {
-            Debug.Log("Arrived.");
             switch (Data.State)
             {
                 case GuestState.WalkingToLodge:
@@ -132,8 +148,7 @@ namespace SkiGame.Model.Agents
                     break;
 
                 case GuestState.Skiing:
-                    Data.State = GuestState.InsideLodge;
-                    _timer = 0f;
+                    SetNewDestination();
                     break;
 
                 case GuestState.Leaving:
@@ -222,10 +237,10 @@ namespace SkiGame.Model.Agents
         {
             Data.IsVisible = true;
             _timer = 0f;
-            Leave();
+            TryLeave();
         }
 
-        private void Leave()
+        private void TryLeave()
         {
             Data.State = GuestState.Leaving;
             if (Data.HomePosition.HasValue)

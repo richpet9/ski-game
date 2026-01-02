@@ -4,8 +4,8 @@ namespace SkiGame.Model.Core
 {
     public sealed class TickManager
     {
-        private const byte TICK_LONG_FREQUENCY = 127;
-        private const byte TICK_RARE_FREQUENCY = 255;
+        private const byte TICKS_FOR_LONG_TICK = 5;
+        private const byte TICKS_FOR_RARE_TICK = 20;
 
         private readonly List<ITickable> _tickables = new List<ITickable>();
         private byte _ticks = 0;
@@ -22,18 +22,22 @@ namespace SkiGame.Model.Core
 
                 tickable.Tick(deltaTime);
 
-                if (_ticks % TICK_LONG_FREQUENCY == 0)
+                if (_ticks % TICKS_FOR_LONG_TICK == 0)
                 {
-                    tickable.TickLong(deltaTime);
+                    tickable.TickLong(deltaTime * TICKS_FOR_LONG_TICK);
                 }
 
-                if (_ticks % TICK_RARE_FREQUENCY == 0)
+                if (_ticks % TICKS_FOR_RARE_TICK == 0)
                 {
-                    tickable.TickRare(deltaTime);
+                    tickable.TickRare(deltaTime * TICKS_FOR_RARE_TICK);
                 }
             }
 
-            _ticks = (byte)((_ticks + 1) % 256);
+            _ticks++;
+            if (_ticks >= TICKS_FOR_RARE_TICK)
+            {
+                _ticks = 0;
+            }
         }
     }
 }

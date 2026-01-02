@@ -17,6 +17,9 @@ namespace SkiGame.View.World
         [SerializeField]
         private float _spawnInterval = 5f;
 
+        private const ushort SPAWN_MONEY = 255;
+        private const byte SPAWN_ENERGY = 255;
+
         private void Start()
         {
             StartCoroutine(SpawnRoutine());
@@ -45,7 +48,8 @@ namespace SkiGame.View.World
                         HomePosition = transform.position,
                         State = GuestState.Wandering,
                         Color = Random.ColorHSV(),
-                        Money = 0,
+                        Money = SPAWN_MONEY,
+                        Energy = SPAWN_ENERGY,
                     }
                 );
                 GameContext.Map.Guests.AddGuest();

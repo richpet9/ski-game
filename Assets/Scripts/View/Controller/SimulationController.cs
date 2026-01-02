@@ -6,8 +6,8 @@ namespace SkiGame.View.Controller
 {
     public class SimulationDriver : MonoBehaviour
     {
-        // 20 Ticks per second = 50ms per tick.
-        private const float TICK_RATE = 0.05f;
+        private const float TICK_RATE = 0.05f; // Every 50ms.
+
         private float _accumulator;
         private float _gameSpeed = 1f; // Modify this to 2f, 5f to speed up game!
         private TickManager _tickManager;

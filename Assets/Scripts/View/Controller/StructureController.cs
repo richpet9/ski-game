@@ -85,8 +85,12 @@ namespace SkiGame.View.Controller
             {
                 _liftStartPos = gridPos;
 
+                float height = GameContext.Map.GetTile(_selector.GridPosition).Height;
                 _previewCable.gameObject.SetActive(true);
-                _previewCable.SetPosition(0, MapUtil.GridToWorld(gridPos, PREVIEW_CABLE_HEIGHT));
+                _previewCable.SetPosition(
+                    0,
+                    MapUtil.GridToWorld(gridPos, height + PREVIEW_CABLE_HEIGHT)
+                );
             }
             else
             {

@@ -7,6 +7,12 @@ namespace SkiGame.View.World
 {
     public static class TerrainVoxelBuilder
     {
+        private struct VoxelInfo
+        {
+            public float Height;
+            public Color Color;
+        }
+
         // 2 voxels per map unit = 4x density.
         private const int VOXELS_PER_UNIT = 2;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
@@ -123,12 +129,6 @@ namespace SkiGame.View.World
                 Colors = colors.ToArray(),
                 UVs = uvs.ToArray(),
             };
-        }
-
-        private struct VoxelInfo
-        {
-            public float Height;
-            public Color Color;
         }
 
         private static VoxelInfo GetVoxelData(Map map, int vx, int vz)

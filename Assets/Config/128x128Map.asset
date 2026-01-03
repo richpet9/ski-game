@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5406f926c41434d7a90db3f75ef77a4d, type: 3}
   m_Name: 128x128Map
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
-  Width: 128
-  Height: 128
-  Seed: 2895
+  Width: 255
+  Height: 255
+  Seed: 60662
   RandomizeOnGenerate: 1
-  MountainHeight: 20
-  NoiseScale: 10
-  NoiseIntensity: 0.3
+  MountainHeight: 50
+  NoiseScale: 14
+  NoiseIntensity: 0.4
   HeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -32,8 +32,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 1
     - serializedVersion: 3
-      time: 0.20632213
-      value: 0.04471506
+      time: 0.28549084
+      value: 0.049432043
       inSlope: 0.657333
       outSlope: 0.657333
       tangentMode: 0
@@ -70,7 +70,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ForestDensity: 0.25
+  ForestDensity: 0.15
   ForestNoiseScale: 14
   TreeLinePercent: 0.6
   TreeScale: 0.2

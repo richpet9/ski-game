@@ -1852,7 +1852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fb1d93c2792f426c939fc6c1e8c6f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapConfig: {fileID: 11400000, guid: 45cc59e68d8ff43b6b242019e1591a59, type: 2}
+  _mapConfig: {fileID: 11400000, guid: 592d1751a0e024e02a40aa25d56befb0, type: 2}
   _terrainView: {fileID: 462982758}
   _foliageView: {fileID: 315996235}
 --- !u!4 &1909696327

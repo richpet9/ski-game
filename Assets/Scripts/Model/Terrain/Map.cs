@@ -100,17 +100,18 @@ namespace SkiGame.Model.Terrain
             }
         }
 
-        public void SetTile(Vector2Int loc, float height)
+        public void SetTileHeight(Vector2Int loc, float height)
         {
-            SetTile(loc.x, loc.y, height);
+            SetTileHeight(loc.x, loc.y, height);
         }
 
-        public void SetTile(int x, int z, float height)
+        public void SetTileHeight(int x, int z, float height)
         {
             if (InBounds(x, z))
             {
                 _grid[GetIndex(x, z)].Height = height;
                 _grid[GetIndex(x, z)].Type = GetTerrainTypeFromHeight(height);
+                OnMapChanged?.Invoke();
             }
         }
 
@@ -187,6 +188,7 @@ namespace SkiGame.Model.Terrain
                     }
                 }
             }
+            OnFoliageChanged?.Invoke();
         }
 
         public void RemoveStructure(Vector2Int loc)

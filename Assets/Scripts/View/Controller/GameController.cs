@@ -47,6 +47,8 @@ namespace SkiGame.View.Controller
 
         private void Start()
         {
+            _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
+            _foliageView.Initialize(_map, _mapConfig.TreeScale);
             // Generates the initial map on startup.
             GenerateAndBindMap();
         }
@@ -89,7 +91,7 @@ namespace SkiGame.View.Controller
                     float h3 = heights[nextRowStartIndex + x];
                     float h4 = heights[nextRowStartIndex + x + 1];
                     float avg = (h1 + h2 + h3 + h4) * 0.25f;
-                    _map.SetTile(x, z, avg);
+                    _map.SetTileHeight(x, z, avg);
                 }
             }
 
@@ -105,9 +107,6 @@ namespace SkiGame.View.Controller
                     _mapConfig.TreeLinePercent
                 )
             );
-
-            _foliageView.Initialize(_map, _mapConfig.TreeScale);
-            _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
         }
 
         private IEnumerator RegenerationCooldownRoutine()

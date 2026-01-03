@@ -28,11 +28,8 @@ namespace SkiGame.View.World
             _width = width;
             _height = height;
 
-            // Subscribe to model changes
+            // Subscribe to model changes.
             _map.OnMapChanged += SetDirty;
-
-            // Initial build
-            SetDirty();
         }
 
         private void OnDestroy()

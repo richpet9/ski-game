@@ -19,16 +19,38 @@ namespace SkiGame.View.World
         private const float MIN_TREE_SCALE = 0.7f;
         private const float MAX_TREE_SCALE = 1.2f;
 
+        private readonly List<Matrix4x4[]> _batches = new List<Matrix4x4[]>();
         private Map _map;
         private float _treeScale;
-        private readonly List<Matrix4x4[]> _batches = new List<Matrix4x4[]>();
+        private bool _isDirty;
 
         public void Initialize(Map map, float treeScale)
         {
             _map = map;
             _treeScale = treeScale;
-            _map.OnFoliageChanged += Refresh;
-            Refresh();
+            _map.OnFoliageChanged += SetDirty;
+        }
+
+        private void SetDirty()
+        {
+            _isDirty = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_map != null)
+            {
+                _map.OnFoliageChanged -= SetDirty;
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (_isDirty)
+            {
+                Refresh();
+                _isDirty = false;
+            }
         }
 
         public void Refresh()
@@ -52,6 +74,11 @@ namespace SkiGame.View.World
                         }
 
                         Vector3 position = MapUtil.GridToWorld(x, z, tile.Height);
+
+                        // Use a deterministic random seed for consistent tree scaling
+                        // and rotation. This ensures trees don't change scale or
+                        // rotation every time Refresh() is called.
+                        Random.InitState(x * 1000 + z);
                         Quaternion rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
                         Vector3 scale =
                             _treeScale * Random.Range(MIN_TREE_SCALE, MAX_TREE_SCALE) * Vector3.one;
@@ -89,14 +116,6 @@ namespace SkiGame.View.World
                     UnityEngine.Rendering.ShadowCastingMode.On,
                     true
                 );
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (_map != null)
-            {
-                _map.OnFoliageChanged -= Refresh;
             }
         }
     }

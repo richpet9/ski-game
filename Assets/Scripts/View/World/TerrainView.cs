@@ -10,8 +10,15 @@ namespace SkiGame.View.World
     [RequireComponent(typeof(NavMeshSurface))]
     public sealed class TerrainView : MonoBehaviour
     {
+        [Header("Assets")]
         [SerializeField]
-        private Material _terrainMaterial; // Assign in Inspector!
+        private Material _terrainMaterial;
+
+        [SerializeField]
+        private Mesh _treeMesh;
+
+        [SerializeField]
+        private Material _treeMaterial;
 
         [SerializeField]
         private LayerMask _terrainLayer;
@@ -65,6 +72,10 @@ namespace SkiGame.View.World
             // Setup components.
             TerrainChunk chunk = chunkObj.AddComponent<TerrainChunk>();
             MeshRenderer mr = chunkObj.GetComponent<MeshRenderer>();
+            FoliageView foliage = chunkObj.AddComponent<FoliageView>();
+
+            // TODO: Get treescale from mapconfig.
+            foliage.Initialize(_map, treeScale: 0.5f, x, z, CHUNK_SIZE, _treeMesh, _treeMaterial);
 
             // Assign shared material (ensure one is set in Inspector or loaded).
             if (_terrainMaterial != null)

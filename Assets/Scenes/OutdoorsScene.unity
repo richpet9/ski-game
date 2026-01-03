@@ -163,7 +163,7 @@ MonoBehaviour:
   _tiltLimits: {x: 20, y: 85}
   _tiltSpeed: 150
   _zoomStep: 5
-  _zoomLimits: {x: 5, y: 50}
+  _zoomLimits: {x: 5, y: 128}
 --- !u!4 &135845665
 Transform:
   m_ObjectHideFlags: 0
@@ -458,53 +458,6 @@ Transform:
   - {fileID: 789128091}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &315996233
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 315996234}
-  - component: {fileID: 315996235}
-  m_Layer: 0
-  m_Name: FoliageView
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &315996234
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 315996233}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1970954226}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &315996235
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 315996233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63e15a7fed33430497aabdc9e225daa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _treeMesh: {fileID: 1261550738812896852, guid: 3194abef289a8e343b7a71a423b0750f,
-    type: 3}
-  _treeMaterial: {fileID: 2100000, guid: 7317cfcf0d7280742b2b5684512102d9, type: 2}
 --- !u!1 &411815431
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,6 +588,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _terrainMaterial: {fileID: 2100000, guid: 6affbbcc2b68e468bb84745f759eb5b1, type: 2}
+  _treeMesh: {fileID: 1261550738812896852, guid: 3194abef289a8e343b7a71a423b0750f,
+    type: 3}
+  _treeMaterial: {fileID: 2100000, guid: 7317cfcf0d7280742b2b5684512102d9, type: 2}
   _terrainLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -1852,9 +1808,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fb1d93c2792f426c939fc6c1e8c6f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapConfig: {fileID: 11400000, guid: 592d1751a0e024e02a40aa25d56befb0, type: 2}
+  _mapConfig: {fileID: 11400000, guid: 3e096f6bf5c134d709a691198dda77cd, type: 2}
   _terrainView: {fileID: 462982758}
-  _foliageView: {fileID: 315996235}
 --- !u!4 &1909696327
 Transform:
   m_ObjectHideFlags: 0
@@ -1951,7 +1906,6 @@ Transform:
   m_Children:
   - {fileID: 462982761}
   - {fileID: 1371647167}
-  - {fileID: 315996234}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2013410473

@@ -172,7 +172,13 @@ namespace SkiGame.View.World
             // Noise.
             float noise = Mathf.Abs(vx * 73856093 ^ vz * 19349663) % 100 / 100f;
             float heightOffset = (noise - 0.5f) * NOISE_AMPLITUDE;
+            Color c = GetColor(tile);
 
+            return new VoxelInfo { Height = tile.Height + heightOffset, Color = c };
+        }
+
+        private static Color GetColor(TileData tile)
+        {
             Color c;
             if (tile.Type == TileType.PackedSnow)
             {
@@ -180,10 +186,11 @@ namespace SkiGame.View.World
             }
             else
             {
-                c = tile.Height > 10 ? Color.white : Color.green;
+                // TODO: Replace with constant.
+                c = tile.Height > 55 ? Color.white : Color.green;
             }
 
-            return new VoxelInfo { Height = tile.Height + heightOffset, Color = c };
+            return c;
         }
 
         private static void CheckAndAddSkirt(

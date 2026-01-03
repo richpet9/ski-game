@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5406f926c41434d7a90db3f75ef77a4d, type: 3}
-  m_Name: 128x128Map
+  m_Name: 256x256Map
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
-  Width: 128
-  Height: 128
+  Width: 256
+  Height: 256
   Seed: 60662
   RandomizeOnGenerate: 1
-  MountainHeight: 30
+  MountainHeight: 70
   NoiseScale: 14
   NoiseIntensity: 0.4
   HeightCurve:
@@ -25,35 +25,26 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.06003486
-      outSlope: 0.06003486
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 1
+      outWeight: 0
     - serializedVersion: 3
-      time: 0.28549084
-      value: 0.049432043
-      inSlope: 0.657333
-      outSlope: 0.657333
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.29425016
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.6473714
-      value: 0.759159
-      inSlope: 0.1131003
-      outSlope: 0.1131003
+      time: 0.23870216
+      value: 0.02074047
+      inSlope: 0.15856677
+      outSlope: 0.15856677
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.9807538
+      outWeight: 0.2775495
     - serializedVersion: 3
-      time: 0.86247325
-      value: 0.8964665
-      inSlope: 1.0407833
-      outSlope: 1.0407833
+      time: 0.69072694
+      value: 0.65602887
+      inSlope: 1.775552
+      outSlope: 1.775552
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -61,16 +52,16 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: -0.008708074
-      outSlope: -0.008708074
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
-      inWeight: 1
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ForestDensity: 0.15
+  ForestDensity: 0.35
   ForestNoiseScale: 14
   TreeLinePercent: 0.6
   TreeScale: 0.2

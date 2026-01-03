@@ -20,9 +20,6 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private TerrainView _terrainView;
 
-        [SerializeField]
-        private FoliageView _foliageView;
-
         private const int MAX_SEED_VALUE = 100000;
 
         private static readonly WaitForSeconds _waitForSeconds0_5 = new WaitForSeconds(0.5f);
@@ -48,7 +45,6 @@ namespace SkiGame.View.Controller
         private void Start()
         {
             _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
-            _foliageView.Initialize(_map, _mapConfig.TreeScale);
             // Generates the initial map on startup.
             GenerateAndBindMap();
         }

@@ -47,6 +47,7 @@ namespace SkiGame.View.World
             visualMesh.SetColors(visualData.Colors);
             visualMesh.SetUVs(0, visualData.UVs);
             visualMesh.RecalculateNormals();
+            visualMesh.RecalculateBounds();
 
             _visualFilter.mesh = visualMesh;
 

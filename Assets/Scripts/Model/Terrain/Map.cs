@@ -30,7 +30,7 @@ namespace SkiGame.Model.Terrain
             _grid = new TileData[width * height];
 
             Guests = new GuestManager();
-            Economy = new EconomyManager(300);
+            Economy = new EconomyManager(1000);
             Structures = new StructureManager(this, Economy);
         }
 

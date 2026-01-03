@@ -9,5 +9,9 @@ namespace SkiGame.Model.Services
             out Vector3 hitPosition,
             float maxDistance
         );
+
+        public Vector2 GetFlow(Vector3 worldPos);
+
+        public Vector3 GetNextPathPosition(Vector3 currentPos, Vector3 targetPos);
     }
 }

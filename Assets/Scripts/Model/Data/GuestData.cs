@@ -12,5 +12,6 @@ namespace SkiGame.Model.Guest
         public Color Color;
         public ushort Money;
         public byte Energy;
+        public Quaternion Rotation;
     }
 }

@@ -19,6 +19,11 @@ namespace SkiGame.Model.Agents
         private const byte WALKING_ENERGY_COST = 1;
         private const byte ENERGY_LEAVE_THRESHOLD = 67;
         private const byte LIFT_TICKET_PRICE = 15;
+        private const float SKI_SPEED = 12f;
+        private const float WALK_SPEED = 3.5f;
+        private const float GRAVITY = 5f;
+        private const float LIFT_SPEED = 10f;
+        private const float MINIMUM_TARGET_DIST = 0.5f;
 
         private readonly Map _map;
         private readonly TickManager _tickManager;
@@ -37,7 +42,7 @@ namespace SkiGame.Model.Agents
 
         public void Dispose()
         {
-            GameContext.Map.Guests.RemoveGuest();
+            _map.Guests.RemoveGuest();
             _tickManager.Unregister(this);
         }
 
@@ -51,7 +56,6 @@ namespace SkiGame.Model.Agents
             if (Data.Energy <= ENERGY_LEAVE_THRESHOLD && Data.State != GuestState.Leaving)
             {
                 TryLeave();
-                return;
             }
 
             switch (Data.State)
@@ -65,13 +69,27 @@ namespace SkiGame.Model.Agents
                     break;
 
                 case GuestState.Skiing:
+                    HandleSkiing(deltaTime);
+                    break;
+
                 case GuestState.WalkingToLodge:
-                case GuestState.RidingLift:
-                case GuestState.Leaving:
-                case GuestState.Wandering:
                 case GuestState.WalkingToLift:
+                case GuestState.Wandering:
+                case GuestState.Leaving:
+                    HandleWalking(deltaTime);
+                    break;
+
+                case GuestState.RidingLift:
+                    HandleLift(deltaTime);
+                    break;
+
                 default:
                     break;
+            }
+
+            if (Data.IsVisible && Data.State != GuestState.RidingLift)
+            {
+                ApplyGravity(deltaTime);
             }
         }
 
@@ -82,35 +100,6 @@ namespace SkiGame.Model.Agents
 
         public void TickRare(float deltaTime) { }
 
-        private void ApplyEnergyCosts()
-        {
-            if (Data.Energy <= 0)
-            {
-                Data.Energy = 0;
-                return;
-            }
-
-            switch (Data.State)
-            {
-                case GuestState.Skiing:
-                    Data.Energy -= SKIING_ENERGY_COST;
-                    break;
-
-                case GuestState.Wandering:
-                case GuestState.WalkingToLift:
-                    Data.Energy -= WALKING_ENERGY_COST;
-                    break;
-
-                case GuestState.Waiting:
-                case GuestState.WalkingToLodge:
-                case GuestState.InsideLodge:
-                case GuestState.RidingLift:
-                case GuestState.Leaving:
-                default:
-                    break;
-            }
-        }
-
         public void BeginLiftTraversal()
         {
             if (Data.State == GuestState.WalkingToLift)
@@ -119,12 +108,84 @@ namespace SkiGame.Model.Agents
             }
         }
 
-        private void HandleInsideLodge(float deltaTime)
+        private void HandleSkiing(float deltaTime)
         {
-            _timer += deltaTime;
-            if (_timer >= LODGE_WAIT_TIME)
+            Vector2 flow = _navService.GetFlow(Data.Position);
+            Vector3 moveDir = new Vector3(flow.x, 0, flow.y);
+
+            if (moveDir.sqrMagnitude < 0.01f)
             {
-                ExitLodge();
+                NotifyArrival();
+            }
+            else
+            {
+                Data.Position += moveDir * SKI_SPEED * deltaTime;
+                Data.Rotation = Quaternion.LookRotation(moveDir);
+            }
+        }
+
+        private void HandleWalking(float deltaTime)
+        {
+            if (!Data.TargetPosition.HasValue)
+                return;
+
+            // Get next corner from NavMesh (without being attached to it).
+            Vector3 nextStep = _navService.GetNextPathPosition(
+                Data.Position,
+                Data.TargetPosition.Value
+            );
+
+            MoveTowards(nextStep, WALK_SPEED, deltaTime);
+
+            if (Vector3.Distance(Data.Position, Data.TargetPosition.Value) < MINIMUM_TARGET_DIST)
+            {
+                NotifyArrival();
+            }
+        }
+
+        private void HandleLift(float deltaTime)
+        {
+            if (!Data.TargetPosition.HasValue)
+                return;
+
+            // Fly straight to target (Lift Top)
+            MoveTowards(Data.TargetPosition.Value, LIFT_SPEED, deltaTime);
+
+            if (Vector3.Distance(Data.Position, Data.TargetPosition.Value) < MINIMUM_TARGET_DIST)
+            {
+                NotifyArrival();
+            }
+        }
+
+        private void MoveTowards(Vector3 target, float speed, float dt)
+        {
+            Vector3 dir = (target - Data.Position).normalized;
+            Data.Position += dt * speed * dir;
+
+            // Rotate (Keep Y flat).
+            Vector3 lookDir = new Vector3(dir.x, 0, dir.z);
+            if (lookDir.sqrMagnitude > 0.001f)
+            {
+                Data.Rotation = Quaternion.LookRotation(lookDir);
+            }
+        }
+
+        private void ApplyGravity(float deltaTime)
+        {
+            float terrainHeight = _map.GetTile(
+                Mathf.RoundToInt(Data.Position.x),
+                Mathf.RoundToInt(Data.Position.z)
+            ).Height;
+
+            // Anti-Jiggle: Only fall if significantly above ground.
+            if (Data.Position.y > terrainHeight + 0.05f)
+            {
+                Data.Position += deltaTime * GRAVITY * Vector3.down;
+            }
+            else
+            {
+                // Snap to ground.
+                Data.Position = new Vector3(Data.Position.x, terrainHeight, Data.Position.z);
             }
         }
 
@@ -137,7 +198,7 @@ namespace SkiGame.Model.Agents
             }
         }
 
-        public void NotifyArrival()
+        private void NotifyArrival()
         {
             switch (Data.State)
             {
@@ -145,9 +206,11 @@ namespace SkiGame.Model.Agents
                     EnterLodge();
                     break;
 
+                case GuestState.WalkingToLift:
+                    RideLift();
+                    break;
+
                 case GuestState.RidingLift:
-                    // This is called when the agent reaches the end of the lift path.
-                    // The state was set to RidingLift by the GuestView's TraverseLift coroutine.
                     SetSkiingDestination();
                     Data.State = GuestState.Skiing;
                     break;
@@ -166,32 +229,49 @@ namespace SkiGame.Model.Agents
                     break;
 
                 case GuestState.Waiting:
+                    throw new System.Exception(
+                        $"Guest in Waiting state should not call NotifyArrival."
+                    );
+
                 case GuestState.InsideLodge:
-                case GuestState.WalkingToLift:
+                    throw new System.Exception(
+                        $"Guest in InsideLodge state should not call NotifyArrival."
+                    );
+
                 default:
                     break;
             }
+        }
+
+        private float GetTerrainHeight(Vector3 pos)
+        {
+            Vector2Int gridPos = MapUtil.WorldToGrid(pos);
+            if (_map.InBounds(gridPos))
+            {
+                return _map.GetTile(gridPos).Height;
+            }
+            return 0;
         }
 
         private void SetNewDestination()
         {
             _timer = 0f;
 
-            // For now, let's prioritize skiing if possible.
-            // This assumes StructureManager has a public List<Lift> Lifts.
-            // A more complex decision-making process can be added later.
+            // 1. Priority: Lifts.
             if (_map.Structures.Lifts.Count > 0)
             {
-                var targetLift = _map.Structures.Lifts[
+                StructureManager.Lift targetLift = _map.Structures.Lifts[
                     Random.Range(0, _map.Structures.Lifts.Count)
                 ];
-                // The destination is the END of the lift. The pathfinder will route
-                // the agent to the start and across the NavMeshLink.
-                var targetGrid = targetLift.EndGrid;
-                float y = _map.GetTile(targetGrid).Height;
-                Data.TargetPosition = MapUtil.GridToWorld(targetGrid, y);
+
+                // Target the BASE of the lift.
+                Vector2Int baseGrid = targetLift.StartGrid;
+                float y = _map.GetTile(baseGrid).Height;
+
+                Data.TargetPosition = MapUtil.GridToWorld(baseGrid, y);
                 Data.State = GuestState.WalkingToLift;
             }
+            // 2. Priority: Food/Lodge.
             else if (_map.Structures.Structures[StructureType.Lodge].Count > 0)
             {
                 Vector2Int targetGrid = _map.Structures.Structures[StructureType.Lodge][
@@ -201,6 +281,7 @@ namespace SkiGame.Model.Agents
                 Data.TargetPosition = MapUtil.GridToWorld(targetGrid, y);
                 Data.State = GuestState.WalkingToLodge;
             }
+            // 3. Fallback: Wander.
             else
             {
                 SetRandomDestination();
@@ -208,20 +289,44 @@ namespace SkiGame.Model.Agents
             }
         }
 
+        private void RideLift()
+        {
+            // Logic: Find the lift we are standing near and target its EndGrid.
+            Vector2Int currentGrid = new Vector2Int(
+                Mathf.RoundToInt(Data.Position.x),
+                Mathf.RoundToInt(Data.Position.z)
+            );
+
+            foreach (StructureManager.Lift lift in _map.Structures.Lifts)
+            {
+                // Check proximity to start base.
+                if (Vector2Int.Distance(lift.StartGrid, currentGrid) < 4)
+                {
+                    Data.State = GuestState.RidingLift;
+
+                    float endY = _map.GetTile(lift.EndGrid).Height;
+                    Data.TargetPosition = MapUtil.GridToWorld(lift.EndGrid, endY);
+
+                    _map.Economy.AddMoney(LIFT_TICKET_PRICE); // Optional: Charge for lift
+                    return;
+                }
+            }
+
+            // Failed to find lift? Just ski.
+            Data.State = GuestState.Skiing;
+        }
+
         private void SetSkiingDestination()
         {
-            // After getting off a lift, ski towards a parking lot to simulate skiing to the base.
+            // When skiing, we don't really have a single target since we follow Flow
+            // Fields. However, if we need to "aim" for the bottom, we can target a
+            // parking lot. For now, this is mostly symbolic as Flow Field overrides
+            // direction.
             if (_map.Structures.Structures[StructureType.ParkingLot].Count > 0)
             {
-                Vector2Int gridPos = _map.Structures.Structures[StructureType.ParkingLot][
-                    Random.Range(0, _map.Structures.Structures[StructureType.ParkingLot].Count)
-                ];
+                Vector2Int gridPos = _map.Structures.Structures[StructureType.ParkingLot][0];
                 float y = _map.GetTile(gridPos).Height;
                 Data.TargetPosition = MapUtil.GridToWorld(gridPos, y);
-            }
-            else
-            {
-                SetRandomDestination();
             }
         }
 
@@ -232,6 +337,42 @@ namespace SkiGame.Model.Agents
             if (_navService.SamplePosition(randomPoint, out Vector3 hitPoint, WANDER_RADIUS))
             {
                 Data.TargetPosition = hitPoint;
+            }
+        }
+
+        private void HandleInsideLodge(float deltaTime)
+        {
+            _timer += deltaTime;
+            if (_timer >= LODGE_WAIT_TIME)
+            {
+                ExitLodge();
+            }
+        }
+
+        private void ApplyEnergyCosts()
+        {
+            if (Data.Energy <= 0)
+            {
+                Data.Energy = 0;
+                return;
+            }
+
+            switch (Data.State)
+            {
+                case GuestState.Skiing:
+                    Data.Energy -= SKIING_ENERGY_COST;
+                    break;
+                case GuestState.Wandering:
+                case GuestState.WalkingToLift:
+                    Data.Energy -= WALKING_ENERGY_COST;
+                    break;
+                case GuestState.Waiting:
+                case GuestState.WalkingToLodge:
+                case GuestState.InsideLodge:
+                case GuestState.RidingLift:
+                case GuestState.Leaving:
+                default:
+                    break;
             }
         }
 

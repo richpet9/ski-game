@@ -13,113 +13,136 @@ namespace SkiGame.View.World
             public Color Color;
         }
 
-        // 2 voxels per map unit = 4x density.
-        private const int VOXELS_PER_UNIT = 1;
+        private const int VOXELS_PER_UNIT = 2;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
-        private const float NOISE_AMPLITUDE = 0.5f;
+        private const float NOISE_AMPLITUDE = 1f;
         private const float BOTTOM_HEIGHT = -10f;
 
         public static MeshData Build(Map map, int startX, int startZ, int chunkSize)
         {
-            List<Vector3> vertices = new List<Vector3>();
-            List<int> triangles = new List<int>();
-            List<Color> colors = new List<Color>();
-            List<Vector2> uvs = new List<Vector2>();
+            // 1. Setup Dimensions.
+            int startVx = startX * VOXELS_PER_UNIT;
+            int startVz = startZ * VOXELS_PER_UNIT;
+            int voxelsPerChunk = chunkSize * VOXELS_PER_UNIT;
+
+            // We need a 1-voxel buffer on all sides for neighbor checks.
+            // Local array size: [0 .. voxelsPerChunk + 1] inclusive.
+            int cacheWidth = voxelsPerChunk + 2;
+            VoxelInfo[] voxelCache = new VoxelInfo[cacheWidth * cacheWidth];
+
+            // 2. Fill Cache (Only fetch Map Data & Noise ONCE per voxel)
+            // We iterate from -1 to voxelsPerChunk to cover the skirts.
+            for (int z = -1; z <= voxelsPerChunk; z++)
+            {
+                for (int x = -1; x <= voxelsPerChunk; x++)
+                {
+                    int vx = startVx + x;
+                    int vz = startVz + z;
+
+                    // Store in 1D array for slight perf boost over 2D
+                    int index = (z + 1) * cacheWidth + (x + 1);
+                    voxelCache[index] = GetVoxelData(map, vx, vz);
+                }
+            }
+
+            // 3. Pre-allocate Lists.
+            // Estimate: Voxels * ~20 verts (1 top + 4 skirts worst case).
+            int estimatedVerts = voxelsPerChunk * voxelsPerChunk * 20;
+            List<Vector3> vertices = new List<Vector3>(estimatedVerts);
+            List<int> triangles = new List<int>(estimatedVerts); // Indices count approx same as verts.
+            List<Color> colors = new List<Color>(estimatedVerts);
+            List<Vector2> uvs = new List<Vector2>(estimatedVerts);
+            List<Vector3> normals = new List<Vector3>(estimatedVerts);
 
             float halfScale = VOXEL_SIZE * 0.5f;
 
-            // Calculate voxel ranges for this chunk.
-            int startVx = startX * VOXELS_PER_UNIT;
-            int startVz = startZ * VOXELS_PER_UNIT;
-            int endVx = (startX + chunkSize) * VOXELS_PER_UNIT;
-            int endVz = (startZ + chunkSize) * VOXELS_PER_UNIT;
-
-            for (int vz = startVz; vz < endVz; vz++)
+            // 4. Build Mesh using Cache.
+            for (int z = 0; z < voxelsPerChunk; z++)
             {
-                for (int vx = startVx; vx < endVx; vx++)
+                for (int x = 0; x < voxelsPerChunk; x++)
                 {
-                    // Get data for the current voxel (Height + Color).
-                    VoxelInfo current = GetVoxelData(map, vx, vz);
+                    // Cache indices.
+                    int currentIdx = (z + 1) * cacheWidth + (x + 1);
+                    VoxelInfo current = voxelCache[currentIdx];
 
-                    // World Position of the voxel center.
-                    float centerX = (vx * VOXEL_SIZE) + halfScale;
-                    float centerZ = (vz * VOXEL_SIZE) + halfScale;
-
+                    // Position.
+                    float centerX = ((startVx + x) * VOXEL_SIZE) + halfScale;
+                    float centerZ = ((startVz + z) * VOXEL_SIZE) + halfScale;
                     Vector3 center = new Vector3(centerX, current.Height, centerZ);
 
-                    // 1. Top Face.
+                    // A. Top Face.
                     AddQuad(
                         vertices,
                         triangles,
                         uvs,
                         colors,
+                        normals,
                         center,
-                        widthAxis: Vector3.right * halfScale,
-                        heightAxis: Vector3.forward * halfScale,
-                        color: current.Color
+                        Vector3.right * halfScale,
+                        Vector3.forward * halfScale,
+                        current.Color,
+                        Vector3.up // Manual Normal.
                     );
 
-                    // 2. Check Neighbors and Add Skirts.
-                    // We now check VOXEL neighbors, not Map neighbors.
-
-                    // North (vz + 1).
+                    // B. Neighbors (Read from Cache).
+                    // North (z+1).
                     CheckAndAddSkirt(
-                        map,
+                        voxelCache[(z + 2) * cacheWidth + (x + 1)], // z+1 -> cache z+2.
                         current.Height,
-                        neighborVx: vx,
-                        neighborVz: vz + 1,
-                        wallCenterXZ: new Vector3(centerX, 0, centerZ + halfScale),
-                        widthAxis: Vector3.left * halfScale,
-                        color: current.Color,
+                        new Vector3(centerX, 0, centerZ + halfScale),
+                        Vector3.left * halfScale,
+                        current.Color,
+                        Vector3.forward, // Normal: Forward.
                         vertices,
                         triangles,
                         uvs,
-                        colors
+                        colors,
+                        normals
                     );
 
-                    // South (vz - 1).
+                    // South (z-1).
                     CheckAndAddSkirt(
-                        map,
+                        voxelCache[z * cacheWidth + (x + 1)], // z-1 -> cache z.
                         current.Height,
-                        neighborVx: vx,
-                        neighborVz: vz - 1,
-                        wallCenterXZ: new Vector3(centerX, 0, centerZ - halfScale),
-                        widthAxis: Vector3.right * halfScale,
-                        color: current.Color,
+                        new Vector3(centerX, 0, centerZ - halfScale),
+                        Vector3.right * halfScale,
+                        current.Color,
+                        Vector3.back, // Normal: Back.
                         vertices,
                         triangles,
                         uvs,
-                        colors
+                        colors,
+                        normals
                     );
 
-                    // East (vx + 1).
+                    // East (x+1).
                     CheckAndAddSkirt(
-                        map,
+                        voxelCache[(z + 1) * cacheWidth + (x + 2)], // x+1 -> cache x+2.
                         current.Height,
-                        neighborVx: vx + 1,
-                        neighborVz: vz,
-                        wallCenterXZ: new Vector3(centerX + halfScale, 0, centerZ),
-                        widthAxis: Vector3.forward * halfScale,
-                        color: current.Color,
+                        new Vector3(centerX + halfScale, 0, centerZ),
+                        Vector3.forward * halfScale,
+                        current.Color,
+                        Vector3.right, // Normal: Right.
                         vertices,
                         triangles,
                         uvs,
-                        colors
+                        colors,
+                        normals
                     );
 
-                    // West (vx - 1).
+                    // West (x-1).
                     CheckAndAddSkirt(
-                        map,
+                        voxelCache[(z + 1) * cacheWidth + x], // x-1 -> cache x.
                         current.Height,
-                        neighborVx: vx - 1,
-                        neighborVz: vz,
-                        wallCenterXZ: new Vector3(centerX - halfScale, 0, centerZ),
-                        widthAxis: Vector3.back * halfScale,
-                        color: current.Color,
+                        new Vector3(centerX - halfScale, 0, centerZ),
+                        Vector3.back * halfScale,
+                        current.Color,
+                        Vector3.left, // Normal: Left.
                         vertices,
                         triangles,
                         uvs,
-                        colors
+                        colors,
+                        normals
                     );
                 }
             }
@@ -129,17 +152,16 @@ namespace SkiGame.View.World
                 Vertices = vertices.ToArray(),
                 Triangles = triangles.ToArray(),
                 Colors = colors.ToArray(),
+                Normals = normals.ToArray(),
                 UVs = uvs.ToArray(),
             };
         }
 
         private static VoxelInfo GetVoxelData(Map map, int vx, int vz)
         {
-            // Map voxel coordinate back to map coordinate.
-            int mapX = vx / VOXELS_PER_UNIT;
-            int mapZ = vz / VOXELS_PER_UNIT;
+            int mapX = Mathf.FloorToInt((float)vx / VOXELS_PER_UNIT);
+            int mapZ = Mathf.FloorToInt((float)vz / VOXELS_PER_UNIT);
 
-            // Boundary check.
             if (!map.InBounds(mapX, mapZ))
             {
                 return new VoxelInfo { Height = BOTTOM_HEIGHT, Color = Color.black };
@@ -147,11 +169,8 @@ namespace SkiGame.View.World
 
             TileData tile = map.GetTile(mapX, mapZ);
 
-            // Deterministic Noise (Pseudo-Random Hash based on coordinates).
-            // This ensures the noise is static and doesn't flicker when rebuilding mesh.
-            // Using primes to scatter the bits.
-            float noise = (vx * 73856093 ^ vz * 19349663) % 100 / 100f;
-            // Map 0..1 to -Amplitude..+Amplitude.
+            // Noise.
+            float noise = Mathf.Abs(vx * 73856093 ^ vz * 19349663) % 100 / 100f;
             float heightOffset = (noise - 0.5f) * NOISE_AMPLITUDE;
 
             Color c;
@@ -168,27 +187,23 @@ namespace SkiGame.View.World
         }
 
         private static void CheckAndAddSkirt(
-            Map map,
+            VoxelInfo neighbor,
             float currentHeight,
-            int neighborVx,
-            int neighborVz,
             Vector3 wallCenterXZ,
             Vector3 widthAxis,
             Color color,
+            Vector3 normal,
             List<Vector3> verts,
             List<int> tris,
             List<Vector2> uvs,
-            List<Color> cols
+            List<Color> cols,
+            List<Vector3> norms
         )
         {
-            // Get height of the neighboring voxel.
-            float neighborHeight = GetVoxelData(map, neighborVx, neighborVz).Height;
-
-            // Only draw if we are taller than the neighbor.
-            if (currentHeight > neighborHeight)
+            if (currentHeight > neighbor.Height)
             {
-                float faceHeight = currentHeight - neighborHeight;
-                float midY = neighborHeight + (faceHeight * 0.5f);
+                float faceHeight = currentHeight - neighbor.Height;
+                float midY = neighbor.Height + (faceHeight * 0.5f);
                 Vector3 center = new Vector3(wallCenterXZ.x, midY, wallCenterXZ.z);
 
                 AddQuad(
@@ -196,10 +211,12 @@ namespace SkiGame.View.World
                     tris,
                     uvs,
                     cols,
+                    norms,
                     center,
                     widthAxis,
                     Vector3.up * (faceHeight * 0.5f),
-                    color
+                    color,
+                    normal
                 );
             }
         }
@@ -209,21 +226,19 @@ namespace SkiGame.View.World
             List<int> tris,
             List<Vector2> uvs,
             List<Color> cols,
+            List<Vector3> norms,
             Vector3 center,
             Vector3 widthAxis,
             Vector3 heightAxis,
-            Color color
+            Color color,
+            Vector3 normal
         )
         {
             int startIndex = verts.Count;
 
-            // P0: Bottom-Left.
             verts.Add(center - widthAxis - heightAxis);
-            // P1: Top-Left.
             verts.Add(center - widthAxis + heightAxis);
-            // P2: Top-Right.
             verts.Add(center + widthAxis + heightAxis);
-            // P3: Bottom-Right.
             verts.Add(center + widthAxis - heightAxis);
 
             uvs.Add(new Vector2(0, 0));
@@ -236,7 +251,12 @@ namespace SkiGame.View.World
             cols.Add(color);
             cols.Add(color);
 
-            // Clockwise Winding.
+            // Add Normals manually (4 times, one per vertex).
+            norms.Add(normal);
+            norms.Add(normal);
+            norms.Add(normal);
+            norms.Add(normal);
+
             tris.Add(startIndex + 0);
             tris.Add(startIndex + 1);
             tris.Add(startIndex + 2);

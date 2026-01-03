@@ -9,8 +9,11 @@ namespace SkiGame.View.World
     public class FoliageView : MonoBehaviour
     {
         [Header("Assets")]
-        public Mesh TreeMesh;
-        public Material TreeMaterial;
+        [SerializeField]
+        private Mesh _treeMesh;
+
+        [SerializeField]
+        private Material _treeMaterial;
 
         private const int BATCH_SIZE = 1023;
         private const float MIN_TREE_SCALE = 0.7f;
@@ -18,7 +21,7 @@ namespace SkiGame.View.World
 
         private Map _map;
         private float _treeScale;
-        private readonly List<Matrix4x4> _treeMatrices = new List<Matrix4x4>();
+        private readonly List<Matrix4x4[]> _batches = new List<Matrix4x4[]>();
 
         public void Initialize(Map map, float treeScale)
         {
@@ -30,7 +33,9 @@ namespace SkiGame.View.World
 
         public void Refresh()
         {
-            _treeMatrices.Clear();
+            _batches.Clear();
+            List<Matrix4x4> currentBatch = new List<Matrix4x4>();
+            int totalTrees = 0;
 
             for (int x = 0; x < _map.Width; x++)
             {
@@ -40,44 +45,58 @@ namespace SkiGame.View.World
 
                     if (tile.Structure == StructureType.Tree)
                     {
+                        if (currentBatch.Count >= BATCH_SIZE)
+                        {
+                            _batches.Add(currentBatch.ToArray());
+                            currentBatch.Clear();
+                        }
+
                         Vector3 position = MapUtil.GridToWorld(x, z, tile.Height);
                         Quaternion rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
                         Vector3 scale =
                             _treeScale * Random.Range(MIN_TREE_SCALE, MAX_TREE_SCALE) * Vector3.one;
 
-                        _treeMatrices.Add(Matrix4x4.TRS(position, rotation, scale));
+                        currentBatch.Add(Matrix4x4.TRS(position, rotation, scale));
+                        totalTrees++;
                     }
                 }
             }
 
-            Debug.Log($"[FoliageView] Generated {_treeMatrices.Count} trees.");
+            if (currentBatch.Count > 0)
+            {
+                _batches.Add(currentBatch.ToArray());
+            }
+
+            Debug.Log($"[FoliageView] Generated {totalTrees} trees.");
         }
 
         private void Update()
         {
-            if (_treeMatrices.Count == 0)
+            if (_treeMesh == null || _treeMaterial == null)
             {
                 return;
             }
 
-            if (TreeMesh == null || TreeMaterial == null)
+            for (int i = 0; i < _batches.Count; i++)
             {
-                Debug.LogWarning("[FoliageView] Mesh or Material is missing!");
-                return;
-            }
-
-            for (int i = 0; i < _treeMatrices.Count; i += BATCH_SIZE)
-            {
-                int count = Mathf.Min(BATCH_SIZE, _treeMatrices.Count - i);
                 Graphics.DrawMeshInstanced(
-                    TreeMesh,
+                    _treeMesh,
                     0,
-                    TreeMaterial,
-                    _treeMatrices.GetRange(i, count),
+                    _treeMaterial,
+                    _batches[i],
+                    _batches[i].Length,
                     null,
                     UnityEngine.Rendering.ShadowCastingMode.On,
                     true
                 );
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_map != null)
+            {
+                _map.OnFoliageChanged -= Refresh;
             }
         }
     }

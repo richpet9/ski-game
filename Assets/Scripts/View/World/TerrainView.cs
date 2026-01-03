@@ -13,6 +13,7 @@ namespace SkiGame.View.World
         private Map _map;
         private int _width;
         private int _height;
+        private bool _isDirty;
 
         private void Awake()
         {
@@ -28,17 +29,31 @@ namespace SkiGame.View.World
             _height = height;
 
             // Subscribe to model changes
-            _map.OnMapChanged += RebuildMesh;
+            _map.OnMapChanged += SetDirty;
 
             // Initial build
-            RebuildMesh();
+            SetDirty();
         }
 
         private void OnDestroy()
         {
             if (_map != null)
             {
-                _map.OnMapChanged -= RebuildMesh;
+                _map.OnMapChanged -= SetDirty;
+            }
+        }
+
+        private void SetDirty()
+        {
+            _isDirty = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (_isDirty)
+            {
+                RebuildMesh();
+                _isDirty = false;
             }
         }
 

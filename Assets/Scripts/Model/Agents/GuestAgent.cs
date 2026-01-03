@@ -1,6 +1,7 @@
 using SkiGame.Model.Core;
 using SkiGame.Model.Guest;
 using SkiGame.Model.Services;
+using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 
@@ -191,10 +192,10 @@ namespace SkiGame.Model.Agents
                 Data.TargetPosition = MapUtil.GridToWorld(targetGrid, y);
                 Data.State = GuestState.WalkingToLift;
             }
-            else if (_map.Structures.Lodges.Count > 0)
+            else if (_map.Structures.Structures[StructureType.Lodge].Count > 0)
             {
-                Vector2Int targetGrid = _map.Structures.Lodges[
-                    Random.Range(0, _map.Structures.Lodges.Count)
+                Vector2Int targetGrid = _map.Structures.Structures[StructureType.Lodge][
+                    Random.Range(0, _map.Structures.Structures[StructureType.Lodge].Count)
                 ];
                 float y = _map.GetTile(targetGrid).Height;
                 Data.TargetPosition = MapUtil.GridToWorld(targetGrid, y);
@@ -210,11 +211,10 @@ namespace SkiGame.Model.Agents
         private void SetSkiingDestination()
         {
             // After getting off a lift, ski towards a parking lot to simulate skiing to the base.
-            // This assumes StructureManager has a public List<Vector2Int> ParkingLots.
-            if (_map.Structures.Lodges.Count > 0)
+            if (_map.Structures.Structures[StructureType.ParkingLot].Count > 0)
             {
-                Vector2Int gridPos = _map.Structures.Lodges[
-                    Random.Range(0, _map.Structures.Lodges.Count)
+                Vector2Int gridPos = _map.Structures.Structures[StructureType.ParkingLot][
+                    Random.Range(0, _map.Structures.Structures[StructureType.ParkingLot].Count)
                 ];
                 float y = _map.GetTile(gridPos).Height;
                 Data.TargetPosition = MapUtil.GridToWorld(gridPos, y);
@@ -227,7 +227,8 @@ namespace SkiGame.Model.Agents
 
         private void SetRandomDestination()
         {
-            Vector3 randomPoint = Data.Position + (Random.insideUnitSphere * WANDER_RADIUS);
+            Vector2 randomCircle = Random.insideUnitCircle * WANDER_RADIUS;
+            Vector3 randomPoint = Data.Position + new Vector3(randomCircle.x, 0, randomCircle.y);
             if (_navService.SamplePosition(randomPoint, out Vector3 hitPoint, WANDER_RADIUS))
             {
                 Data.TargetPosition = hitPoint;

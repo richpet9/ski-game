@@ -17,6 +17,9 @@ namespace SkiGame.Model.Terrain
         public readonly int Width;
         public readonly int Height;
 
+        private const int SNOW_LINE_HEIGHT = 10;
+        private const float FLATTEN_LERP_FACTOR = 0.5f;
+
         private readonly TileData[] _grid;
 
         public Map(int width, int height)
@@ -83,12 +86,11 @@ namespace SkiGame.Model.Terrain
             if (count > 0)
             {
                 float average = totalHeight / count;
-                // Apply a gentle lerp towards the average to "pack" it rather than
-                // instantly flatten.
+                // Apply a gentle lerp towards the average to "pack" it rather than instantly flatten.
                 _grid[GetIndex(x, z)].Height = Mathf.Lerp(
                     _grid[GetIndex(x, z)].Height,
                     average,
-                    0.5f
+                    FLATTEN_LERP_FACTOR
                 );
             }
         }
@@ -149,8 +151,8 @@ namespace SkiGame.Model.Terrain
 
         private TileType GetTerrainTypeFromHeight(float height)
         {
-            // Use a constant in the shader and here.
-            if (height > 10)
+            // Uses a constant in the shader and here.
+            if (height > SNOW_LINE_HEIGHT)
             {
                 return TileType.Snow;
             }

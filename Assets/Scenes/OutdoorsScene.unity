@@ -456,7 +456,6 @@ Transform:
   - {fileID: 411815432}
   - {fileID: 1667351141}
   - {fileID: 789128091}
-  - {fileID: 968372243}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &315996233
@@ -517,7 +516,7 @@ GameObject:
   - component: {fileID: 411815432}
   - component: {fileID: 411815433}
   m_Layer: 0
-  m_Name: StructureController
+  m_Name: ToolController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1016,55 +1015,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05573bbf07d104d45a646fe03bc14be8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &968372242
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 968372243}
-  - component: {fileID: 968372244}
-  m_Layer: 0
-  m_Name: PisteController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &968372243
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 968372242}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 298316583}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &968372244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 968372242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02337e8120adf41a684bd079caa9ce54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MainCamera: {fileID: 1823688466}
-  TerrainView: {fileID: 462982758}
-  _terrainLayer:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!1 &1359164285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1899,7 +1849,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapConfig: {fileID: 11400000, guid: 592d1751a0e024e02a40aa25d56befb0, type: 2}
-  _pisteController: {fileID: 968372244}
   _terrainView: {fileID: 462982758}
   _foliageView: {fileID: 315996235}
 --- !u!4 &1909696327

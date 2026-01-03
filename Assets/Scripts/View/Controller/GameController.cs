@@ -23,6 +23,8 @@ namespace SkiGame.View.Controller
         [SerializeField]
         private FoliageView _foliageView;
 
+        private const int MAX_SEED_VALUE = 100000;
+
         private static readonly WaitForSeconds _waitForSeconds0_5 = new WaitForSeconds(0.5f);
 
         private Map _map;
@@ -41,19 +43,19 @@ namespace SkiGame.View.Controller
 
         private void Start()
         {
-            // Called on the frame when a script is enabled just before any of the Update methods are called the first time.
+            // Generates the initial map on startup.
             GenerateAndBindMap();
         }
 
         private void Update()
         {
-            // Checks if the user has pressed the G key and if map generation is allowed.
+            // Listens for the 'G' key to regenerate the map for debugging purposes.
             if (Input.GetKeyDown(KeyCode.G) && _canGenerate)
             {
-                StartCoroutine(ActionRoutine());
+                StartCoroutine(RegenerationCooldownRoutine());
                 if (_mapConfig.RandomizeOnGenerate)
                 {
-                    _mapConfig.Seed = Random.Range(0, 100000);
+                    _mapConfig.Seed = Random.Range(0, MAX_SEED_VALUE);
                 }
                 GenerateAndBindMap();
             }
@@ -74,14 +76,16 @@ namespace SkiGame.View.Controller
 
             for (int z = 0; z < _mapConfig.Height; z++)
             {
+                var rowStartIndex = z * (_mapConfig.Width + 1);
+                var nextRowStartIndex = (z + 1) * (_mapConfig.Width + 1);
                 for (int x = 0; x < _mapConfig.Width; x++)
                 {
-                    float h1 = heights[z * (_mapConfig.Width + 1) + x];
-                    float h2 = heights[z * (_mapConfig.Width + 1) + x + 1];
-                    float h3 = heights[(z + 1) * (_mapConfig.Width + 1) + x];
-                    float h4 = heights[(z + 1) * (_mapConfig.Width + 1) + x + 1];
+                    float h1 = heights[rowStartIndex + x];
+                    float h2 = heights[rowStartIndex + x + 1];
+                    float h3 = heights[nextRowStartIndex + x];
+                    float h4 = heights[nextRowStartIndex + x + 1];
                     float avg = (h1 + h2 + h3 + h4) * 0.25f;
-                    GameContext.Map.SetTile(x, z, avg);
+                    _map.SetTile(x, z, avg);
                 }
             }
 
@@ -102,7 +106,7 @@ namespace SkiGame.View.Controller
             _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
         }
 
-        private IEnumerator ActionRoutine()
+        private IEnumerator RegenerationCooldownRoutine()
         {
             if (!_canGenerate)
                 yield break;

@@ -20,8 +20,11 @@ namespace SkiGame.View.World
         private const ushort SPAWN_MONEY = 255;
         private const byte SPAWN_ENERGY = 255;
 
+        private WaitForSeconds _wait;
+
         private void Start()
         {
+            _wait = new WaitForSeconds(_spawnInterval);
             StartCoroutine(SpawnRoutine());
         }
 
@@ -29,7 +32,7 @@ namespace SkiGame.View.World
         {
             while (true)
             {
-                yield return new WaitForSeconds(_spawnInterval);
+                yield return _wait;
                 SpawnGuest();
             }
         }

@@ -14,12 +14,14 @@ namespace SkiGame.Model.Structures
             public Vector2Int EndGrid;
         }
 
-        public readonly List<Vector2Int> Lodges = new List<Vector2Int>();
-        public readonly List<Vector2Int> ParkingLots = new List<Vector2Int>();
         public readonly List<Lift> Lifts = new List<Lift>();
+        public readonly Dictionary<StructureType, List<Vector2Int>> Structures =
+            new Dictionary<StructureType, List<Vector2Int>>();
 
         public event Action<Vector2Int, StructureType> OnStructureBuilt;
         public event Action<Vector2Int, Vector2Int> OnLiftBuilt;
+
+        private const int LIFT_COST_PER_UNIT = 10;
 
         private readonly Map _map;
         private readonly EconomyManager _economy;
@@ -28,6 +30,8 @@ namespace SkiGame.Model.Structures
         {
             _map = map;
             _economy = economy;
+            Structures[StructureType.Lodge] = new List<Vector2Int>();
+            Structures[StructureType.ParkingLot] = new List<Vector2Int>();
         }
 
         public int GetCost(StructureType type) =>
@@ -79,8 +83,8 @@ namespace SkiGame.Model.Structures
                 return (false, "End position is occupied");
             }
 
-            // TODO: Base cost on distance.
-            int cost = GetCost(StructureType.Lift) * 2; // There are two lift towers.
+            int distance = (int)Vector2Int.Distance(startPos, endPos);
+            int cost = distance * LIFT_COST_PER_UNIT;
             if (!_economy.TrySpendMoney(cost))
             {
                 return (false, "Not enough money");
@@ -97,14 +101,9 @@ namespace SkiGame.Model.Structures
         {
             _map.SetStructure(gridPos, structure);
 
-            // TODO: Replace these lists with a dictionary, probably. Or a typed getter.
-            if (structure == StructureType.Lodge)
+            if (Structures.ContainsKey(structure))
             {
-                Lodges.Add(gridPos);
-            }
-            else if (structure == StructureType.ParkingLot)
-            {
-                ParkingLots.Add(gridPos);
+                Structures[structure].Add(gridPos);
             }
         }
     }

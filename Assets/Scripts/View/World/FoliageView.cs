@@ -36,9 +36,9 @@ namespace SkiGame.View.World
             }
 
             // Iterate over the map size (hardcoded to 128 for now, ideally passed in)
-            for (int x = 0; x < 128; x++)
+            for (int x = 0; x < _map.Width; x++)
             {
-                for (int z = 0; z < 128; z++)
+                for (int z = 0; z < _map.Height; z++)
                 {
                     TileData tile = _map.GetTile(x, z);
 

@@ -25,6 +25,7 @@ namespace SkiGame.View.Controller
         private ToolMode _currentMode = ToolMode.Build;
         private StructureType _structureType = StructureType.Lodge;
         private Vector2Int? _liftStartPos;
+        private Vector2Int? _lastPisteGridPos;
 
         private void Update()
         {
@@ -34,6 +35,7 @@ namespace SkiGame.View.Controller
                 _currentMode = ToolMode.Piste;
                 _liftStartPos = null;
                 _previewCable.gameObject.SetActive(false);
+                _lastPisteGridPos = null;
                 Debug.Log("Selected: Piste Tool");
             }
 
@@ -66,7 +68,11 @@ namespace SkiGame.View.Controller
             else if (_currentMode == ToolMode.Piste && Input.GetMouseButton(0) && _selector.IsValid)
             {
                 // Paint piste while holding mouse
-                GameContext.Map.PaintPiste(_selector.GridPosition);
+                if (_lastPisteGridPos != _selector.GridPosition)
+                {
+                    _lastPisteGridPos = _selector.GridPosition;
+                    GameContext.Map.PaintPiste(_selector.GridPosition);
+                }
             }
         }
 

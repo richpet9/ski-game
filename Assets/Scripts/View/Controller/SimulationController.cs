@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class SimulationDriver : MonoBehaviour
+    public class SimulationController : MonoBehaviour
     {
         private const float TICK_RATE = 0.05f; // Every 50ms.
 

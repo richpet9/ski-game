@@ -4,7 +4,9 @@ namespace SkiGame.Model.Terrain
 {
     public static class MountainGenerator
     {
-        // Pure Logic: Returns the height map data, doesn't touch MeshFilters
+        private const float NOISE_OFFSET = 9999f;
+
+        // Pure Logic: Returns the height map data, doesn't touch MeshFilters.
         public static float[] GenerateHeights(
             int width,
             int height,
@@ -17,8 +19,8 @@ namespace SkiGame.Model.Terrain
         {
             float[] heights = new float[(width + 1) * (height + 1)];
             Vector2 center = new Vector2(width / 2f, height / 2f);
-            float xOffset = seed + 9999f;
-            float zOffset = seed + 9999f;
+            float xOffset = seed + NOISE_OFFSET;
+            float zOffset = seed + NOISE_OFFSET;
 
             for (int z = 0; z <= height; z++)
             {

@@ -10,6 +10,8 @@ namespace SkiGame.View.World
     public class TerrainView : MonoBehaviour
     {
         private NavMeshSurface _surface;
+        private MeshFilter _visualFilter;
+        private MeshCollider _physicsCollider;
         private Map _map;
         private int _width;
         private int _height;
@@ -18,8 +20,14 @@ namespace SkiGame.View.World
         private void Awake()
         {
             _surface = GetComponent<NavMeshSurface>();
+            _visualFilter = GetComponent<MeshFilter>();
+            _physicsCollider = GetComponent<MeshCollider>();
+
             _surface.collectObjects = CollectObjects.Children;
-            _surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+            // Crucial: Only bake the physics collider, not the rendered mesh.
+            // You might need to put the Physics mesh on a child object or specific layer
+            // if NavMeshSurface picks up the MeshFilter automatically.
+            _surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
         }
 
         public void Initialize(Map map, int width, int height)
@@ -27,8 +35,6 @@ namespace SkiGame.View.World
             _map = map;
             _width = width;
             _height = height;
-
-            // Subscribe to model changes.
             _map.OnMapChanged += SetDirty;
         }
 
@@ -57,24 +63,31 @@ namespace SkiGame.View.World
         private void RebuildMesh()
         {
             if (_map == null)
-                return;
-
-            MeshData meshData = TerrainMeshBuilder.Build(_map, _width, _height);
-
-            Mesh mesh = new Mesh
             {
-                vertices = meshData.Vertices,
-                triangles = meshData.Triangles,
-                uv = meshData.UVs,
-                colors = meshData.Colors,
+                return;
+            }
+
+            MeshData visualData = TerrainVoxelBuilder.Build(_map, _width, _height);
+            Mesh visualMesh = new Mesh
+            {
+                name = "Terrain Visual Mesh",
+                vertices = visualData.Vertices,
+                triangles = visualData.Triangles,
+                uv = visualData.UVs,
+                colors = visualData.Colors,
+            };
+            visualMesh.RecalculateNormals();
+            _visualFilter.mesh = visualMesh;
+
+            MeshData physicsData = TerrainMeshBuilder.Build(_map, _width, _height);
+            Mesh physicsMesh = new Mesh
+            {
+                name = "Terrain Physics Mesh",
+                vertices = physicsData.Vertices,
+                triangles = physicsData.Triangles,
             };
 
-            mesh.RecalculateNormals();
-
-            GetComponent<MeshFilter>().mesh = mesh;
-            GetComponent<MeshCollider>().sharedMesh = mesh;
-
-            // Note: For performance, we might want to delay NavMesh rebaking or debounce it.
+            _physicsCollider.sharedMesh = physicsMesh;
             _surface.BuildNavMesh();
         }
     }

@@ -19,41 +19,17 @@ namespace SkiGame.View.World
                 for (int x = 0; x <= width; x++)
                 {
                     int index = z * (width + 1) + x;
-                    int count = 0;
-                    float heightSum = 0;
-                    bool isPiste = false;
 
-                    for (int dx = -1; dx <= 0; dx++)
-                    {
-                        for (int dz = -1; dz <= 0; dz++)
-                        {
-                            int sampleX = x + dx;
-                            int sampleZ = z + dz;
-
-                            if (map.InBounds(sampleX, sampleZ))
-                            {
-                                TileData t = map.GetTile(sampleX, sampleZ);
-                                heightSum += t.Height;
-                                count++;
-                                if (t.Type == TileType.PackedSnow)
-                                {
-                                    isPiste = true;
-                                }
-                            }
-                        }
-                    }
-
-                    float avgHeight = count > 0 ? heightSum / count : 0;
-
-                    vertices[index] = new Vector3(x, avgHeight, z);
+                    TileData t = map.GetTile(x, z);
+                    vertices[index] = new Vector3(x, t.Height, z);
                     uvs[index] = new Vector2((float)x / width, (float)z / height);
 
                     // Colors
-                    if (isPiste)
+                    if (t.Type == TileType.PackedSnow)
                     {
                         colors[index] = Color.blue;
                     }
-                    else if (avgHeight > 10) // Match your Snow Line constant
+                    else if (t.Height > 10) // Match your Snow Line constant
                     {
                         colors[index] = Color.white;
                     }

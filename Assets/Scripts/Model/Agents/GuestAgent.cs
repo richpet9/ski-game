@@ -119,7 +119,7 @@ namespace SkiGame.Model.Agents
             }
             else
             {
-                Data.Position += moveDir * SKI_SPEED * deltaTime;
+                Data.Position += deltaTime * SKI_SPEED * moveDir;
                 Data.Rotation = Quaternion.LookRotation(moveDir);
             }
         }

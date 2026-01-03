@@ -51,7 +51,7 @@ namespace SkiGame.View.World
                     // Colors
                     if (isPiste)
                     {
-                        colors[index] = Color.cyan;
+                        colors[index] = Color.blue;
                     }
                     else if (avgHeight > 10) // Match your Snow Line constant
                     {

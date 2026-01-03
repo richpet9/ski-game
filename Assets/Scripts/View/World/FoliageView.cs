@@ -24,6 +24,7 @@ namespace SkiGame.View.World
         {
             _map = map;
             _treeScale = treeScale;
+            _map.OnFoliageChanged += Refresh;
             Refresh();
         }
 
@@ -55,7 +56,9 @@ namespace SkiGame.View.World
         private void Update()
         {
             if (_treeMatrices.Count == 0)
+            {
                 return;
+            }
 
             if (TreeMesh == null || TreeMaterial == null)
             {

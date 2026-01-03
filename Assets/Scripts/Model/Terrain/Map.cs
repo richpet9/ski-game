@@ -10,6 +10,7 @@ namespace SkiGame.Model.Terrain
     public class Map
     {
         public event Action OnMapChanged;
+        public event Action OnFoliageChanged;
 
         public GuestManager Guests { get; private set; }
         public EconomyManager Economy { get; private set; }
@@ -53,11 +54,21 @@ namespace SkiGame.Model.Terrain
         {
             if (InBounds(loc))
             {
+                TileData tile = GetTile(loc);
+                if (tile.Structure == StructureType.Tree)
+                {
+                    RemoveStructure(loc);
+                }
                 SetTileType(loc, TileType.PackedSnow);
-                FlattenTerrain(loc.x, loc.y);
+                FlattenTerrain(loc);
 
                 OnMapChanged?.Invoke();
             }
+        }
+
+        private void FlattenTerrain(Vector2Int loc)
+        {
+            FlattenTerrain(loc.x, loc.y);
         }
 
         private void FlattenTerrain(int x, int z)
@@ -137,6 +148,13 @@ namespace SkiGame.Model.Terrain
 
         public void SetStructure(int x, int z, StructureType structure)
         {
+            if (structure == StructureType.None)
+            {
+                Debug.LogError(
+                    "Do not use SetStructure to remove structures! Use RemoveStructure()."
+                );
+                return;
+            }
             if (InBounds(x, z))
             {
                 _grid[GetIndex(x, z)].Structure = structure;
@@ -167,6 +185,24 @@ namespace SkiGame.Model.Terrain
                     {
                         _grid[i].Structure = StructureType.Tree;
                     }
+                }
+            }
+        }
+
+        public void RemoveStructure(Vector2Int loc)
+        {
+            RemoveStructure(loc.x, loc.y);
+        }
+
+        public void RemoveStructure(int x, int z)
+        {
+            if (InBounds(x, z))
+            {
+                StructureType oldStructure = _grid[GetIndex(x, z)].Structure;
+                _grid[GetIndex(x, z)].Structure = StructureType.None;
+                if (oldStructure == StructureType.Tree)
+                {
+                    OnFoliageChanged?.Invoke();
                 }
             }
         }

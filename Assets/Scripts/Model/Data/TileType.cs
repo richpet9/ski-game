@@ -4,5 +4,6 @@ namespace SkiGame.Model.Data
     {
         Grass = 0,
         Snow = 1,
+        PackedSnow = 2,
     }
 }

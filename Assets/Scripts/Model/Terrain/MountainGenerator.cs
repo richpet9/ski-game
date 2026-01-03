@@ -86,5 +86,6 @@ namespace SkiGame.Model.Terrain
         public int[] Triangles;
         public Vector3[] Vertices;
         public Vector2[] UVs;
+        public Color[] Colors;
     }
 }

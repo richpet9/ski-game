@@ -10,39 +10,59 @@ namespace SkiGame.View.World
     public class TerrainView : MonoBehaviour
     {
         private NavMeshSurface _surface;
+        private Map _map;
+        private int _width;
+        private int _height;
 
         private void Awake()
         {
             _surface = GetComponent<NavMeshSurface>();
-            // Settings for the bake.
             _surface.collectObjects = CollectObjects.Children;
             _surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
         }
 
-        public void Render(MeshData meshData)
+        public void Initialize(Map map, int width, int height)
         {
-            Mesh mesh = new Mesh()
+            _map = map;
+            _width = width;
+            _height = height;
+
+            // Subscribe to model changes
+            _map.OnMapChanged += RebuildMesh;
+
+            // Initial build
+            RebuildMesh();
+        }
+
+        private void OnDestroy()
+        {
+            if (_map != null)
+            {
+                _map.OnMapChanged -= RebuildMesh;
+            }
+        }
+
+        private void RebuildMesh()
+        {
+            if (_map == null)
+                return;
+
+            MeshData meshData = TerrainMeshBuilder.Build(_map, _width, _height);
+
+            Mesh mesh = new Mesh
             {
                 vertices = meshData.Vertices,
                 triangles = meshData.Triangles,
                 uv = meshData.UVs,
+                colors = meshData.Colors,
             };
+
             mesh.RecalculateNormals();
-            UpdateTerrainMesh(mesh);
 
-            Debug.Log("Rendered Terrain.");
-        }
-
-        public void ClearMesh()
-        {
-            GetComponent<MeshFilter>().mesh = null;
-            GetComponent<MeshCollider>().sharedMesh = null;
-        }
-
-        public void UpdateTerrainMesh(Mesh mesh)
-        {
             GetComponent<MeshFilter>().mesh = mesh;
             GetComponent<MeshCollider>().sharedMesh = mesh;
+
+            // Note: For performance, we might want to delay NavMesh rebaking or debounce it.
             _surface.BuildNavMesh();
         }
     }

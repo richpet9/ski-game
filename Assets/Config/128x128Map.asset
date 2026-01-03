@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
   Width: 128
   Height: 128
-  Seed: 56660
+  Seed: 37176
   RandomizeOnGenerate: 1
   MountainHeight: 20
   NoiseScale: 10
@@ -61,3 +61,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  ForestDensity: 0.3
+  ForestNoiseScale: 10
+  TreeLinePercent: 0.6
+  TreeScale: 0.12

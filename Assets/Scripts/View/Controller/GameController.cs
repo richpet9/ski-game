@@ -30,6 +30,7 @@ namespace SkiGame.View.Controller
 
         private void Awake()
         {
+            // Initializes the core game systems.
             _map = new Map(_mapConfig.Width, _mapConfig.Height);
             TickManager tickManager = new TickManager();
 
@@ -40,35 +41,27 @@ namespace SkiGame.View.Controller
 
         private void Start()
         {
-            InitializeTerrain();
+            // Called on the frame when a script is enabled just before any of the Update methods are called the first time.
+            GenerateAndBindMap();
         }
 
         private void Update()
         {
-            if (Input.GetKey(KeyCode.G) && _canGenerate)
+            // Checks if the user has pressed the G key and if map generation is allowed.
+            if (Input.GetKeyDown(KeyCode.G) && _canGenerate)
             {
                 StartCoroutine(ActionRoutine());
                 if (_mapConfig.RandomizeOnGenerate)
                 {
                     _mapConfig.Seed = Random.Range(0, 100000);
                 }
-                _terrainView.ClearMesh();
-                InitializeTerrain();
+                GenerateAndBindMap();
             }
         }
 
-        private IEnumerator ActionRoutine()
+        private void GenerateAndBindMap()
         {
-            if (!_canGenerate)
-                yield break;
-
-            _canGenerate = false;
-            yield return _waitForSeconds0_5;
-            _canGenerate = true;
-        }
-
-        private void InitializeTerrain()
-        {
+            // Generates the map data and binds it to the view components.
             float[] heights = MountainGenerator.GenerateHeights(
                 _mapConfig.Width,
                 _mapConfig.Height,
@@ -106,9 +99,17 @@ namespace SkiGame.View.Controller
             );
 
             _foliageView.Initialize(_map, _mapConfig.TreeScale);
-            _terrainView.Render(
-                MountainGenerator.GenerateMeshData(_mapConfig.Width, _mapConfig.Height, heights)
-            );
+            _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
+        }
+
+        private IEnumerator ActionRoutine()
+        {
+            if (!_canGenerate)
+                yield break;
+
+            _canGenerate = false;
+            yield return _waitForSeconds0_5;
+            _canGenerate = true;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace SkiGame.Model.Agents
         private const byte SKIING_ENERGY_COST = 3;
         private const byte WALKING_ENERGY_COST = 1;
         private const byte ENERGY_LEAVE_THRESHOLD = 67;
+        private const byte LIFT_TICKET_PRICE = 15;
 
         private readonly Map _map;
         private readonly TickManager _tickManager;
@@ -239,7 +240,7 @@ namespace SkiGame.Model.Agents
             Data.TargetPosition = null;
             Data.IsVisible = false;
             _timer = 0f;
-            _map.Economy.AddMoney(15);
+            _map.Economy.AddMoney(LIFT_TICKET_PRICE);
         }
 
         private void ExitLodge()

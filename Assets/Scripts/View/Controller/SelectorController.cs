@@ -22,6 +22,7 @@ namespace SkiGame.View.Controller
         private const float RAY_HEIGHT = 2000f;
 
         public Vector2Int GridPosition { get; private set; }
+        public bool IsValid { get; private set; }
         public event Action<Vector2Int> OnTileClicked;
 
         private void Update()
@@ -30,6 +31,7 @@ namespace SkiGame.View.Controller
 
             if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, terrainLayer))
             {
+                IsValid = true;
                 GridPosition = MapUtil.WorldToGrid(hit.point);
                 cursorVisual.transform.position = MapUtil.GridToWorld(
                     GridPosition,
@@ -45,6 +47,7 @@ namespace SkiGame.View.Controller
             }
             else
             {
+                IsValid = false;
                 cursorVisual.SetActive(false);
             }
         }

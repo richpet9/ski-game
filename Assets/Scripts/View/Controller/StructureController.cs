@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class StructureController : MonoBehaviour
+    public class ToolController : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField]
@@ -16,32 +16,57 @@ namespace SkiGame.View.Controller
 
         private const float PREVIEW_CABLE_HEIGHT = 2f;
 
+        private enum ToolMode
+        {
+            Build,
+            Piste,
+        }
+
+        private ToolMode _currentMode = ToolMode.Build;
         private StructureType _structureType = StructureType.Lodge;
         private Vector2Int? _liftStartPos;
 
         private void Update()
         {
-            if (_liftStartPos.HasValue)
+            // Tool Switching
+            if (Input.GetKeyDown(KeyCode.P))
             {
-                DrawListPreviewEndpoint();
+                _currentMode = ToolMode.Piste;
+                _liftStartPos = null;
+                _previewCable.gameObject.SetActive(false);
+                Debug.Log("Selected: Piste Tool");
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
+                _currentMode = ToolMode.Build;
                 _structureType = StructureType.Lodge;
                 Debug.Log("Selected: Lodge");
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
+                _currentMode = ToolMode.Build;
                 _structureType = StructureType.ParkingLot;
                 Debug.Log("Selected: Parking Lot");
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
+                _currentMode = ToolMode.Build;
                 _structureType = StructureType.Lift;
                 Debug.Log("Selected: Lift");
+            }
+
+            // Tool Logic
+            if (_currentMode == ToolMode.Build && _liftStartPos.HasValue)
+            {
+                DrawListPreviewEndpoint();
+            }
+            else if (_currentMode == ToolMode.Piste && Input.GetMouseButton(0) && _selector.IsValid)
+            {
+                // Paint piste while holding mouse
+                GameContext.Map.PaintPiste(_selector.GridPosition);
             }
         }
 
@@ -63,6 +88,11 @@ namespace SkiGame.View.Controller
 
         private void HandleTileClick(Vector2Int gridPos)
         {
+            if (_currentMode != ToolMode.Build)
+            {
+                return;
+            }
+
             if (_structureType == StructureType.Lift)
             {
                 HandleLiftInput(gridPos);

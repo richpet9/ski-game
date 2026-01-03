@@ -1,3 +1,4 @@
+using System;
 using SkiGame.Model.Agents;
 using SkiGame.Model.Data;
 using SkiGame.Model.Economy;
@@ -8,6 +9,8 @@ namespace SkiGame.Model.Terrain
 {
     public class Map
     {
+        public event Action OnMapChanged;
+
         public GuestManager Guests { get; private set; }
         public EconomyManager Economy { get; private set; }
         public StructureManager Structures { get; private set; }
@@ -33,6 +36,63 @@ namespace SkiGame.Model.Terrain
             return x + z * Width;
         }
 
+        public bool InBounds(Vector2Int loc)
+        {
+            return InBounds(loc.x, loc.y);
+        }
+
+        public bool InBounds(int x, int z)
+        {
+            bool inBounds = GetIndex(x, z) >= 0 && GetIndex(x, z) < _grid.Length;
+            if (!inBounds)
+            {
+                Debug.LogError($"Attempting access out of bounds map index: {x}, {z}");
+                return false;
+            }
+            return true;
+        }
+
+        public void PaintPiste(Vector2Int loc)
+        {
+            if (InBounds(loc))
+            {
+                SetTileType(loc, TileType.PackedSnow);
+                FlattenTerrain(loc.x, loc.y);
+
+                OnMapChanged?.Invoke();
+            }
+        }
+
+        private void FlattenTerrain(int x, int z)
+        {
+            float totalHeight = 0;
+            int count = 0;
+
+            for (int nx = x - 1; nx <= x + 1; nx++)
+            {
+                for (int nz = z - 1; nz <= z + 1; nz++)
+                {
+                    if (InBounds(nx, nz))
+                    {
+                        totalHeight += _grid[GetIndex(nx, nz)].Height;
+                        count++;
+                    }
+                }
+            }
+
+            if (count > 0)
+            {
+                float average = totalHeight / count;
+                // Apply a gentle lerp towards the average to "pack" it rather than
+                // instantly flatten.
+                _grid[GetIndex(x, z)].Height = Mathf.Lerp(
+                    _grid[GetIndex(x, z)].Height,
+                    average,
+                    0.5f
+                );
+            }
+        }
+
         public void SetTile(Vector2Int loc, float height)
         {
             SetTile(loc.x, loc.y, height);
@@ -40,14 +100,24 @@ namespace SkiGame.Model.Terrain
 
         public void SetTile(int x, int z, float height)
         {
-            if (!InBounds(x, z))
+            if (InBounds(x, z))
             {
-                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
-                return;
+                _grid[GetIndex(x, z)].Height = height;
+                _grid[GetIndex(x, z)].Type = GetTerrainTypeFromHeight(height);
             }
+        }
 
-            _grid[GetIndex(x, z)].Height = height;
-            _grid[GetIndex(x, z)].Type = GetTerrainTypeFromHeight(height);
+        public void SetTileType(Vector2Int loc, TileType type)
+        {
+            SetTileType(loc.x, loc.y, type);
+        }
+
+        public void SetTileType(int x, int z, TileType type)
+        {
+            if (InBounds(x, z))
+            {
+                _grid[GetIndex(x, z)].Type = type;
+            }
         }
 
         public TileData GetTile(Vector2Int loc)
@@ -57,13 +127,11 @@ namespace SkiGame.Model.Terrain
 
         public TileData GetTile(int x, int z)
         {
-            if (!InBounds(x, z))
+            if (InBounds(x, z))
             {
-                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
-                return new TileData();
+                return _grid[GetIndex(x, z)];
             }
-
-            return _grid[GetIndex(x, z)];
+            return default;
         }
 
         public void SetStructure(Vector2Int loc, StructureType structure)
@@ -73,23 +141,10 @@ namespace SkiGame.Model.Terrain
 
         public void SetStructure(int x, int z, StructureType structure)
         {
-            if (!InBounds(x, z))
+            if (InBounds(x, z))
             {
-                Debug.LogError($"Arrempting access out of bounds map index: {x}, {z}");
-                return;
+                _grid[GetIndex(x, z)].Structure = structure;
             }
-
-            _grid[GetIndex(x, z)].Structure = structure;
-        }
-
-        public bool InBounds(Vector2Int loc)
-        {
-            return InBounds(loc.x, loc.y);
-        }
-
-        public bool InBounds(int x, int z)
-        {
-            return GetIndex(x, z) >= 0 && GetIndex(x, z) < _grid.Length;
         }
 
         private TileType GetTerrainTypeFromHeight(float height)

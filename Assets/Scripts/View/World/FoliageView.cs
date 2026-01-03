@@ -13,6 +13,8 @@ namespace SkiGame.View.World
         public Material TreeMaterial;
 
         private const int BATCH_SIZE = 1023;
+        private const float MIN_TREE_SCALE = 0.7f;
+        private const float MAX_TREE_SCALE = 1.2f;
 
         private Map _map;
         private float _treeScale;
@@ -29,25 +31,18 @@ namespace SkiGame.View.World
         {
             _treeMatrices.Clear();
 
-            if (_map == null)
-            {
-                Debug.LogError("[FoliageView] Map is null!");
-                return;
-            }
-
-            // Iterate over the map size (hardcoded to 128 for now, ideally passed in)
             for (int x = 0; x < _map.Width; x++)
             {
                 for (int z = 0; z < _map.Height; z++)
                 {
                     TileData tile = _map.GetTile(x, z);
 
-                    // Check if this tile has a tree
                     if (tile.Structure == StructureType.Tree)
                     {
-                        Vector3 position = new Vector3(x, tile.Height, z);
+                        Vector3 position = MapUtil.GridToWorld(x, z, tile.Height);
                         Quaternion rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                        Vector3 scale = _treeScale * Random.Range(0.8f, 1.2f) * Vector3.one;
+                        Vector3 scale =
+                            _treeScale * Random.Range(MIN_TREE_SCALE, MAX_TREE_SCALE) * Vector3.one;
 
                         _treeMatrices.Add(Matrix4x4.TRS(position, rotation, scale));
                     }

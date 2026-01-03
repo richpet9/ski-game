@@ -6,10 +6,10 @@ namespace SkiGame.View.Controller
     {
         [Header("Dependencies")]
         [SerializeField]
-        private Transform cameraTransform;
+        private Transform _cameraTransform;
 
         [SerializeField]
-        private LayerMask terrainLayer;
+        private LayerMask _terrainLayer;
 
         [Header("Movement (Rig Translation)")]
         [SerializeField]
@@ -63,11 +63,11 @@ namespace SkiGame.View.Controller
             // 1. Snap targets to current transform to prevent initial jerk.
             _targetPos = transform.position;
             _targetYaw = transform.eulerAngles.y;
-            _targetPitch = cameraTransform.localEulerAngles.x;
+            _targetPitch = _cameraTransform.localEulerAngles.x;
 
             // 2. Initialize zoom based on distance, not just Z axis.
             _targetZoom = Mathf.Clamp(
-                Vector3.Distance(transform.position, cameraTransform.position),
+                Vector3.Distance(transform.position, _cameraTransform.position),
                 _zoomLimits.x,
                 _zoomLimits.y
             );
@@ -167,7 +167,7 @@ namespace SkiGame.View.Controller
             transform.rotation = Quaternion.Euler(0, _currentYaw, 0);
 
             Quaternion pitchRotation = Quaternion.Euler(_currentPitch, 0, 0);
-            cameraTransform.SetLocalPositionAndRotation(
+            _cameraTransform.SetLocalPositionAndRotation(
                 pitchRotation * Vector3.back * _currentZoom,
                 pitchRotation
             );
@@ -178,7 +178,7 @@ namespace SkiGame.View.Controller
         {
             Vector3 origin = new Vector3(xzPos.x, RAY_HEIGHT, xzPos.y);
 
-            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1000f, terrainLayer))
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1000f, _terrainLayer))
             {
                 return hit.point.y;
             }

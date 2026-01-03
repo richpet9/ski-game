@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 306c591c814204eeca91f4a2261e3daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 1823688467}
-  terrainLayer:
+  _cameraTransform: {fileID: 1823688467}
+  _terrainLayer:
     serializedVersion: 2
     m_Bits: 256
   _moveSpeed: 20
@@ -502,6 +502,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63e15a7fed33430497aabdc9e225daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _terrainLayer:
+    serializedVersion: 2
+    m_Bits: 256
   TreeMesh: {fileID: 1261550738812896852, guid: 3194abef289a8e343b7a71a423b0750f,
     type: 3}
   TreeMaterial: {fileID: 2100000, guid: 7317cfcf0d7280742b2b5684512102d9, type: 2}
@@ -1895,11 +1898,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 877b252becb694841b7068b9ffefd1f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 1823688466}
-  terrainLayer:
+  _cam: {fileID: 1823688466}
+  _terrainLayer:
     serializedVersion: 2
     m_Bits: 256
-  cursorVisual: {fileID: 1359164285}
+  _cursorVisual: {fileID: 1359164285}
 --- !u!4 &1929428067
 Transform:
   m_ObjectHideFlags: 0

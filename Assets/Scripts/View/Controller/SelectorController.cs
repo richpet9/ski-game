@@ -9,14 +9,14 @@ namespace SkiGame.View.Controller
     {
         [Header("Dependencies")]
         [SerializeField]
-        private Camera cam;
+        private Camera _cam;
 
         [SerializeField]
-        private LayerMask terrainLayer;
+        private LayerMask _terrainLayer;
 
         [Header("Visuals")]
         [SerializeField]
-        private GameObject cursorVisual;
+        private GameObject _cursorVisual;
 
         private const float VERTICAL_OFFSET = 0.1f;
         private const float RAY_HEIGHT = 2000f;
@@ -27,17 +27,17 @@ namespace SkiGame.View.Controller
 
         private void Update()
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, terrainLayer))
+            if (Physics.Raycast(ray, out RaycastHit hit, RAY_HEIGHT, _terrainLayer))
             {
                 IsValid = true;
                 GridPosition = MapUtil.WorldToGrid(hit.point);
-                cursorVisual.transform.position = MapUtil.GridToWorld(
+                _cursorVisual.transform.position = MapUtil.GridToWorld(
                     GridPosition,
                     hit.point.y + VERTICAL_OFFSET
                 );
-                cursorVisual.SetActive(true);
+                _cursorVisual.SetActive(true);
 
                 // Debug interaction.
                 if (Input.GetMouseButtonDown(0))
@@ -48,7 +48,7 @@ namespace SkiGame.View.Controller
             else
             {
                 IsValid = false;
-                cursorVisual.SetActive(false);
+                _cursorVisual.SetActive(false);
             }
         }
     }

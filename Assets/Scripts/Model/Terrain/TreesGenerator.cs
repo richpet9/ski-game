@@ -4,6 +4,8 @@ namespace SkiGame.Model.Terrain
 {
     public static class TreesGenerator
     {
+        private const float MINIMUM_TREE_HEIGHT = 0f;
+
         public static bool[] GenerateTrees(
             int width,
             int height,
@@ -30,7 +32,7 @@ namespace SkiGame.Model.Terrain
                     continue;
                 }
 
-                if (currentHeight < 1f)
+                if (currentHeight < MINIMUM_TREE_HEIGHT)
                 {
                     continue;
                 }

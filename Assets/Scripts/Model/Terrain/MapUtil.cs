@@ -7,7 +7,13 @@ namespace SkiGame.Model.Terrain
         // Centers the entity on the tile (x + 0.5) and applies height.
         public static Vector3 GridToWorld(Vector2Int gridPos, float height = 0f)
         {
-            return new Vector3(gridPos.x + 0.5f, height, gridPos.y + 0.5f);
+            return GridToWorld(gridPos.x, gridPos.y, height);
+        }
+
+        // Centers the entity on the tile (x + 0.5) and applies height.
+        public static Vector3 GridToWorld(int x, int z, float height = 0f)
+        {
+            return new Vector3(x + 0.5f, height, z + 0.5f);
         }
 
         public static Vector2Int WorldToGrid(Vector3 worldPos)

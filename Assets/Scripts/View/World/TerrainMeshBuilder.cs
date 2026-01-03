@@ -18,28 +18,48 @@ namespace SkiGame.View.World
             {
                 for (int x = 0; x <= width; x++)
                 {
-                    int i = z * (width + 1) + x;
+                    int index = z * (width + 1) + x;
+                    int count = 0;
+                    float heightSum = 0;
+                    bool isPiste = false;
 
-                    // Clamping to map bounds for vertex height retrieval.
-                    int mapX = Mathf.Min(x, width - 1);
-                    int mapZ = Mathf.Min(z, height - 1);
-                    TileData tile = map.GetTile(mapX, mapZ);
-
-                    vertices[i] = new Vector3(x, tile.Height, z);
-                    uvs[i] = new Vector2((float)x / width, (float)z / height);
-
-                    // Color encoding for Shader.
-                    if (tile.Type == TileType.PackedSnow)
+                    for (int dx = -1; dx <= 0; dx++)
                     {
-                        colors[i] = new Color(1f, 1f, 0f, 1f); // White/Yellow for Piste.
+                        for (int dz = -1; dz <= 0; dz++)
+                        {
+                            int sampleX = x + dx;
+                            int sampleZ = z + dz;
+
+                            if (map.InBounds(sampleX, sampleZ))
+                            {
+                                TileData t = map.GetTile(sampleX, sampleZ);
+                                heightSum += t.Height;
+                                count++;
+                                if (t.Type == TileType.PackedSnow)
+                                {
+                                    isPiste = true;
+                                }
+                            }
+                        }
                     }
-                    else if (tile.Type == TileType.Snow)
+
+                    float avgHeight = count > 0 ? heightSum / count : 0;
+
+                    vertices[index] = new Vector3(x, avgHeight, z);
+                    uvs[index] = new Vector2((float)x / width, (float)z / height);
+
+                    // Colors
+                    if (isPiste)
                     {
-                        colors[i] = new Color(1f, 0f, 0f, 1f); // White for Snow.
+                        colors[index] = Color.cyan;
+                    }
+                    else if (avgHeight > 10) // Match your Snow Line constant
+                    {
+                        colors[index] = Color.white;
                     }
                     else
                     {
-                        colors[i] = new Color(0f, 0f, 0f, 1f); // Black for Grass.
+                        colors[index] = Color.green;
                     }
                 }
             }

@@ -46,13 +46,7 @@ namespace SkiGame.Model.Terrain
 
         public bool InBounds(int x, int z)
         {
-            bool inBounds = GetIndex(x, z) >= 0 && GetIndex(x, z) < _grid.Length;
-            if (!inBounds)
-            {
-                Debug.LogError($"Attempting access out of bounds map index: {x}, {z}");
-                return false;
-            }
-            return true;
+            return x >= 0 && x < Width && z >= 0 && z < Height;
         }
 
         public void PaintPiste(Vector2Int loc)

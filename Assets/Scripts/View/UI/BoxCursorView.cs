@@ -10,7 +10,7 @@ namespace SkiGame.View.UI
 
         private void Start()
         {
-            var line = GetComponent<LineRenderer>();
+            LineRenderer line = GetComponent<LineRenderer>();
 
             // Ensure standard settings for a simple box.
             line.useWorldSpace = false;

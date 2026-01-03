@@ -80,8 +80,8 @@ namespace SkiGame.View.Controller
 
             for (int z = 0; z < _mapConfig.Height; z++)
             {
-                var rowStartIndex = z * (_mapConfig.Width + 1);
-                var nextRowStartIndex = (z + 1) * (_mapConfig.Width + 1);
+                int rowStartIndex = z * (_mapConfig.Width + 1);
+                int nextRowStartIndex = (z + 1) * (_mapConfig.Width + 1);
                 for (int x = 0; x < _mapConfig.Width; x++)
                 {
                     float h1 = heights[rowStartIndex + x];

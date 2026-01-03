@@ -40,6 +40,7 @@ namespace SkiGame.View.Controller
                         State = GuestState.Wandering,
                         Money = 0,
                         Color = Color.white,
+                        Energy = 255,
                     }
                 );
             guest.transform.parent = transform;

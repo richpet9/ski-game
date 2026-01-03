@@ -127,7 +127,9 @@ namespace SkiGame.Model.Agents
         private void HandleWalking(float deltaTime)
         {
             if (!Data.TargetPosition.HasValue)
+            {
                 return;
+            }
 
             // Get next corner from NavMesh (without being attached to it).
             Vector3 nextStep = _navService.GetNextPathPosition(
@@ -139,6 +141,7 @@ namespace SkiGame.Model.Agents
 
             if (Vector3.Distance(Data.Position, Data.TargetPosition.Value) < MINIMUM_TARGET_DIST)
             {
+                Debug.Log("Arrival");
                 NotifyArrival();
             }
         }

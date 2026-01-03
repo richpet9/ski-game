@@ -45,7 +45,7 @@ namespace SkiGame.View.World
             _map = map;
 
             // Clear existing chunks if any.
-            foreach (var chunk in _chunks)
+            foreach (TerrainChunk chunk in _chunks)
             {
                 Destroy(chunk.gameObject);
             }
@@ -75,7 +75,7 @@ namespace SkiGame.View.World
             FoliageView foliage = chunkObj.AddComponent<FoliageView>();
 
             // TODO: Get treescale from mapconfig.
-            foliage.Initialize(_map, treeScale: 0.5f, x, z, CHUNK_SIZE, _treeMesh, _treeMaterial);
+            foliage.Initialize(_map, treeScale: 1f, x, z, CHUNK_SIZE, _treeMesh, _treeMaterial);
 
             // Assign shared material (ensure one is set in Inspector or loaded).
             if (_terrainMaterial != null)
@@ -113,9 +113,11 @@ namespace SkiGame.View.World
         private void RebuildAllChunks()
         {
             if (_map == null)
+            {
                 return;
+            }
 
-            foreach (var chunk in _chunks)
+            foreach (TerrainChunk chunk in _chunks)
             {
                 chunk.Rebuild();
             }

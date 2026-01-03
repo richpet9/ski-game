@@ -13,7 +13,7 @@ namespace SkiGame.View.World
             public Color Color;
         }
 
-        private const int VOXELS_PER_UNIT = 2;
+        private const byte VOXELS_PER_UNIT = 1;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
         private const float NOISE_AMPLITUDE = 1f;
         private const float BOTTOM_HEIGHT = -10f;

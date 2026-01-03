@@ -634,6 +634,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8425d0c5481114c03b5d34895f30d7f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _terrainMaterial: {fileID: 2100000, guid: 6affbbcc2b68e468bb84745f759eb5b1, type: 2}
+  _terrainLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!23 &462982759
 MeshRenderer:
   m_ObjectHideFlags: 0

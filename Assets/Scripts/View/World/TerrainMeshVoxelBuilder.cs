@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SkiGame.View.World
 {
-    public static class TerrainVoxelBuilder
+    public static class TerrainMeshVoxelBuilder
     {
         private struct VoxelInfo
         {
@@ -14,12 +14,12 @@ namespace SkiGame.View.World
         }
 
         // 2 voxels per map unit = 4x density.
-        private const int VOXELS_PER_UNIT = 2;
+        private const int VOXELS_PER_UNIT = 1;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
-        private const float NOISE_AMPLITUDE = VOXEL_SIZE;
+        private const float NOISE_AMPLITUDE = 0.5f;
         private const float BOTTOM_HEIGHT = -10f;
 
-        public static MeshData Build(Map map, int width, int height)
+        public static MeshData Build(Map map, int startX, int startZ, int chunkSize)
         {
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
@@ -28,13 +28,15 @@ namespace SkiGame.View.World
 
             float halfScale = VOXEL_SIZE * 0.5f;
 
-            // Calculate total voxel grid dimensions.
-            int voxelWidth = width * VOXELS_PER_UNIT;
-            int voxelHeight = height * VOXELS_PER_UNIT;
+            // Calculate voxel ranges for this chunk.
+            int startVx = startX * VOXELS_PER_UNIT;
+            int startVz = startZ * VOXELS_PER_UNIT;
+            int endVx = (startX + chunkSize) * VOXELS_PER_UNIT;
+            int endVz = (startZ + chunkSize) * VOXELS_PER_UNIT;
 
-            for (int vz = 0; vz < voxelHeight; vz++)
+            for (int vz = startVz; vz < endVz; vz++)
             {
-                for (int vx = 0; vx < voxelWidth; vx++)
+                for (int vx = startVx; vx < endVx; vx++)
                 {
                     // Get data for the current voxel (Height + Color).
                     VoxelInfo current = GetVoxelData(map, vx, vz);
@@ -52,9 +54,9 @@ namespace SkiGame.View.World
                         uvs,
                         colors,
                         center,
-                        Vector3.right * halfScale, // Width Axis.
-                        Vector3.forward * halfScale, // Height Axis.
-                        current.Color
+                        widthAxis: Vector3.right * halfScale,
+                        heightAxis: Vector3.forward * halfScale,
+                        color: current.Color
                     );
 
                     // 2. Check Neighbors and Add Skirts.
@@ -64,11 +66,11 @@ namespace SkiGame.View.World
                     CheckAndAddSkirt(
                         map,
                         current.Height,
-                        vx,
-                        vz + 1,
-                        new Vector3(centerX, 0, centerZ + halfScale),
-                        Vector3.left * halfScale,
-                        current.Color,
+                        neighborVx: vx,
+                        neighborVz: vz + 1,
+                        wallCenterXZ: new Vector3(centerX, 0, centerZ + halfScale),
+                        widthAxis: Vector3.left * halfScale,
+                        color: current.Color,
                         vertices,
                         triangles,
                         uvs,
@@ -79,11 +81,11 @@ namespace SkiGame.View.World
                     CheckAndAddSkirt(
                         map,
                         current.Height,
-                        vx,
-                        vz - 1,
-                        new Vector3(centerX, 0, centerZ - halfScale),
-                        Vector3.right * halfScale,
-                        current.Color,
+                        neighborVx: vx,
+                        neighborVz: vz - 1,
+                        wallCenterXZ: new Vector3(centerX, 0, centerZ - halfScale),
+                        widthAxis: Vector3.right * halfScale,
+                        color: current.Color,
                         vertices,
                         triangles,
                         uvs,
@@ -94,11 +96,11 @@ namespace SkiGame.View.World
                     CheckAndAddSkirt(
                         map,
                         current.Height,
-                        vx + 1,
-                        vz,
-                        new Vector3(centerX + halfScale, 0, centerZ),
-                        Vector3.forward * halfScale,
-                        current.Color,
+                        neighborVx: vx + 1,
+                        neighborVz: vz,
+                        wallCenterXZ: new Vector3(centerX + halfScale, 0, centerZ),
+                        widthAxis: Vector3.forward * halfScale,
+                        color: current.Color,
                         vertices,
                         triangles,
                         uvs,
@@ -109,11 +111,11 @@ namespace SkiGame.View.World
                     CheckAndAddSkirt(
                         map,
                         current.Height,
-                        vx - 1,
-                        vz,
-                        new Vector3(centerX - halfScale, 0, centerZ),
-                        Vector3.back * halfScale,
-                        current.Color,
+                        neighborVx: vx - 1,
+                        neighborVz: vz,
+                        wallCenterXZ: new Vector3(centerX - halfScale, 0, centerZ),
+                        widthAxis: Vector3.back * halfScale,
+                        color: current.Color,
                         vertices,
                         triangles,
                         uvs,

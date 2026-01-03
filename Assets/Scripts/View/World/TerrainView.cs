@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SkiGame.Model.Terrain;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -5,37 +6,74 @@ using UnityEngine.AI;
 
 namespace SkiGame.View.World
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    // The NavMeshSurface stays here to bake over all chunks.
     [RequireComponent(typeof(NavMeshSurface))]
-    public class TerrainView : MonoBehaviour
+    public sealed class TerrainView : MonoBehaviour
     {
+        [SerializeField]
+        private Material _terrainMaterial; // Assign in Inspector!
+
+        [SerializeField]
+        private LayerMask _terrainLayer;
+
+        private const int CHUNK_SIZE = 32;
+
+        private readonly List<TerrainChunk> _chunks = new List<TerrainChunk>();
         private NavMeshSurface _surface;
-        private MeshFilter _visualFilter;
-        private MeshCollider _physicsCollider;
         private Map _map;
-        private int _width;
-        private int _height;
         private bool _isDirty;
 
         private void Awake()
         {
             _surface = GetComponent<NavMeshSurface>();
-            _visualFilter = GetComponent<MeshFilter>();
-            _physicsCollider = GetComponent<MeshCollider>();
 
+            // Important: We still want to bake physics colliders,
+            // which are now located on the child Chunk objects.
             _surface.collectObjects = CollectObjects.Children;
-            // Crucial: Only bake the physics collider, not the rendered mesh.
-            // You might need to put the Physics mesh on a child object or specific layer
-            // if NavMeshSurface picks up the MeshFilter automatically.
             _surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
         }
 
         public void Initialize(Map map, int width, int height)
         {
             _map = map;
-            _width = width;
-            _height = height;
+
+            // Clear existing chunks if any.
+            foreach (var chunk in _chunks)
+            {
+                Destroy(chunk.gameObject);
+            }
+            _chunks.Clear();
+
+            // Create Chunks.
+            for (int z = 0; z < height; z += CHUNK_SIZE)
+            {
+                for (int x = 0; x < width; x += CHUNK_SIZE)
+                {
+                    CreateChunk(x, z);
+                }
+            }
+
             _map.OnMapChanged += SetDirty;
+            _map.OnFoliageChanged += SetDirty;
+        }
+
+        private void CreateChunk(int x, int z)
+        {
+            GameObject chunkObj = new GameObject($"Chunk_{x}_{z}");
+            chunkObj.transform.SetParent(transform, false);
+
+            // Setup components.
+            TerrainChunk chunk = chunkObj.AddComponent<TerrainChunk>();
+            MeshRenderer mr = chunkObj.GetComponent<MeshRenderer>();
+
+            // Assign shared material (ensure one is set in Inspector or loaded).
+            if (_terrainMaterial != null)
+            {
+                mr.sharedMaterial = _terrainMaterial;
+            }
+
+            chunk.Initialize(_map, x, z, CHUNK_SIZE, gameObject.layer);
+            _chunks.Add(chunk);
         }
 
         private void OnDestroy()
@@ -43,6 +81,7 @@ namespace SkiGame.View.World
             if (_map != null)
             {
                 _map.OnMapChanged -= SetDirty;
+                _map.OnFoliageChanged -= SetDirty;
             }
         }
 
@@ -55,39 +94,22 @@ namespace SkiGame.View.World
         {
             if (_isDirty)
             {
-                RebuildMesh();
+                RebuildAllChunks();
                 _isDirty = false;
             }
         }
 
-        private void RebuildMesh()
+        private void RebuildAllChunks()
         {
             if (_map == null)
-            {
                 return;
+
+            foreach (var chunk in _chunks)
+            {
+                chunk.Rebuild();
             }
 
-            MeshData visualData = TerrainVoxelBuilder.Build(_map, _width, _height);
-            Mesh visualMesh = new Mesh
-            {
-                name = "Terrain Visual Mesh",
-                vertices = visualData.Vertices,
-                triangles = visualData.Triangles,
-                uv = visualData.UVs,
-                colors = visualData.Colors,
-            };
-            visualMesh.RecalculateNormals();
-            _visualFilter.mesh = visualMesh;
-
-            MeshData physicsData = TerrainMeshBuilder.Build(_map, _width, _height);
-            Mesh physicsMesh = new Mesh
-            {
-                name = "Terrain Physics Mesh",
-                vertices = physicsData.Vertices,
-                triangles = physicsData.Triangles,
-            };
-
-            _physicsCollider.sharedMesh = physicsMesh;
+            // Re-bake NavMesh after all chunks are updated.
             _surface.BuildNavMesh();
         }
     }

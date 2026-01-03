@@ -5,11 +5,11 @@ namespace SkiGame.View.Configs
     public class MapConfig : ScriptableObject
     {
         [Header("Dimensions")]
-        [Range(1, 128)]
-        public int Width = 128;
+        [Range(1, 512)]
+        public int Width = 512;
 
-        [Range(1, 128)]
-        public int Height = 128;
+        [Range(1, 512)]
+        public int Height = 512;
 
         [Header("Generation")]
         public int Seed = 0;

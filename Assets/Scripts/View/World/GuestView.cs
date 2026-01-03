@@ -38,6 +38,21 @@ namespace SkiGame.View.Agents
                 return;
             }
 
+            // Visibility Toggle.
+            bool visible = _agent.Data.IsVisible;
+            if (_renderers.Length > 0 && _renderers[0].enabled != visible)
+            {
+                foreach (MeshRenderer r in _renderers)
+                {
+                    r.enabled = visible;
+                }
+            }
+
+            if (!visible)
+            {
+                return;
+            }
+
             transform.SetPositionAndRotation(
                 Vector3.Lerp(
                     transform.position,
@@ -50,16 +65,6 @@ namespace SkiGame.View.Agents
                     Time.deltaTime * _smoothSpeed
                 )
             );
-
-            // Visibility Toggle.
-            bool visible = _agent.Data.IsVisible;
-            if (_renderers.Length > 0 && _renderers[0].enabled != visible)
-            {
-                foreach (MeshRenderer r in _renderers)
-                {
-                    r.enabled = visible;
-                }
-            }
         }
     }
 }

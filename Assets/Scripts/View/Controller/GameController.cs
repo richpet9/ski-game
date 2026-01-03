@@ -1,5 +1,6 @@
 using System.Collections;
 using SkiGame.Model.Core;
+using SkiGame.Model.Data;
 using SkiGame.Model.Services;
 using SkiGame.Model.Terrain;
 using SkiGame.View.Configs;
@@ -45,8 +46,31 @@ namespace SkiGame.View.Controller
         private void Start()
         {
             _terrainView.Initialize(_map, _mapConfig.Width, _mapConfig.Height);
-            // Generates the initial map on startup.
-            GenerateAndBindMap();
+
+            // Prioritize the developer save for faster iteration.
+            if (PersistenceService.SaveExists())
+            {
+                LoadExistingMap();
+            }
+            else
+            {
+                GenerateAndBindMap();
+            }
+        }
+
+        private void LoadExistingMap()
+        {
+            MapSaveData data = PersistenceService.LoadMap();
+            if (data != null)
+            {
+                _map.LoadSaveData(data);
+                Debug.Log("<color=green>Initial State: Loaded from dev save.</color>");
+            }
+            else
+            {
+                // Fallback if the file was corrupted or unreadable.
+                GenerateAndBindMap();
+            }
         }
 
         private void Update()
@@ -60,6 +84,21 @@ namespace SkiGame.View.Controller
                     _mapConfig.Seed = Random.Range(0, MAX_SEED_VALUE);
                 }
                 GenerateAndBindMap();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                MapSaveData data = _map.GetSaveData();
+                PersistenceService.SaveMap(data);
+            }
+
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                MapSaveData data = PersistenceService.LoadMap();
+                if (data != null)
+                {
+                    _map.LoadSaveData(data);
+                }
             }
         }
 

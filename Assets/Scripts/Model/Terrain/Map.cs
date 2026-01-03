@@ -35,6 +35,34 @@ namespace SkiGame.Model.Terrain
             Structures = new StructureManager(this, Economy);
         }
 
+        public MapSaveData GetSaveData()
+        {
+            TileData[] tiles = new TileData[_grid.Length];
+            Array.Copy(_grid, tiles, _grid.Length);
+
+            MapSaveData data = new MapSaveData
+            {
+                Width = Width,
+                Height = Height,
+                Tiles = tiles,
+            };
+
+            return data;
+        }
+
+        public void LoadSaveData(MapSaveData data)
+        {
+            if (data == null || data.Tiles == null || data.Tiles.Length != _grid.Length)
+            {
+                return;
+            }
+
+            Array.Copy(data.Tiles, _grid, _grid.Length);
+
+            OnMapChanged?.Invoke();
+            OnFoliageChanged?.Invoke();
+        }
+
         private int GetIndex(int x, int z)
         {
             return x + z * Width;

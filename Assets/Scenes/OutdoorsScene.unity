@@ -588,9 +588,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _terrainMaterial: {fileID: 2100000, guid: 6affbbcc2b68e468bb84745f759eb5b1, type: 2}
-  _treeMesh: {fileID: 1261550738812896852, guid: 3194abef289a8e343b7a71a423b0750f,
-    type: 3}
-  _treeMaterial: {fileID: 2100000, guid: 7317cfcf0d7280742b2b5684512102d9, type: 2}
+  _treeMesh: {fileID: 4300000, guid: a1fecea344db96040a4a6271af8bd12a, type: 3}
+  _treeMaterial: {fileID: 2100000, guid: 06c2c9d0a6219de4a862c5c1a8e99115, type: 2}
   _terrainLayer:
     serializedVersion: 2
     m_Bits: 256

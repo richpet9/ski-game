@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Configs
 {
-    public class MapConfig : ScriptableObject
+    public sealed class MapConfig : ScriptableObject
     {
         [Header("Dimensions")]
         [Range(1, 512)]

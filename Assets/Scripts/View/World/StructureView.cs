@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SkiGame.View.World
 {
-    public class StructureView : MonoBehaviour
+    public sealed class StructureView : MonoBehaviour
     {
         [Header("Prefabs")]
         [SerializeField]

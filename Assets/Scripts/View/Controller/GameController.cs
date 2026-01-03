@@ -11,7 +11,7 @@ using UnityEngine;
 namespace SkiGame.View.Controller
 {
     [DefaultExecutionOrder(-999999)]
-    public class GameController : MonoBehaviour
+    public sealed class GameController : MonoBehaviour
     {
         [Header("Config")]
         [SerializeField]

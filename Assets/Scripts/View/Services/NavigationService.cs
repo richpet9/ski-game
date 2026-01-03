@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 namespace SkiGame.View.Services
 {
-    public class NavigationService : INavigationService
+    public sealed class NavigationService : INavigationService
     {
         private Vector2[,] _flowField;
         private Map _map;

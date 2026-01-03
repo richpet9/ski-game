@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class SelectorController : MonoBehaviour
+    public sealed class SelectorController : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField]

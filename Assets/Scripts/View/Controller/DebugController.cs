@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class DebugController : MonoBehaviour
+    public sealed class DebugController : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField]

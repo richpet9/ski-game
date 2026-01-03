@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SkiGame.Model.Terrain
 {
-    public class Map
+    public sealed class Map
     {
         public event Action OnMapChanged;
         public event Action OnFoliageChanged;

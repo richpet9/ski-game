@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SkiGame.Model.Structures
 {
-    public class StructureManager
+    public sealed class StructureManager
     {
         public struct Lift
         {

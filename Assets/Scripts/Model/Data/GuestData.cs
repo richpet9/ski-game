@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SkiGame.Model.Guest
 {
-    public class GuestData
+    public sealed class GuestData
     {
         public bool IsVisible = true;
         public Vector3 Position;

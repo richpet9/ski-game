@@ -2,7 +2,7 @@ using System;
 
 namespace SkiGame.Model.Agents
 {
-    public class GuestManager
+    public sealed class GuestManager
     {
         public ushort GuestCount { get; private set; }
         public event Action<ushort> OnGuestCountChanged;

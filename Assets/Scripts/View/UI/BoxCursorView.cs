@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SkiGame.View.UI
 {
     [RequireComponent(typeof(LineRenderer))]
-    public class BoxCursorView : MonoBehaviour
+    public sealed class BoxCursorView : MonoBehaviour
     {
         [SerializeField]
         private float _size = 1f;

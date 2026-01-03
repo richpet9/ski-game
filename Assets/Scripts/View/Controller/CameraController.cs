@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class CameraController : MonoBehaviour
+    public sealed class CameraController : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField]

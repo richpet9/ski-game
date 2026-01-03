@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SkiGame.View.UI
 {
-    public class HUDMoneyView : MonoBehaviour
+    public sealed class HUDMoneyView : MonoBehaviour
     {
         [SerializeField]
         private TMP_Text _label;

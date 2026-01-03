@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Controller
 {
-    public class ToolController : MonoBehaviour
+    public sealed class ToolController : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField]

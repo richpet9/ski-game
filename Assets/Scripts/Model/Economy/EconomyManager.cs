@@ -2,7 +2,7 @@ using System;
 
 namespace SkiGame.Model.Economy
 {
-    public class EconomyManager
+    public sealed class EconomyManager
     {
         public Action<int> OnMoneyChanged;
         public int Money { get; private set; }

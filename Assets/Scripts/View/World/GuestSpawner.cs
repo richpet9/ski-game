@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SkiGame.View.World
 {
-    public class GuestSpawner : MonoBehaviour
+    public sealed class GuestSpawner : MonoBehaviour
     {
         [Header("Prefabs")]
         [SerializeField]

@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(LineRenderer))]
-public class GuestDebugger : MonoBehaviour
+public sealed class GuestDebugger : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private LineRenderer _line;

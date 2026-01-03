@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SkiGame.View.Agents
 {
-    public class GuestView : MonoBehaviour
+    public sealed class GuestView : MonoBehaviour
     {
         [SerializeField]
         private float _smoothSpeed = 10f;

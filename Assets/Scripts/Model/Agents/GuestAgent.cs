@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SkiGame.Model.Agents
 {
-    public class GuestAgent : ITickable
+    public sealed class GuestAgent : ITickable
     {
         public GuestData Data { get; }
         public bool QueuedForDestruction { get; private set; }

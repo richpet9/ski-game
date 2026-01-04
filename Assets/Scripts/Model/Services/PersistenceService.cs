@@ -6,7 +6,7 @@ namespace SkiGame.Model.Services
 {
     public sealed class PersistenceService
     {
-        private const string SAVE_FILE_NAME = "dev_map_save.json";
+        private const string SAVE_FILE_NAME = "64_dev_map_save.json";
 
         private PersistenceService() { }
 

@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5406f926c41434d7a90db3f75ef77a4d, type: 3}
+  m_Name: 64x64Map
+  m_EditorClassIdentifier: Assembly-CSharp:SkiGame.Map:MapConfig
+  Width: 64
+  Height: 64
+  Seed: 2895
+  RandomizeOnGenerate: 1
+  MountainHeight: 20
+  NoiseScale: 10
+  NoiseIntensity: 0.3
+  HeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.06003486
+      outSlope: 0.06003486
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.20632213
+      value: 0.04471506
+      inSlope: 0.657333
+      outSlope: 0.657333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.29425016
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.68904316
+      value: 0.76152414
+      inSlope: -0.022888906
+      outSlope: -0.022888906
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.8666399
+      value: 0.83986276
+      inSlope: 1.0407833
+      outSlope: 1.0407833
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.008708074
+      outSlope: -0.008708074
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ForestDensity: 0.25
+  ForestNoiseScale: 14
+  TreeLinePercent: 0.6
+  TreeScale: 0.2

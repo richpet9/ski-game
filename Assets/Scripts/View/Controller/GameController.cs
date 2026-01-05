@@ -127,6 +127,7 @@ namespace SkiGame.View.Controller
                     float h4 = heights[nextRowStartIndex + x + 1];
                     float avg = (h1 + h2 + h3 + h4) * 0.25f;
                     _map.SetTileHeight(x, z, avg);
+                    _map.SetTileType(x, z, MountainGenerator.GetTerrainTypeFromHeight(avg));
                 }
             }
 

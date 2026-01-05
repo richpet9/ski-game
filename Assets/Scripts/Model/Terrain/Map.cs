@@ -18,8 +18,9 @@ namespace SkiGame.Model.Terrain
         public readonly int Width;
         public readonly int Height;
 
-        private const int SNOW_LINE_HEIGHT = 10;
-        private const float FLATTEN_LERP_FACTOR = 0.5f;
+        private const float PISTE_RADIUS = 1.8f;
+        private const float PISTE_HEIGHT_LERP = 0.2f;
+        private const float PISTE_FLATTEN_STRENGTH = 1f;
 
         private readonly TileData[] _grid;
 
@@ -63,45 +64,80 @@ namespace SkiGame.Model.Terrain
             OnFoliageChanged?.Invoke();
         }
 
-        private int GetIndex(int x, int z)
+        public void PaintPiste(Vector2Int centerLoc)
         {
-            return x + z * Width;
-        }
-
-        public bool InBounds(Vector2Int loc)
-        {
-            return InBounds(loc.x, loc.y);
-        }
-
-        public bool InBounds(int x, int z)
-        {
-            return x >= 0 && x < Width && z >= 0 && z < Height;
-        }
-
-        public void PaintPiste(Vector2Int loc)
-        {
-            if (InBounds(loc))
+            if (!InBounds(centerLoc))
             {
-                TileData tile = GetTile(loc);
-                if (tile.Structure == StructureType.Tree)
-                {
-                    RemoveStructure(loc);
-                }
-                SetTileType(loc, TileType.PackedSnow);
-                FlattenTerrain(loc);
+                return;
+            }
 
-                OnMapChanged?.Invoke();
+            // The target height for the "Cut" is the current height at the brush center.
+            float centerHeight = GetTile(centerLoc).Height;
+            int radiusCells = Mathf.CeilToInt(PISTE_RADIUS);
+
+            for (int x = centerLoc.x - radiusCells; x <= centerLoc.x + radiusCells; x++)
+            {
+                for (int z = centerLoc.y - radiusCells; z <= centerLoc.y + radiusCells; z++)
+                {
+                    if (!InBounds(x, z))
+                    {
+                        continue;
+                    }
+
+                    Vector2Int currentLoc = new Vector2Int(x, z);
+
+                    float distance = Vector2.Distance(centerLoc, currentLoc);
+                    if (distance > PISTE_RADIUS)
+                    {
+                        continue;
+                    }
+
+                    // Remove foliage and mark as packed snow.
+                    TileData currentTile = GetTile(currentLoc);
+                    if (currentTile.Structure == StructureType.Tree)
+                    {
+                        RemoveStructure(currentLoc);
+                    }
+                    SetTileType(currentLoc, TileType.PackedSnow);
+
+                    // Step 2: Mellowing the Terrain (The "Cut").
+                    // We lerp the height toward a blend of the local average and the center height.
+                    float currentHeight = currentTile.Height;
+                    float averageHeight = GetAverageNeighborHeight(x, z);
+                    float targetHeight = Mathf.Lerp(
+                        averageHeight,
+                        centerHeight,
+                        PISTE_FLATTEN_STRENGTH
+                    );
+
+                    float falloff = 1f - Mathf.Clamp01(distance / PISTE_RADIUS);
+                    float lerpAmount = PISTE_HEIGHT_LERP * falloff;
+                    SetTileHeight(currentLoc, Mathf.Lerp(currentHeight, targetHeight, lerpAmount));
+                }
+            }
+
+            OnMapChanged?.Invoke();
+        }
+
+        public void PaintPisteStroke(Vector2Int start, Vector2Int end)
+        {
+            float distance = Vector2Int.Distance(start, end);
+            int steps = Mathf.CeilToInt(distance * 2f);
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = steps == 0 ? 0f : i / (float)steps;
+                float x = Mathf.Lerp(start.x, end.x, t);
+                float z = Mathf.Lerp(start.y, end.y, t);
+
+                Vector2Int pos = new Vector2Int(Mathf.RoundToInt(x), Mathf.RoundToInt(z));
+                PaintPiste(pos);
             }
         }
 
-        private void FlattenTerrain(Vector2Int loc)
+        private float GetAverageNeighborHeight(int x, int z)
         {
-            FlattenTerrain(loc.x, loc.y);
-        }
-
-        private void FlattenTerrain(int x, int z)
-        {
-            float totalHeight = 0;
+            float totalHeight = 0f;
             int count = 0;
 
             for (int nx = x - 1; nx <= x + 1; nx++)
@@ -118,14 +154,24 @@ namespace SkiGame.Model.Terrain
 
             if (count > 0)
             {
-                float average = totalHeight / count;
-                // Apply a gentle lerp towards the average to "pack" it rather than instantly flatten.
-                _grid[GetIndex(x, z)].Height = Mathf.Lerp(
-                    _grid[GetIndex(x, z)].Height,
-                    average,
-                    FLATTEN_LERP_FACTOR
-                );
+                return totalHeight / (float)count;
             }
+            return _grid[GetIndex(x, z)].Height;
+        }
+
+        private int GetIndex(int x, int z)
+        {
+            return x + z * Width;
+        }
+
+        public bool InBounds(Vector2Int loc)
+        {
+            return InBounds(loc.x, loc.y);
+        }
+
+        public bool InBounds(int x, int z)
+        {
+            return x >= 0 && x < Width && z >= 0 && z < Height;
         }
 
         public void SetTileHeight(Vector2Int loc, float height)
@@ -138,7 +184,6 @@ namespace SkiGame.Model.Terrain
             if (InBounds(x, z))
             {
                 _grid[GetIndex(x, z)].Height = height;
-                _grid[GetIndex(x, z)].Type = GetTerrainTypeFromHeight(height);
                 OnMapChanged?.Invoke();
             }
         }
@@ -190,26 +235,12 @@ namespace SkiGame.Model.Terrain
             }
         }
 
-        private TileType GetTerrainTypeFromHeight(float height)
-        {
-            // Uses a constant in the shader and here.
-            if (height > SNOW_LINE_HEIGHT)
-            {
-                return TileType.Snow;
-            }
-            else
-            {
-                return TileType.Grass;
-            }
-        }
-
         public void ApplyTrees(bool[] trees)
         {
             for (int i = 0; i < trees.Length; i++)
             {
                 if (trees[i])
                 {
-                    // Only place a tree if the spot is empty.
                     if (_grid[i].Structure == StructureType.None)
                     {
                         _grid[i].Structure = StructureType.Tree;

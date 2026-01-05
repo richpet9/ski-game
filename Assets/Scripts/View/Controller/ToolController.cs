@@ -29,7 +29,7 @@ namespace SkiGame.View.Controller
 
         private void Update()
         {
-            // Tool Switching
+            // Tool Switching.
             if (Input.GetKeyDown(KeyCode.P))
             {
                 _currentMode = ToolMode.Piste;
@@ -60,19 +60,33 @@ namespace SkiGame.View.Controller
                 Debug.Log("Selected: Lift");
             }
 
-            // Tool Logic
+            // Tool Logic.
             if (_currentMode == ToolMode.Build && _liftStartPos.HasValue)
             {
                 DrawListPreviewEndpoint();
             }
             else if (_currentMode == ToolMode.Piste && Input.GetMouseButton(0) && _selector.IsValid)
             {
-                // Paint piste while holding mouse
-                if (_lastPisteGridPos != _selector.GridPosition)
+                if (_lastPisteGridPos.HasValue)
                 {
-                    _lastPisteGridPos = _selector.GridPosition;
-                    GameContext.Map.PaintPiste(_selector.GridPosition);
+                    if (_lastPisteGridPos.Value != _selector.GridPosition)
+                    {
+                        GameContext.Map.PaintPisteStroke(
+                            _lastPisteGridPos.Value,
+                            _selector.GridPosition
+                        );
+                        _lastPisteGridPos = _selector.GridPosition;
+                    }
                 }
+                else
+                {
+                    GameContext.Map.PaintPiste(_selector.GridPosition);
+                    _lastPisteGridPos = _selector.GridPosition;
+                }
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                _lastPisteGridPos = null;
             }
         }
 

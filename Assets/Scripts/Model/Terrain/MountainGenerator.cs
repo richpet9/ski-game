@@ -1,3 +1,5 @@
+using System;
+using SkiGame.Model.Data;
 using UnityEngine;
 
 namespace SkiGame.Model.Terrain
@@ -5,6 +7,7 @@ namespace SkiGame.Model.Terrain
     public static class MountainGenerator
     {
         private const float NOISE_OFFSET = 9999f;
+        private const int SNOW_LINE_HEIGHT = 10;
 
         // Pure Logic: Returns the height map data, doesn't touch MeshFilters.
         public static float[] GenerateHeights(
@@ -80,6 +83,18 @@ namespace SkiGame.Model.Terrain
                 Triangles = triangles,
                 UVs = uvs,
             };
+        }
+
+        public static TileType GetTerrainTypeFromHeight(float height)
+        {
+            if (height > SNOW_LINE_HEIGHT)
+            {
+                return TileType.Snow;
+            }
+            else
+            {
+                return TileType.Grass;
+            }
         }
     }
 

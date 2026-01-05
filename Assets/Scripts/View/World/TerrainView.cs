@@ -105,6 +105,7 @@ namespace SkiGame.View.World
         {
             if (_isDirty)
             {
+                // TODO: Check which chunks need rebuilding, do not rebuild all.
                 RebuildAllChunks();
                 _isDirty = false;
             }

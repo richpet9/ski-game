@@ -16,7 +16,7 @@ namespace SkiGame.Model.Services
                 {
                     TileData currentTile = map.GetTile(x, z);
 
-                    // 1. If not a piste, no flow (agents use other navigation)
+                    // 1. If not a piste, no flow (agents use other navigation).
                     if (currentTile.Type != TileType.PackedSnow)
                     {
                         field[x, z] = Vector2.zero;

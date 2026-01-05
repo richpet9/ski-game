@@ -14,8 +14,8 @@ namespace SkiGame.Model.Core
         public static T Get<T>()
             where T : class
         {
-            var type = typeof(T);
-            if (_services.TryGetValue(type, out var service))
+            Type type = typeof(T);
+            if (_services.TryGetValue(type, out object service))
             {
                 return (T)service;
             }
@@ -29,7 +29,7 @@ namespace SkiGame.Model.Core
         public static void Register<T>(T service)
             where T : class
         {
-            var type = typeof(T);
+            Type type = typeof(T);
             if (_services.ContainsKey(type))
             {
                 Debug.LogWarning(

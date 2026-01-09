@@ -4,11 +4,11 @@ namespace SkiGame.Model.Guest
     {
         Waiting = 0,
         Wandering = 1,
-        InsideLodge = 2,
+        WalkingToLift = 2,
         WalkingToLodge = 3,
-        Leaving = 4,
-        WalkingToLift = 5,
-        RidingLift = 6,
-        Skiing = 7,
+        Skiing = 4,
+        RidingLift = 5,
+        InsideLodge = 6,
+        Leaving = 7,
     }
 }

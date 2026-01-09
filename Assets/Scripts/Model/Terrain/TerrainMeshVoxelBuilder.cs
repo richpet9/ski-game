@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using SkiGame.Model.Data;
-using SkiGame.Model.Terrain;
 using UnityEngine;
 
-namespace SkiGame.View.World
+namespace SkiGame.Model.Terrain
 {
     public static class TerrainMeshVoxelBuilder
     {

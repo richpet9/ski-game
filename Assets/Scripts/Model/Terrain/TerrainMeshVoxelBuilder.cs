@@ -14,7 +14,7 @@ namespace SkiGame.Model.Terrain
 
         private const byte VOXELS_PER_UNIT = 1;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
-        private const float NOISE_AMPLITUDE = 1f;
+        private const float NOISE_AMPLITUDE = 0.25f;
         private const float BOTTOM_HEIGHT = -10f;
 
         public static MeshData Build(Map map, int startX, int startZ, int chunkSize)
@@ -178,18 +178,11 @@ namespace SkiGame.Model.Terrain
 
         private static Color GetColor(TileData tile)
         {
-            Color c;
             if (tile.Type == TileType.PackedSnow)
             {
-                c = Color.blue;
+                return Color.white;
             }
-            else
-            {
-                // TODO: Replace with constant.
-                c = tile.Height > 55 ? Color.white : Color.green;
-            }
-
-            return c;
+            return Color.green;
         }
 
         private static void CheckAndAddSkirt(

@@ -74,6 +74,7 @@ namespace SkiGame.Model.Terrain
             // The target height for the "Cut" is the current height at the brush center.
             float centerHeight = GetTile(centerLoc).Height;
             int radiusCells = Mathf.CeilToInt(PISTE_RADIUS);
+            bool terrainChanged = false;
 
             for (int x = centerLoc.x - radiusCells; x <= centerLoc.x + radiusCells; x++)
             {
@@ -93,16 +94,18 @@ namespace SkiGame.Model.Terrain
                     }
 
                     // Remove foliage and mark as packed snow.
-                    TileData currentTile = GetTile(currentLoc);
-                    if (currentTile.Structure == StructureType.Tree)
+                    int index = GetIndex(x, z);
+                    if (_grid[index].Structure == StructureType.Tree)
                     {
                         RemoveStructure(currentLoc);
                     }
-                    SetTileType(currentLoc, TileType.PackedSnow);
+
+                    _grid[index].Type = TileType.PackedSnow;
 
                     // Step 2: Mellowing the Terrain (The "Cut").
-                    // We lerp the height toward a blend of the local average and the center height.
-                    float currentHeight = currentTile.Height;
+                    // We lerp the height toward a blend of the local average and the
+                    // center height.
+                    float currentHeight = _grid[index].Height;
                     float averageHeight = GetAverageNeighborHeight(x, z);
                     float targetHeight = Mathf.Lerp(
                         averageHeight,
@@ -112,11 +115,16 @@ namespace SkiGame.Model.Terrain
 
                     float falloff = 1f - Mathf.Clamp01(distance / PISTE_RADIUS);
                     float lerpAmount = PISTE_HEIGHT_LERP * falloff;
-                    SetTileHeight(currentLoc, Mathf.Lerp(currentHeight, targetHeight, lerpAmount));
+
+                    _grid[index].Height = Mathf.Lerp(currentHeight, targetHeight, lerpAmount);
+                    terrainChanged = true;
                 }
             }
 
-            OnMapChanged?.Invoke();
+            if (terrainChanged)
+            {
+                OnMapChanged?.Invoke();
+            }
         }
 
         public void PaintPisteStroke(Vector2Int start, Vector2Int end)

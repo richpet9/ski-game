@@ -7,7 +7,7 @@ namespace SkiGame.View.Services
 {
     public sealed class NavigationService : INavigationService
     {
-        private Vector2[,] _flowField;
+        private Vector2[] _flowField;
         private Map _map;
 
         public void Initialize(Map map)
@@ -32,7 +32,7 @@ namespace SkiGame.View.Services
             Vector2Int gridPos = MapUtil.WorldToGrid(worldPos);
             if (_map.InBounds(gridPos))
             {
-                return _flowField[gridPos.x, gridPos.y];
+                return _flowField[_map.GetIndex(gridPos.x, gridPos.y)];
             }
 
             return Vector2.zero;

@@ -167,7 +167,7 @@ namespace SkiGame.Model.Terrain
             return _grid[GetIndex(x, z)].Height;
         }
 
-        private int GetIndex(int x, int z)
+        public int GetIndex(int x, int z)
         {
             return x + z * Width;
         }

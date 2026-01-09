@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using SkiGame.Model.Data;
+using SkiGame.Model.Structures;
 using SkiGame.Model.Terrain;
 using UnityEngine;
 
@@ -6,72 +9,115 @@ namespace SkiGame.Model.Services
 {
     public static class FlowFieldGenerator
     {
-        public static Vector2[,] Generate(Map map)
+        public static Vector2[] Generate(Map map)
         {
-            Vector2[,] field = new Vector2[map.Width, map.Height];
+            Vector2[] field = new Vector2[map.Width * map.Height];
+            Queue<Vector2Int> goals = new Queue<Vector2Int>();
+            float[] cost = new float[map.Width * map.Height];
 
-            for (int x = 0; x < map.Width; x++)
+            // Initialize costs to maximum.
+            for (int i = 0; i < cost.Length; i++)
             {
-                for (int z = 0; z < map.Height; z++)
+                cost[i] = float.MaxValue;
+            }
+
+            // Identify Lift goals.
+            foreach (StructureManager.Lift lift in map.Structures.Lifts)
+            {
+                int index = map.GetIndex(lift.StartGrid.x, lift.StartGrid.y);
+                cost[index] = 0f;
+                goals.Enqueue(lift.StartGrid);
+            }
+
+            // Identify Lodge goals.
+            if (
+                map.Structures.Structures.TryGetValue(
+                    StructureType.Lodge,
+                    out List<Vector2Int> lodges
+                )
+            )
+            {
+                foreach (Vector2Int lodgePos in lodges)
                 {
-                    TileData currentTile = map.GetTile(x, z);
+                    int index = map.GetIndex(lodgePos.x, lodgePos.y);
+                    cost[index] = 0f;
+                    goals.Enqueue(lodgePos);
+                }
+            }
 
-                    // 1. If not a piste, no flow (agents use other navigation).
-                    if (currentTile.Type != TileType.PackedSnow)
+            // Dijkstra Flood-Fill to generate the Cost Field.
+            while (goals.Count > 0)
+            {
+                Vector2Int current = goals.Dequeue();
+                float currentCost = cost[map.GetIndex(current.x, current.y)];
+
+                for (int nz = -1; nz <= 1; nz++)
+                {
+                    for (int nx = -1; nx <= 1; nx++)
                     {
-                        field[x, z] = Vector2.zero;
-                        continue;
-                    }
-
-                    float lowestHeight = currentTile.Height;
-                    Vector2Int bestTarget = new Vector2Int(x, z);
-                    bool foundSlope = false;
-
-                    for (int nx = x - 1; nx <= x + 1; nx++)
-                    {
-                        for (int nz = z - 1; nz <= z + 1; nz++)
+                        if (nx == 0 && nz == 0)
                         {
-                            if (nx == x && nz == z)
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            if (!map.InBounds(nx, nz))
-                            {
-                                continue;
-                            }
+                        Vector2Int neighbor = new Vector2Int(current.x + nx, current.y + nz);
 
-                            TileData neighbor = map.GetTile(nx, nz);
+                        if (map.InBounds(neighbor))
+                        {
+                            TileData neighborTile = map.GetTile(neighbor);
 
-                            // Skiers prefer Piste, but will ski onto snow if forced
-                            // (optional) For now, strict Piste following.
-                            if (neighbor.Type != TileType.PackedSnow)
+                            // Only propagate costs through packed snow.
+                            if (neighborTile.Type == TileType.PackedSnow)
                             {
-                                continue;
-                            }
+                                float moveCost = (Mathf.Abs(nx) + Mathf.Abs(nz) > 1) ? 1.414f : 1f;
+                                float newCost = currentCost + moveCost;
 
-                            // Use a small epsilon to prefer movement even on slight
-                            // grades.
-                            if (neighbor.Height < lowestHeight - 0.01f)
-                            {
-                                lowestHeight = neighbor.Height;
-                                bestTarget = new Vector2Int(nx, nz);
-                                foundSlope = true;
+                                int nIndex = map.GetIndex(neighbor.x, neighbor.y);
+                                if (newCost < cost[nIndex])
+                                {
+                                    cost[nIndex] = newCost;
+                                    goals.Enqueue(neighbor);
+                                }
                             }
                         }
                     }
+                }
+            }
 
-                    if (foundSlope)
+            // Generate Flow Vectors based on the lowest neighbor cost.
+            for (int z = 0; z < map.Height; z++)
+            {
+                for (int x = 0; x < map.Width; x++)
+                {
+                    int index = map.GetIndex(x, z);
+                    TileData tile = map.GetTile(x, z);
+
+                    if (tile.Type == TileType.PackedSnow)
                     {
-                        Vector2 dir = new Vector2(bestTarget.x - x, bestTarget.y - z);
-                        field[x, z] = dir.normalized;
+                        float minCost = cost[index];
+                        Vector2 bestDir = Vector2.zero;
+
+                        for (int nz = -1; nz <= 1; nz++)
+                        {
+                            for (int nx = -1; nx <= 1; nx++)
+                            {
+                                Vector2Int neighbor = new Vector2Int(x + nx, z + nz);
+                                if (map.InBounds(neighbor))
+                                {
+                                    float nCost = cost[map.GetIndex(neighbor.x, neighbor.y)];
+                                    if (nCost < minCost)
+                                    {
+                                        minCost = nCost;
+                                        bestDir = new Vector2(nx, nz);
+                                    }
+                                }
+                            }
+                        }
+                        field[index] = bestDir.normalized;
                     }
                     else
                     {
-                        // Flat area or local minimum:
-                        // In a robust system, we'd flood-fill distance to base.
-                        // For Step 1, we just stop (or maintain momentum in Agent).
-                        field[x, z] = Vector2.zero;
+                        field[index] = Vector2.zero;
                     }
                 }
             }

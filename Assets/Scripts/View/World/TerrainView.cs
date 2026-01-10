@@ -60,8 +60,8 @@ namespace SkiGame.View.World
                 }
             }
 
-            _map.OnMapChanged += SetDirty;
-            _map.OnFoliageChanged += SetDirty;
+            _map.OnMapChange += SetDirty;
+            _map.OnFoliageChange += SetDirty;
         }
 
         private void CreateChunk(int x, int z)
@@ -91,8 +91,8 @@ namespace SkiGame.View.World
         {
             if (_map != null)
             {
-                _map.OnMapChanged -= SetDirty;
-                _map.OnFoliageChanged -= SetDirty;
+                _map.OnMapChange -= SetDirty;
+                _map.OnFoliageChange -= SetDirty;
             }
         }
 

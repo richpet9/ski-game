@@ -52,7 +52,7 @@ namespace SkiGame.View.World
                 lightProbeUsage = LightProbeUsage.Off,
             };
 
-            _map.OnFoliageChanged += SetDirty;
+            _map.OnFoliageChange += SetDirty;
             Refresh();
         }
 
@@ -159,7 +159,7 @@ namespace SkiGame.View.World
         {
             if (_map != null)
             {
-                _map.OnFoliageChanged -= SetDirty;
+                _map.OnFoliageChange -= SetDirty;
             }
         }
     }

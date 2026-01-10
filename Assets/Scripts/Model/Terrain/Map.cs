@@ -9,8 +9,8 @@ namespace SkiGame.Model.Terrain
 {
     public sealed class Map
     {
-        public event Action OnMapChanged;
-        public event Action OnFoliageChanged;
+        public event Action OnMapChange;
+        public event Action OnFoliageChange;
 
         public GuestManager Guests { get; private set; }
         public EconomyManager Economy { get; private set; }
@@ -60,8 +60,8 @@ namespace SkiGame.Model.Terrain
 
             Array.Copy(data.Tiles, _grid, _grid.Length);
 
-            OnMapChanged?.Invoke();
-            OnFoliageChanged?.Invoke();
+            OnMapChange?.Invoke();
+            OnFoliageChange?.Invoke();
         }
 
         public void PaintPiste(Vector2Int centerLoc)
@@ -123,7 +123,7 @@ namespace SkiGame.Model.Terrain
 
             if (terrainChanged)
             {
-                OnMapChanged?.Invoke();
+                OnMapChange?.Invoke();
             }
         }
 
@@ -192,7 +192,7 @@ namespace SkiGame.Model.Terrain
             if (InBounds(x, z))
             {
                 _grid[GetIndex(x, z)].Height = height;
-                OnMapChanged?.Invoke();
+                OnMapChange?.Invoke();
             }
         }
 
@@ -240,6 +240,7 @@ namespace SkiGame.Model.Terrain
             if (InBounds(x, z))
             {
                 _grid[GetIndex(x, z)].Structure = structure;
+                OnMapChange?.Invoke();
             }
         }
 
@@ -255,7 +256,7 @@ namespace SkiGame.Model.Terrain
                     }
                 }
             }
-            OnFoliageChanged?.Invoke();
+            OnFoliageChange?.Invoke();
         }
 
         public void RemoveStructure(Vector2Int loc)
@@ -271,8 +272,9 @@ namespace SkiGame.Model.Terrain
                 _grid[GetIndex(x, z)].Structure = StructureType.None;
                 if (oldStructure == StructureType.Tree)
                 {
-                    OnFoliageChanged?.Invoke();
+                    OnFoliageChange?.Invoke();
                 }
+                OnMapChange?.Invoke();
             }
         }
     }

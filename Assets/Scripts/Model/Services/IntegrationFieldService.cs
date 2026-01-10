@@ -24,7 +24,7 @@ namespace SkiGame.Model.Services
         {
             _map = map;
             _distanceFields = new Dictionary<NavigationGoal, float[,]>();
-            _map.OnMapChanged += RequestRecalculation;
+            _map.OnMapChange += RequestRecalculation;
         }
 
         public void RequestRecalculation()

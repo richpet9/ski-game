@@ -14,12 +14,12 @@ namespace SkiGame.Model.Structures
             public Vector2Int EndGrid;
         }
 
+        public event Action<Vector2Int, StructureType> OnStructureBuilt;
+        public event Action<Vector2Int, Vector2Int> OnLiftBuilt;
+
         public readonly List<Lift> Lifts = new List<Lift>();
         public readonly Dictionary<StructureType, List<Vector2Int>> Structures =
             new Dictionary<StructureType, List<Vector2Int>>();
-
-        public event Action<Vector2Int, StructureType> OnStructureBuilt;
-        public event Action<Vector2Int, Vector2Int> OnLiftBuilt;
 
         private const int LIFT_COST_PER_UNIT = 10;
 
@@ -90,21 +90,20 @@ namespace SkiGame.Model.Structures
                 return (false, "Not enough money");
             }
 
+            Lifts.Add(new Lift { StartGrid = startPos, EndGrid = endPos });
             Build(startPos, StructureType.Lift);
             Build(endPos, StructureType.Lift);
             OnLiftBuilt?.Invoke(startPos, endPos);
-            Lifts.Add(new Lift { StartGrid = startPos, EndGrid = endPos });
             return (true, null);
         }
 
         private void Build(Vector2Int gridPos, StructureType structure)
         {
-            _map.SetStructure(gridPos, structure);
-
             if (Structures.ContainsKey(structure))
             {
                 Structures[structure].Add(gridPos);
             }
+            _map.SetStructure(gridPos, structure);
         }
     }
 }

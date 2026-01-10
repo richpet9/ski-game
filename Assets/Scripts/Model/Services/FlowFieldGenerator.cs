@@ -102,15 +102,21 @@ namespace SkiGame.Model.AI
                     break;
             }
 
+            Debug.Log($"Goal tiles for goal {goal}: {string.Join(", ", tiles)}");
+
             return tiles;
         }
 
         private static IEnumerable<Vector2Int> GetNeighbors(Vector2Int pos)
         {
-            yield return new Vector2Int(pos.x + 1, pos.y);
             yield return new Vector2Int(pos.x - 1, pos.y);
-            yield return new Vector2Int(pos.x, pos.y + 1);
+            yield return new Vector2Int(pos.x - 1, pos.y - 1);
+            yield return new Vector2Int(pos.x - 1, pos.y + 1);
             yield return new Vector2Int(pos.x, pos.y - 1);
+            yield return new Vector2Int(pos.x, pos.y + 1);
+            yield return new Vector2Int(pos.x + 1, pos.y);
+            yield return new Vector2Int(pos.x + 1, pos.y - 1);
+            yield return new Vector2Int(pos.x + 1, pos.y + 1);
         }
     }
 }

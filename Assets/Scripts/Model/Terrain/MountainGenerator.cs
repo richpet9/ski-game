@@ -37,7 +37,9 @@ namespace SkiGame.Model.Terrain
                     float noise =
                         (Mathf.PerlinNoise(xCoord, zCoord) - 0.5f) * noiseIntensity * mask;
 
-                    float heightValue = (curve.Evaluate(mask) + noise) * mountainHeight;
+                    float heightValue = Mathf.Round(
+                        (curve.Evaluate(mask) + noise) * mountainHeight
+                    );
                     heights[z * (width + 1) + x] = heightValue;
                 }
             }

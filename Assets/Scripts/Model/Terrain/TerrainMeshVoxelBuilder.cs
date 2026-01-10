@@ -12,7 +12,7 @@ namespace SkiGame.Model.Terrain
             public Color Color;
         }
 
-        private const byte VOXELS_PER_UNIT = 1;
+        private const byte VOXELS_PER_UNIT = 2;
         private const float VOXEL_SIZE = 1f / VOXELS_PER_UNIT;
         private const float NOISE_AMPLITUDE = 0.25f;
         private const float BOTTOM_HEIGHT = -10f;
@@ -39,7 +39,7 @@ namespace SkiGame.Model.Terrain
                     int vz = startVz + z;
 
                     // Store in 1D array for slight perf boost over 2D
-                    int index = (z + 1) * cacheWidth + (x + 1);
+                    int index = (z + 1) * cacheWidth + x + 1;
                     voxelCache[index] = GetVoxelData(map, vx, vz);
                 }
             }
@@ -170,7 +170,8 @@ namespace SkiGame.Model.Terrain
 
             // Noise.
             float noise = Mathf.Abs(vx * 73856093 ^ vz * 19349663) % 100 / 100f;
-            float heightOffset = (noise - 0.5f) * NOISE_AMPLITUDE;
+            float rawHeightOffset = (noise - 0.5f) * NOISE_AMPLITUDE;
+            float heightOffset = Mathf.Round(rawHeightOffset / NOISE_AMPLITUDE) * NOISE_AMPLITUDE;
             Color c = GetColor(tile);
 
             return new VoxelInfo { Height = tile.Height + heightOffset, Color = c };
